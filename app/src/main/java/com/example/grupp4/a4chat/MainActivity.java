@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> user = new HashMap<>();
         user.put("app", "Chat");
         user.put("group", 4);
-        user.put("developer", "Start");
+        user.put("developer", "Will");
 
         // Add a new document with a generated ID
         db.collection("users")

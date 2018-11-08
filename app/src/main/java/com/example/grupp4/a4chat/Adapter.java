@@ -32,8 +32,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         ListItem listItem = listItems.get(i);
 
-        viewHolder.textViewHead.setText(listItem.getHead());
-        viewHolder.textViewDesc.setText(listItem.getDesc());
+        viewHolder.textViewUser.setText(listItem.getUser());
+        viewHolder.textViewDate.setText(listItem.getDate());
+        viewHolder.textViewTitle.setText(listItem.getTitle());
+        viewHolder.textViewMessage.setText(listItem.getMessage());
     }
 
     @Override
@@ -43,14 +45,18 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textViewHead;
-        public TextView textViewDesc;
+        public TextView textViewUser;
+        public TextView textViewDate;
+        public TextView textViewTitle;
+        public TextView textViewMessage;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            textViewHead = (TextView) itemView.findViewById(R.id.textViewHead);
-            textViewDesc = (TextView) itemView.findViewById(R.id.textViewDesc);
+            textViewUser = (TextView) itemView.findViewById(R.id.textViewUser);
+            textViewDate = (TextView) itemView.findViewById(R.id.textViewDate);
+            textViewTitle = (TextView) itemView.findViewById(R.id.textViewTitle);
+            textViewMessage = (TextView) itemView.findViewById(R.id.textViewMessage);
         }
     }
 

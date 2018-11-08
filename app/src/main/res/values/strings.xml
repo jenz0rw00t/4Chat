@@ -4,7 +4,10 @@
     <string name="username" />
     <string name="time_posted" />
     <string name="message_box" />
-    <string name="heading" />
-    <string name="description" />
+    <string name="title">"Title</string>
+    <string name="message">Message</string>
     <string name="recyclerview_button">RecyclerView</string>
+    <string name="user">User</string>
+    <string name="date">Date</string>
+    <string name="avatar">Avatar</string>
 </resources>

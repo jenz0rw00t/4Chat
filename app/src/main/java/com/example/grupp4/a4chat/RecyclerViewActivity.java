@@ -27,8 +27,9 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
         for (int i = 0; i < 10; i++) {
             ListItem listItem = new ListItem(
+                    "Username",
                     "Title #" + (i + 1),
-                    "This is the message that needs to be heard by everyone!"
+                    "This is the message that needs to be heard by everyone! It's so important that no one have ever made a more important message in history, maybe ever."
             );
             listItems.add(listItem);
         }

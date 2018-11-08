@@ -1,6 +1,7 @@
 package com.example.grupp4.a4chat;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -60,5 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void runRecyclerViewActivity() {
         startActivity(new Intent(this,RecyclerViewActivity.class));
+    }
+
+    @Override
+    public Resources getResources() {
+        return super.getResources();
     }
 }

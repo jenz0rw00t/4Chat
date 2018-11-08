@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">4 Chat</string>
+    <string name="user_message" />
+    <string name="username" />
+    <string name="time_posted" />
+    <string name="message_box" />
+    <string name="heading" />
+    <string name="description" />
+    <string name="recyclerview_button">RecyclerView</string>
 </resources>

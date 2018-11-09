@@ -19,7 +19,8 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setData(Message message){
-        textUser.setText(message.user);
+        String userStyle = message.user+":";
+        textUser.setText(userStyle);
         textMessage.setText(message.message);
     }
 }

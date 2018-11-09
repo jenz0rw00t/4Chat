@@ -46,4 +46,13 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MessageViewHolde
             this.notifyItemRemoved(index);
         }
     }
+
+    public void removeItem(String id) {
+        for (int i = 0; i < list.size(); i++) {
+            if( list.get(i).id.equals(id) ) {
+                removeItem(i);
+                return;
+            }
+        }
+    }
 }

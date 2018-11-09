@@ -4,6 +4,7 @@ public class Message {
 
     public String user;
     public String message;
+    public String id;
 
     public Message() {}
 

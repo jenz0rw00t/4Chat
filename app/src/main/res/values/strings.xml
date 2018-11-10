@@ -10,4 +10,6 @@
     <string name="user">User</string>
     <string name="date">Date</string>
     <string name="avatar">Avatar</string>
+    <string name="befriend">Befriend</string>
+    <string name="report">Report</string>
 </resources>

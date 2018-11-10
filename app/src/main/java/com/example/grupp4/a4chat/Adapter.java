@@ -33,9 +33,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         ListItem listItem = listItems.get(i);
 
+        viewHolder.imageViewAvatar.setImageDrawable(listItem.getAvatar());
         viewHolder.textViewUser.setText(listItem.getUser());
         viewHolder.textViewDate.setText(listItem.getDate());
-        viewHolder.textViewTitle.setText(listItem.getTitle());
         viewHolder.textViewMessage.setText(listItem.getMessage());
     }
 
@@ -49,7 +49,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         public ImageView imageViewAvatar;
         public TextView textViewUser;
         public TextView textViewDate;
-        public TextView textViewTitle;
         public TextView textViewMessage;
 
         ViewHolder(@NonNull View itemView) {
@@ -58,7 +57,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.imageViewAvatar);
             textViewUser = (TextView) itemView.findViewById(R.id.textViewUser);
             textViewDate = (TextView) itemView.findViewById(R.id.textViewDate);
-            textViewTitle = (TextView) itemView.findViewById(R.id.textViewTitle);
             textViewMessage = (TextView) itemView.findViewById(R.id.textViewMessage);
         }
     }

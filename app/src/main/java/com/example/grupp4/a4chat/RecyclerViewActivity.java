@@ -1,5 +1,6 @@
 package com.example.grupp4.a4chat;
 
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,8 @@ public class RecyclerViewActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private List<ListItem> listItems;
 
+    private ArrayList<Drawable> drawableList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,13 +25,15 @@ public class RecyclerViewActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         listItems = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
+        drawableList = new ArrayList<>();
+        initiateDrawables();
+
+        for (int i = 0; i < 25; i++) {
             ListItem listItem = new ListItem(
+                    drawableList,
                     "Username",
-                    "Title #" + (i + 1),
                     "This is the message that needs to be heard by everyone! It's so important that no one have ever made a more important message in history, maybe ever."
             );
             listItems.add(listItem);
@@ -36,5 +41,12 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
         adapter = new Adapter(listItems,this);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void initiateDrawables() {
+        drawableList.add(getResources().getDrawable(R.drawable.avatar1));
+        drawableList.add(getResources().getDrawable(R.drawable.avatar2));
+        drawableList.add(getResources().getDrawable(R.drawable.avatar3));
+        drawableList.add(getResources().getDrawable(R.drawable.avatar4));
     }
 }

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,6 +40,8 @@ public class ChatFragment extends Fragment {
     List<Message> messagesList = new ArrayList<>();
     private MyRecyclerViewAdapter adapter;
     FirebaseFirestore db;
+    EditText userNameField;
+    EditText messageField;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,6 +56,8 @@ public class ChatFragment extends Fragment {
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
 
         db = FirebaseFirestore.getInstance();
+        userNameField = getActivity().findViewById(R.id.userNameField);
+        messageField = getActivity().findViewById(R.id.messageField);
 
         //Set adapter for recyclerView
         adapter = new MyRecyclerViewAdapter(messagesList);
@@ -86,7 +91,8 @@ public class ChatFragment extends Fragment {
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
 
             // Create a new message with username and message
-            Message info = new Message("Username", "Hello world!");
+            Message info = new Message(userNameField.getText().toString(), messageField.getText().toString());
+            messageField.setText("");
 
             // Add a new document with a generated ID
             db.collection("messages")

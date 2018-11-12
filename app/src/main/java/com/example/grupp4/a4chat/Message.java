@@ -1,10 +1,16 @@
 package com.example.grupp4.a4chat;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
+
 public class Message {
 
     public String user;
     public String message;
     public String id;
+    @ServerTimestamp
+    public Date timeStamp;
 
     public Message() {}
 

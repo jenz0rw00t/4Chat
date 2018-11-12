@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -64,7 +65,9 @@ public class ChatFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         //Register for change events for documents stored in collection items on firestore
-        db.collection("messages").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("messages")
+                .orderBy("timeStamp")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -79,6 +82,8 @@ public class ChatFragment extends Fragment {
                         Message message = dc.getDocument().toObject(Message.class);
                         message.id = id;
                         adapter.addItem(message);
+                        //TODO Hur funkar detta
+                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
                     }
                     else if(dc.getType() == DocumentChange.Type.REMOVED){
                         String id = dc.getDocument().getId();

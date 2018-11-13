@@ -14,18 +14,25 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "Error";
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
@@ -33,12 +40,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView navUserImage;
     private FirebaseAuth mAuth;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mAuth = FirebaseAuth.getInstance();
+        String user_id = mAuth.getCurrentUser().getUid();
+        FirebaseFirestore databaseReference = FirebaseFirestore.getInstance();
+
+        databaseReference.collection("users").document(user_id)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    String name = documentSnapshot.getString("name");
+                    String image = documentSnapshot.getString("avatar");
+                    navUserName.setText(name);
+                    Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(navUserImage);
+                } else {
+                    Log.w(TAG, "Error getting documents.", task.getException());
+                }
+            }
+        });
 
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
@@ -51,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new ChatFragment()).commit();
@@ -73,10 +100,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_profile){
+            startActivity(new Intent(MainActivity.this, UserProfile.class));
+            Toast.makeText(this, getApplicationContext().toString(), Toast.LENGTH_SHORT).show();
         }else if (id == R.id.nav_chatandfriends){
             startActivity(new Intent(MainActivity.this, MainActivity.class));
 
         }else if (id == R.id.nav_logout){
+            mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
 

@@ -8,6 +8,14 @@
     tools:context=".MainActivity"
     tools:openDrawer="start">
 
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
@@ -16,15 +24,4 @@
         android:layout_gravity="start"
         app:menu="@menu/navigation_drawer_menu"
         app:headerLayout="@layout/nav_header" />
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </FrameLayout>
 </android.support.v4.widget.DrawerLayout>

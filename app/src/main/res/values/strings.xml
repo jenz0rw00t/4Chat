@@ -27,5 +27,7 @@
 
     <string name="emailpassword_status_fmt">Email User: %1$s (verified: %2$b)</string>
     <string name="emailpassword_title_text">Email and Password</string>
+    <string name="profile_username">Name</string>
+    <string name="profile_email">Email</string>
 
 </resources>

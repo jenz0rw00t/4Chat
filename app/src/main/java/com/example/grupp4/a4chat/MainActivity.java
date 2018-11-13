@@ -100,11 +100,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_profile){
-            startActivity(new Intent(MainActivity.this, UserProfile.class));
-            Toast.makeText(this, getApplicationContext().toString(), Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
         }else if (id == R.id.nav_chatandfriends){
-            startActivity(new Intent(MainActivity.this, MainActivity.class));
-
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatFragment()).commit();
         }else if (id == R.id.nav_logout){
             mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));

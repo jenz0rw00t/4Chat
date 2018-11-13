@@ -178,6 +178,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //duplicates the the authenticate user to a userObject and sets it to the database
+    //if current usedID already exists, there will be NO new userFireStore object created
     private void setUserToDatabase() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();

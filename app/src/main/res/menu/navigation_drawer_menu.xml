@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_profile"
+        android:title="Profil"
+        android:icon="@drawable/ic_account_circle_black_24dp"/>
+    <item
+        android:id="@+id/nav_chatandfriends"
+        android:title="Chat och Vänner"
+        android:icon="@drawable/ic_group_black_24dp"/>
+
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Logga ut"
+        android:icon="@drawable/ic_exit_to_app_black_24dp"/>
+</menu>

@@ -6,6 +6,8 @@
     <string name="action_save">save</string>
     <string name="name">name</string>
     <string name="email">email</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
     <string name="no_match_password">Passwords do not match</string>
     <string name="required_fields">All fields must be filled out</string>
 

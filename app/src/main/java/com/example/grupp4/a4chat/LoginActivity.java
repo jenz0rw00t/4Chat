@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithCredential:success");
 
-                            startActivity(new Intent(LoginActivity.this, SignedInActivity.class));
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             setUserToDatabase();
                             finish(); //finish so the user cant go back to login screen after they´ve logged in
                         } else {

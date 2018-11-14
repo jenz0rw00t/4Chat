@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.grupp4.a4chat.allusers.AllUserListFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -97,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else if (id == R.id.nav_logout){
             mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        }else if (id == R.id.nav_all_users){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);

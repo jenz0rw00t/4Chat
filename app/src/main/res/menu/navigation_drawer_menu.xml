@@ -2,15 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_profile"
-        android:title="Profil"
+        android:title="@string/nav_profile_string"
         android:icon="@drawable/ic_account_circle_black_24dp"/>
     <item
-        android:id="@+id/nav_chatandfriends"
-        android:title="Chat och Vänner"
+        android:id="@+id/nav_chatAndFriends"
+        android:title="@string/nav_chatAndFriends"
         android:icon="@drawable/ic_group_black_24dp"/>
 
     <item
+        android:id="@+id/nav_all_users"
+        android:title="@string/nav_allUsers"
+        android:icon="@drawable/ic_person_add_black_add_24dp"/>
+
+    <item
         android:id="@+id/nav_logout"
-        android:title="Logga ut"
+        android:title="@string/nav_logout"
         android:icon="@drawable/ic_exit_to_app_black_24dp"/>
 </menu>

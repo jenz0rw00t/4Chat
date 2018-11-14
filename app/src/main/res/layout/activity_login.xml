@@ -7,6 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -63,6 +68,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:contentDescription="ChatIcon"
+        android:background="@drawable/login_background_shape"
         app:layout_constraintBottom_toTopOf="@+id/sign_in_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

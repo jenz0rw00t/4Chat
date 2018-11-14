@@ -6,6 +6,8 @@
     <string name="action_save">save</string>
     <string name="name">name</string>
     <string name="email">email</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
     <string name="no_match_password">Passwords do not match</string>
     <string name="required_fields">All fields must be filled out</string>
 
@@ -25,5 +27,11 @@
 
     <string name="emailpassword_status_fmt">Email User: %1$s (verified: %2$b)</string>
     <string name="emailpassword_title_text">Email and Password</string>
+    <string name="profile_username">Name</string>
+    <string name="profile_email">Email</string>
+    <string name="nav_profile_string">Profil</string>
+    <string name="nav_chatAndFriends">Chat och Vänner</string>
+    <string name="nav_logout">Logga ut</string>
+    <string name="nav_allUsers">Alla användare</string>
 
 </resources>

@@ -63,8 +63,14 @@ public class AllUserListFragment extends Fragment{
             public void onItemClick(DocumentSnapshot snapshot, int position) {
                 AllUsers allUsers = snapshot.toObject(AllUsers.class);
                 String id = snapshot.getId();
-                getFragmentManager().beginTransaction().replace(R.id.frameLayout,new AllUserProfileFragment()).commit();
-
+                Bundle bundle = new Bundle();
+                bundle.putString("visit_user_id", id);
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                AllUserProfileFragment fragment = new AllUserProfileFragment();
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.frameLayout, fragment);
+                fragmentTransaction.commit();
             }
         });
 

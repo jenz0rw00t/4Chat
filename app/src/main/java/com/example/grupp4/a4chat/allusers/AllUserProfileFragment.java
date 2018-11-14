@@ -1,6 +1,7 @@
 package com.example.grupp4.a4chat.allusers;
 
 import android.content.Context;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.grupp4.a4chat.R;
@@ -33,13 +35,18 @@ public class AllUserProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_all_user_profile, container, false);
+
+
 
         FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
 
         TextView allUserName = (TextView)view.findViewById(R.id.allUserProfileName);
         TextView allUserEmail = (TextView)view.findViewById(R.id.allUserProfileEmail);
+        ImageView allUserImage = (ImageView)view.findViewById(R.id.allUserProfileImage);
+
+        Bundle bundle = getArguments();
+        all_user_id = bundle.getString("visit_user_id");
 
         userFireStoreReference.collection("users").document(all_user_id)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -49,8 +56,10 @@ public class AllUserProfileFragment extends Fragment {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     String name = documentSnapshot.getString("name");
                     String email = documentSnapshot.getString("email");
+                    String image = documentSnapshot.getString("avatar");
                     allUserName.setText(name);
                     allUserEmail.setText(email);
+                    Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(allUserImage);
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }

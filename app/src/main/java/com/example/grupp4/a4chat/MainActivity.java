@@ -69,12 +69,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new ChatFragment()).commit();
-        }
-
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.example.grupp4.a4chat.allusers;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +18,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import java.util.Objects;
 
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
@@ -33,23 +37,33 @@ public class AllUserListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        setUpRecyclerView();
+        View view = inflater.inflate(R.layout.fragment_all_user_list, container, false);
 
-        return inflater.inflate(R.layout.fragment_all_user_list, container, false);
-    }
 
-    private void setUpRecyclerView(){
-        Query query = allUsers.orderBy("name",Query.Direction.DESCENDING);
+        Query query = allUsers;
 
         FirestoreRecyclerOptions<AllUsers> recyclerOptions = new FirestoreRecyclerOptions.Builder<AllUsers>()
                 .setQuery(query, AllUsers.class)
                 .build();
 
         mUserAdapter = new AllUserAdapter(recyclerOptions);
-        RecyclerView recyclerView = getView().findViewById(R.id.allUser_listView);
+        RecyclerView recyclerView = view.findViewById(R.id.allUser_listView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(mUserAdapter);
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+    }
+
+    private void setUpRecyclerView(){
+
     }
 
     @Override
@@ -58,9 +72,4 @@ public class AllUserListFragment extends Fragment {
         mUserAdapter.startListening();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        mUserAdapter.stopListening();
-    }
 }

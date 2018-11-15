@@ -45,7 +45,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mVideoView = (VideoView)findViewById(R.id.videoView);
+       /*
+       // Background video function.
+
+       mVideoView = (VideoView)findViewById(R.id.videoView);
         Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.login_background_video);
         mVideoView.setVideoURI(uri);
         mVideoView.start();
@@ -57,6 +60,8 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+        */
+
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))

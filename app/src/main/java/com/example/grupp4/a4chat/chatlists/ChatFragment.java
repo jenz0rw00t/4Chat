@@ -1,4 +1,4 @@
-package com.example.grupp4.a4chat;
+package com.example.grupp4.a4chat.chatlists;
 
 
 import android.os.Bundle;
@@ -12,20 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.example.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -38,11 +37,11 @@ public class ChatFragment extends Fragment {
         // Required empty public constructor
     }
 
-    List<Message> messagesList = new ArrayList<>();
+    private List<Message> messagesList = new ArrayList<>();
     private MyRecyclerViewAdapter adapter;
-    FirebaseFirestore db;
-    EditText userNameField;
-    EditText messageField;
+    private FirebaseFirestore db;
+    private FirebaseAuth mFirebaseAuth;
+    private EditText messageField;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,7 +56,8 @@ public class ChatFragment extends Fragment {
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
 
         db = FirebaseFirestore.getInstance();
-        userNameField = getActivity().findViewById(R.id.userNameField);
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        String uid = mFirebaseAuth.getCurrentUser().getUid();
         messageField = getActivity().findViewById(R.id.messageField);
 
         //Set adapter for recyclerView
@@ -94,14 +94,13 @@ public class ChatFragment extends Fragment {
         });
 
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
-
             // Create a new message with username and message
-            Message info = new Message(userNameField.getText().toString(), messageField.getText().toString());
+            Message chatMessage = new Message(mFirebaseAuth.getCurrentUser().getDisplayName(), messageField.getText().toString());
             messageField.setText("");
 
             // Add a new document with a generated ID
             db.collection("messages")
-                    .add(info)
+                    .add(chatMessage)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {

@@ -1,4 +1,4 @@
-package com.example.grupp4.a4chat;
+package com.example.grupp4.a4chat.chatlists;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -12,11 +12,13 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.example.grupp4.a4chat.MainActivity;
+import com.example.grupp4.a4chat.R;
+import com.example.grupp4.a4chat.UserFireStore;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

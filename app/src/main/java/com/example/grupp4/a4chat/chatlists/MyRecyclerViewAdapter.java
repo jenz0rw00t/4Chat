@@ -1,10 +1,12 @@
-package com.example.grupp4.a4chat;
+package com.example.grupp4.a4chat.chatlists;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.grupp4.a4chat.R;
 
 import java.util.List;
 

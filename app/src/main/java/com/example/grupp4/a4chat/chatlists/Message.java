@@ -1,5 +1,6 @@
-package com.example.grupp4.a4chat;
+package com.example.grupp4.a4chat.chatlists;
 
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
@@ -8,9 +9,8 @@ public class Message {
 
     public String user;
     public String message;
-    public String id;
-    @ServerTimestamp
-    public Date timeStamp;
+    @Exclude public String id;
+    @ServerTimestamp public Date timeStamp;
 
     public Message() {}
 

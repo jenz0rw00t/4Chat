@@ -74,7 +74,6 @@ public class AllUserListFragment extends Fragment{
             }
         });
 
-
         return view;
     }
 

@@ -8,7 +8,10 @@
         android:id="@+id/nav_chatAndFriends"
         android:title="@string/nav_chatAndFriends"
         android:icon="@drawable/ic_group_black_24dp"/>
-
+    <item
+        android:id="@+id/nav_chat_test"
+        android:title="Chat BETA"
+        android:icon="@drawable/ic_group_black_24dp"/>
     <item
         android:id="@+id/nav_all_users"
         android:title="@string/nav_allUsers"

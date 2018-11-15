@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".chatlists.LoginActivity">
 
     <VideoView
         android:id="@+id/videoView"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="173dp"
-        tools:context="com.example.grupp4.a4chat.LoginActivity"/>
+        tools:context="com.example.grupp4.a4chat.chatlists.LoginActivity"/>
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_btn"

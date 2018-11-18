@@ -57,7 +57,7 @@ public class PhotoUploader {
     }
 
     // the compressing of image and uploading of image will be able to go in the background while
-    // user navigates 
+    // user navigates
     public class BackgroundConversion extends AsyncTask<Uri, Integer, byte[]> {
 
         @Override

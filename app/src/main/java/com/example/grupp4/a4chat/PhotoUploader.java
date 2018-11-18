@@ -56,8 +56,8 @@ public class PhotoUploader {
         mConvert.execute(imageUri);
     }
 
-    //this class is for compressing the image in iterations
-    //reduces quality by 10% for each iteration, until its under 5 MB
+    // the compressing of image and uploading of image will be able to go in the background while
+    // user navigates 
     public class BackgroundConversion extends AsyncTask<Uri, Integer, byte[]> {
 
         @Override
@@ -65,6 +65,9 @@ public class PhotoUploader {
             super.onPreExecute();
         }
 
+        //this class is for compressing the image in iterations
+        //If the compressed image is not under 5 MB, its compresses and reduces the quality of the
+        //image by 10% for each iteration, until the picture is less than 5 MB.
         @Override
         protected byte[] doInBackground(Uri... params) {
             Log.d(TAG, "doInBackground: started.");
@@ -108,9 +111,9 @@ public class PhotoUploader {
             StorageReference storageReference = FirebaseStorage.getInstance().getReference()
                     .child("images/users" + "/" + mUserid + "/profile_image");
 
+            //if the image size is valid then we can submit to database
             if(mBytes.length/MB < MB_THRESHHOLD) {
 
-                //if the image size is valid then we can submit to database
                 UploadTask uploadTask;
                 uploadTask = storageReference.putBytes(mBytes);
 
@@ -151,6 +154,7 @@ public class PhotoUploader {
             }
         }
 
+        //Updates the new URL that points to Firebase Storage to database FireStore Cloud
         private void updateProfilePicture(String downloadUrl) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 

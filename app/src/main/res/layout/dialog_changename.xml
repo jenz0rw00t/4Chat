@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <EditText
+        android:id="@+id/dialogChangeName"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:gravity="center_vertical"
+        android:hint="Set your nickname"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/dialogSaveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="41dp"
+        android:text="Save"
+        android:layout_below="@+id/dialogChangeName"/>
+
+</RelativeLayout>

@@ -37,10 +37,7 @@ public class AllUserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_user_profile, container, false);
 
-
-
         FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
-
         TextView allUserName = (TextView)view.findViewById(R.id.allUserProfileName);
         TextView allUserEmail = (TextView)view.findViewById(R.id.allUserProfileEmail);
         ImageView allUserImage = (ImageView)view.findViewById(R.id.allUserProfileImage);
@@ -65,7 +62,6 @@ public class AllUserProfileFragment extends Fragment {
                 }
             }
         });
-
         return view;
     }
 

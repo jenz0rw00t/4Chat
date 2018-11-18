@@ -14,7 +14,7 @@ import android.widget.VideoView;
 
 import com.example.grupp4.a4chat.MainActivity;
 import com.example.grupp4.a4chat.R;
-import com.example.grupp4.a4chat.UserFireStore;
+import com.example.grupp4.a4chat.allusers.AllUsers;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -208,45 +208,32 @@ public class LoginActivity extends AppCompatActivity {
 
         if (currentUser != null) {
 
-            UserFireStore userFireStore = new UserFireStore(
-                    currentUser.getDisplayName(),
-                    currentUser.getEmail(),
-                    currentUser.getPhotoUrl().toString(),
-                    currentUser.getUid()
-            );
+            if (db.collection("users").document(currentUser.getUid()) == null) {
 
-            db.collection("users").document(currentUser.getUid())
-                    .set(userFireStore)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
+                AllUsers allUsers = new AllUsers(
+                        currentUser.getDisplayName(),
+                        currentUser.getEmail(),
+                        currentUser.getPhotoUrl().toString(),
+                        currentUser.getUid()
+                );
 
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("firestore", "Error adding document", e);
-                        }
-                    });
+                db.collection("users").document(currentUser.getUid())
+                        .set(allUsers)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("firestore", "Error adding document", e);
+                            }
+                        });
+            }
         }
     }
-
-
 }
 
 
-/*
-2018-11-12 16:25:42.334 10680-10680/com.example.grupp4.a4chat W/LoginActivity: signInWithCredential:failure
-    com.google.firebase.FirebaseException: An internal error has occurred. [ Identity Toolkit API has not been used in project 365291550515 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/identitytoolkit.googleapis.com/overview?project=365291550515 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry. ]
-        at com.google.firebase.auth.api.internal.zzds.zzb(Unknown Source:18)
-        at com.google.firebase.auth.api.internal.zzew.zza(Unknown Source:11)
-        at com.google.firebase.auth.api.internal.zzeo.zzc(Unknown Source:33)
-        at com.google.firebase.auth.api.internal.zzep.onFailure(Unknown Source:49)
-        at com.google.firebase.auth.api.internal.zzdy.dispatchTransaction(Unknown Source:18)
-        at com.google.android.gms.internal.firebase_auth.zzb.onTransact(Unknown Source:12)
-        at android.os.Binder.execTransact(Binder.java:697)
-
-SOVLED: Disable the Identity Toolkit API in Google API Console API Library and then enable it
-2018-11-12 16:34:27.878 12154-12154/com.example.grupp4.a4chat D/LoginActivity: signInWithCredential:success
-*/

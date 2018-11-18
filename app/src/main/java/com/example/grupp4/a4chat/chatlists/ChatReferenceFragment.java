@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.example.grupp4.a4chat.R;
-import com.example.grupp4.a4chat.UserFireStore;
+import com.example.grupp4.a4chat.allusers.AllUsers;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +42,7 @@ public class ChatReferenceFragment extends Fragment {
     private MessageReferenceViewAdapter adapter;
     FirebaseFirestore db;
     EditText messageField;
-    UserFireStore user;
+    AllUsers user;
     DocumentReference userRef;
 
 

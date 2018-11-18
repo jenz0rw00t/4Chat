@@ -1,6 +1,8 @@
 package com.example.grupp4.a4chat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,15 +27,19 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+      {
 
-    private static final String TAG = "Error";
+
+    private static final String TAG = "MainActivityTag";
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
     private TextView navUserName;
     private ImageView navUserImage;
     private FirebaseAuth mAuth;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +106,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else if (id == R.id.nav_chat_test){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
         }
-
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void updateNavProfileImage(Uri imagePath) {
+        Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);
+            Picasso.get().load(imagePath.toString()).placeholder(R.drawable.default_avatar).into(navUserImage);
+        }
+
+    public void updateNavProfileName(String name) {
+        navUserName.setText(name);
+    }
+
 }
+

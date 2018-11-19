@@ -34,4 +34,6 @@
     <string name="nav_logout">Logga ut</string>
     <string name="nav_allUsers">Alla användare</string>
 
+    <string name="facebook_app_id">288776491772638</string>
+    <string name="fb_login_protocol_scheme">fb288776491772638</string>
 </resources>

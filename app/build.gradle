@@ -42,4 +42,5 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-firestore:4.2.1'
     implementation 'com.firebaseui:firebase-ui-auth:4.2.1'
     implementation 'com.google.firebase:firebase-storage:16.0.4'
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 }

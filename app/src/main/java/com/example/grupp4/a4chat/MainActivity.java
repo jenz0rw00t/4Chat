@@ -20,6 +20,7 @@ import com.example.grupp4.a4chat.allusers.AllUserListFragment;
 import com.example.grupp4.a4chat.chatlists.ChatFragment;
 import com.example.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.example.grupp4.a4chat.chatlists.LoginActivity;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatFragment()).commit();
         }else if (id == R.id.nav_logout){
             mAuth.signOut();
+            LoginManager.getInstance().logOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }else if (id == R.id.nav_all_users){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();

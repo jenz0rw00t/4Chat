@@ -14,12 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class ChangePhotoDialog extends DialogFragment {
+import com.example.grupp4.a4chat.camera.Camera;
+
+public class ChangePhotoDialog extends DialogFragment  {
 
     private static final String TAG = "ChangePhotoDialog";
 
     public static final int  CAMERA_REQUEST_CODE = 2;
     private static final int RESULT_LOAD_IMAGE = 1;
+    //private static final Object ChangePhotoDialog;
 
     //For communicating with UserProfileFragment
     public interface OnPhotoReceivedListener{
@@ -33,19 +36,32 @@ public class ChangePhotoDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_changephoto, container, false);
 
+
         //Initialize the textview for choosing an image from memory
-        TextView selectPhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
+        TextView selectCamera = view.findViewById(R.id.dialogOpenCamera);
+        TextView selectPhoto =  view.findViewById(R.id.dialogChoosePhoto);
         selectPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: accessing phones memory.");
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI); //opens camera intent
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI); //opens galleri intent
                 intent.setType("image/*");
                 startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
+
+        selectCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: starting camera.");
+                Intent intent1 = new Intent(getContext(), Camera.class);
+                startActivity(intent1);
+            }
+        });
+
         return view;
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -62,6 +78,8 @@ public class ChangePhotoDialog extends DialogFragment {
         }
 
         else if(requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            Camera photo = new Camera();
+            photo.getImage
 
         }
     }

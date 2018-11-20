@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -148,6 +149,7 @@ public class Camera extends AppCompatActivity {
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,ORIENTATIONS.get(rotation));
 
             file = new File(Environment.getExternalStorageDirectory()+"/"+UUID.randomUUID().toString()+".jpg");
+
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader imageReader) {
@@ -177,6 +179,8 @@ public class Camera extends AppCompatActivity {
                     OutputStream outputStream = null;
                     try{
                         outputStream = new FileOutputStream(file);
+                        Log.d("CameraActivity", "save: " + file);
+
                         outputStream.write(bytes);
                     }finally {
                         if(outputStream != null)

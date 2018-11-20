@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.grupp4.a4chat.allusers.AllUserListFragment;
+import com.example.grupp4.a4chat.chat.ChatBottomNavFragment;
 import com.example.grupp4.a4chat.chatlists.ChatFragment;
 import com.example.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.example.grupp4.a4chat.chatlists.LoginActivity;
@@ -108,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
         }else if (id == R.id.nav_chat_test){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
+        }else if (id == R.id.nav_chat){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatBottomNavFragment()).commit();
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;

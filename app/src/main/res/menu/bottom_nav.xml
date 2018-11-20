@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/globalChat"
+        android:state_checked="true"
+        android:icon="@drawable/ic_visibility_black_24dp"
+        android:title="Global Chat"/>
+
+    <item
+        android:title="Private Chat"
+        android:state_checked="true"
+        android:icon="@drawable/ic_group_black_24dp"
+        android:id="@+id/bottomNavPrivateChat"/>
+</menu>

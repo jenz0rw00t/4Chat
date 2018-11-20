@@ -1,6 +1,5 @@
 package com.example.grupp4.a4chat;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -17,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.grupp4.a4chat.allusers.AllUserListFragment;
-import com.example.grupp4.a4chat.chat.ChatBottomNavFragment;
+import com.example.grupp4.a4chat.chat_nav.ChatBottomNavFragment;
 import com.example.grupp4.a4chat.chatlists.ChatFragment;
 import com.example.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.example.grupp4.a4chat.chatlists.LoginActivity;

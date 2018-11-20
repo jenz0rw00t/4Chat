@@ -1,4 +1,4 @@
-package com.example.grupp4.a4chat.chat;
+package com.example.grupp4.a4chat.chat_nav;
 
 
 import android.os.Bundle;
@@ -15,9 +15,7 @@ import com.example.grupp4.a4chat.R;
 import com.example.grupp4.a4chat.chatlists.ChatFragment;
 import com.example.grupp4.a4chat.chatlists.ChatReferenceFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class ChatBottomNavFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private Button navButton;

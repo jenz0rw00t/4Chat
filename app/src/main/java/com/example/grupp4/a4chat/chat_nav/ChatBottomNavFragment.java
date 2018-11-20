@@ -46,7 +46,7 @@ public class ChatBottomNavFragment extends Fragment implements BottomNavigationV
 
         switch (id){
             case R.id.globalChat:
-                navButton.setText("Global chat");
+                navButton.setText("Enter Global chat");
                 navButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

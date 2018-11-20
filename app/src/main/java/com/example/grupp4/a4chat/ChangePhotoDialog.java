@@ -53,9 +53,13 @@ public class ChangePhotoDialog extends DialogFragment  {
         selectCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+
                 Log.d(TAG, "onClick: starting camera.");
                 Intent intent1 = new Intent(getContext(), Camera.class);
                 startActivity(intent1);
+                
             }
         });
 
@@ -78,8 +82,7 @@ public class ChangePhotoDialog extends DialogFragment  {
         }
 
         else if(requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-            Camera photo = new Camera();
-            photo.getImage
+
 
         }
     }

@@ -156,7 +156,10 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
+                            if (isNew) {
+                                setUserToDatabase();
+                            }
                             loginButton.setEnabled(true);
                             setUserToDatabase();
                             updateUI();
@@ -232,10 +235,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithCredential:success");
-
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            setUserToDatabase();
-                            finish(); //finish so the user cant go back to login screen after they´ve logged in
+                            boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
+                            if (isNew) {
+                                setUserToDatabase();
+                            }
+                            updateUI();
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
 
@@ -314,8 +318,6 @@ public class LoginActivity extends AppCompatActivity {
 
         if (currentUser != null) {
 
-            if (db.collection("users").document(currentUser.getUid()) == null) {
-
                 AllUsers allUsers = new AllUsers(
                         currentUser.getDisplayName(),
                         currentUser.getEmail(),
@@ -337,7 +339,6 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.w("firestore", "Error adding document", e);
                             }
                         });
-            }
         }
     }
 }

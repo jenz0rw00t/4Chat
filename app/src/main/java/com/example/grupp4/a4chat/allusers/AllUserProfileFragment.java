@@ -1,14 +1,14 @@
 package com.example.grupp4.a4chat.allusers;
 
-import android.content.Context;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,15 +17,27 @@ import android.widget.TextView;
 import com.example.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class AllUserProfileFragment extends Fragment {
 
     private static final String TAG = "Error" ;
-    String all_user_id = "sk3j1Jl3SJc0pn9kMwfp8Wsu34P2";
+    private MenuItem itemAddFriend;
+    private MenuItem itemRemoveFriend;
+
+    String current_state;
+    String sender_user_id;
+    String receiver_user_id;
+
 
     public AllUserProfileFragment() {
 
@@ -42,10 +54,13 @@ public class AllUserProfileFragment extends Fragment {
         TextView allUserEmail = (TextView)view.findViewById(R.id.allUserProfileEmail);
         ImageView allUserImage = (ImageView)view.findViewById(R.id.allUserProfileImage);
 
-        Bundle bundle = getArguments();
-        all_user_id = bundle.getString("visit_user_id");
+        setHasOptionsMenu(true);
 
-        userFireStoreReference.collection("users").document(all_user_id)
+        Bundle bundle = getArguments();
+        receiver_user_id = bundle.getString("visit_user_id");
+
+
+        userFireStoreReference.collection("users").document(receiver_user_id)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -69,6 +84,47 @@ public class AllUserProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_friend, menu);
+
+        itemAddFriend = menu.findItem(R.id.menu_addFriend);
+        itemRemoveFriend = menu.findItem(R.id.menu_removeFriend);
+
+        itemRemoveFriend.setVisible(false);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_addFriend:
+                addFriend();
+                itemAddFriend.setVisible(false);
+                itemRemoveFriend.setVisible(true);
+                return true;
+
+            case R.id.menu_removeFriend:
+                removeFriend();
+                itemRemoveFriend.setVisible(false);
+                itemAddFriend.setVisible(true);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+
+    public void addFriend(){
+
+
+    }
+
+
+    public void removeFriend(){
 
     }
 }

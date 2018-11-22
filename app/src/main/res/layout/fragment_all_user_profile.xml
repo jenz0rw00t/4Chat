@@ -80,6 +80,19 @@
                 android:textColor="@android:color/black"
                 android:gravity="center"
                 android:text="" />
+
+            <Button
+                android:id="@+id/addFriend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="Lägg till vän" />
+
+            <Button
+                android:id="@+id/removeFriend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ta bort vän" />
         </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>

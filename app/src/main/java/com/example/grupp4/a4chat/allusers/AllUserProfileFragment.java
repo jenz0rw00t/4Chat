@@ -11,15 +11,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
@@ -30,7 +34,7 @@ import java.util.Map;
 
 public class AllUserProfileFragment extends Fragment {
 
-    private static final String TAG = "Error" ;
+    private static final String TAG = "Error";
     private MenuItem itemAddFriend;
     private MenuItem itemRemoveFriend;
 
@@ -50,9 +54,13 @@ public class AllUserProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_all_user_profile, container, false);
 
         FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
-        TextView allUserName = (TextView)view.findViewById(R.id.allUserProfileName);
-        TextView allUserEmail = (TextView)view.findViewById(R.id.allUserProfileEmail);
-        ImageView allUserImage = (ImageView)view.findViewById(R.id.allUserProfileImage);
+        TextView allUserName = (TextView) view.findViewById(R.id.allUserProfileName);
+        TextView allUserEmail = (TextView) view.findViewById(R.id.allUserProfileEmail);
+        ImageView allUserImage = (ImageView) view.findViewById(R.id.allUserProfileImage);
+        Button addFriend = (Button) view.findViewById(R.id.addFriend);
+        Button removeFriend = (Button) view.findViewById(R.id.removeFriend);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         setHasOptionsMenu(true);
 
@@ -77,6 +85,30 @@ public class AllUserProfileFragment extends Fragment {
                 }
             }
         });
+
+        addFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> user = new HashMap<>();
+                user.put("first", "Ada");
+                user.put("last", "Lovelace");
+                user.put("born", 1815);
+
+
+                db.collection("friends").document("our").set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+            }
+        });
+
         return view;
     }
 
@@ -100,7 +132,7 @@ public class AllUserProfileFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_addFriend:
                 addFriend();
                 itemAddFriend.setVisible(false);
@@ -118,13 +150,13 @@ public class AllUserProfileFragment extends Fragment {
     }
 
 
-    public void addFriend(){
+    public void addFriend() {
 
 
     }
 
 
-    public void removeFriend(){
+    public void removeFriend() {
 
     }
 }

@@ -90,6 +90,7 @@ public class AllUserProfileFragment extends Fragment {
                     allUserEmail.setText(email);
                     Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(allUserImage);
 
+                    //TODO Fix this problem cant get the request type from the firestore.
                     friendRequestReference.collection("friend_request").document(current_user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -120,6 +121,8 @@ public class AllUserProfileFragment extends Fragment {
                             }
                         }
                     });
+
+                    // DONT REMOVE THIS CODE !
                     /*
                     friendRequestReference.collection("friend_request")
                             .document(current_user.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -161,6 +164,7 @@ public class AllUserProfileFragment extends Fragment {
             }
         });
 
+        //TODO Need to fix where i dont have the document "request".
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

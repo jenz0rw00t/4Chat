@@ -23,10 +23,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public class AllUserProfileFragment extends Fragment {
     private Button removeFriend;
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private FirebaseFirestore friendRequestReference;
     private FirebaseUser current_user;
 
     private String current_state;
@@ -67,7 +67,7 @@ public class AllUserProfileFragment extends Fragment {
         addFriend = (Button) view.findViewById(R.id.addFriend);
         removeFriend = (Button) view.findViewById(R.id.removeFriend);
 
-        db = FirebaseFirestore.getInstance();
+        friendRequestReference = FirebaseFirestore.getInstance();
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_state = "not_friends";
 
@@ -89,6 +89,72 @@ public class AllUserProfileFragment extends Fragment {
                     allUserName.setText(name);
                     allUserEmail.setText(email);
                     Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(allUserImage);
+
+                    friendRequestReference.collection("friend_request").document(current_user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.contains(current_user.getUid())){
+                                String request_type = documentSnapshot.getString("reques_type");
+
+
+                                //dataSnapshot.child(user_id).child("request_type").getValue().toString();
+
+                                if(request_type.equals("received")){
+
+                                    current_state = "request_received";
+                                    addFriend.setText("Accept Friend Request");
+
+                                    removeFriend.setVisibility(View.VISIBLE);
+                                    removeFriend.setEnabled(true);
+
+
+                                } else if(request_type.equals("sent")) {
+
+                                    current_state = "request_sent";
+                                    addFriend.setText("Cancel Friend Request");
+
+                                    removeFriend.setVisibility(View.INVISIBLE);
+                                    removeFriend.setEnabled(false);
+
+                                }
+                            }
+                        }
+                    });
+                    /*
+                    friendRequestReference.collection("friend_request")
+                            .document(current_user.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
+                                            @javax.annotation.Nullable FirebaseFirestoreException e) {
+                            if (documentSnapshot.contains(current_user.getUid())){
+                                String request_type = documentSnapshot.getString("request_type");
+
+
+                                //dataSnapshot.child(user_id).child("request_type").getValue().toString();
+
+                                if(request_type.equals("received")){
+
+                                    current_state = "request_received";
+                                    addFriend.setText("Accept Friend Request");
+
+                                    removeFriend.setVisibility(View.VISIBLE);
+                                    removeFriend.setEnabled(true);
+
+
+                                } else if(request_type.equals("sent")) {
+
+                                    current_state = "request_sent";
+                                    addFriend.setText("Cancel Friend Request");
+
+                                    removeFriend.setVisibility(View.INVISIBLE);
+                                    removeFriend.setEnabled(false);
+
+                                }
+                            }
+                        }
+                    });
+                    */
+
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
@@ -100,11 +166,15 @@ public class AllUserProfileFragment extends Fragment {
             public void onClick(View v) {
                 addFriend.setEnabled(false);
 
+                /*
+                When you press on add friend button it will create new collection and document
+                in firestore, that you have sent a friend request.
+                */
                 if (current_state.equals("not_friends")){
                     Map<String, Object> sent = new HashMap<>();
                     sent.put("request_type", "sent");
 
-                    db.collection("friend_request").document(current_user.getUid())
+                    friendRequestReference.collection("friend_request").document(current_user.getUid())
                             .collection(receiver_user_id).document("request")
                             .set(sent).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -112,7 +182,7 @@ public class AllUserProfileFragment extends Fragment {
                             if (task.isSuccessful()){
                                 Map<String, Object> received = new HashMap<>();
                                 received.put("request_type", "received");
-                                db.collection("friend_request").document(receiver_user_id)
+                                friendRequestReference.collection("friend_request").document(receiver_user_id)
                                         .collection(current_user.getUid()).document("request")
                                         .set(received).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -138,15 +208,18 @@ public class AllUserProfileFragment extends Fragment {
                     });
 
                 }
-
+                /*
+                When you have sent friend request to the other user the state will be changed to request sent
+                and you can cancel the request where the collection and document will be removed.
+                 */
                 if (current_state.equals("request_sent")){
-                    db.collection("friend_request").document(current_user.getUid()).
-                            collection(receiver_user_id).document("request").delete()
+                    friendRequestReference.collection("friend_request").document(current_user.getUid())
+                            .collection(receiver_user_id).document("request").delete()
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            db.collection("friend_request").document(receiver_user_id)
-                                    .collection(current_user.getUid()).document("request")
+                            friendRequestReference.collection("friend_request").document(receiver_user_id).
+                                    collection(current_user.getUid()).document("request")
                                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {

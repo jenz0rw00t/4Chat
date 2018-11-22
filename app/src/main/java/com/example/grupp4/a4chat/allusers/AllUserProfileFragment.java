@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,6 +39,10 @@ public class AllUserProfileFragment extends Fragment {
     private MenuItem itemAddFriend;
     private MenuItem itemRemoveFriend;
 
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private FirebaseUser current_user;
+
     String current_state;
     String sender_user_id;
     String receiver_user_id;
@@ -60,7 +65,8 @@ public class AllUserProfileFragment extends Fragment {
         Button addFriend = (Button) view.findViewById(R.id.addFriend);
         Button removeFriend = (Button) view.findViewById(R.id.removeFriend);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
+        current_user = FirebaseAuth.getInstance().getCurrentUser();
 
         setHasOptionsMenu(true);
 
@@ -89,25 +95,11 @@ public class AllUserProfileFragment extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, Object> user = new HashMap<>();
-                user.put("first", "Ada");
-                user.put("last", "Lovelace");
-                user.put("born", 1815);
-
-
-                db.collection("friends").document("our").set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
+                addFriend();
             }
         });
+
+
 
         return view;
     }
@@ -151,8 +143,40 @@ public class AllUserProfileFragment extends Fragment {
 
 
     public void addFriend() {
+        Map<String, Object> sent = new HashMap<>();
+        sent.put("request_type", "sent");
 
+        db.collection("friend_request").document(current_user.getUid())
+                .collection(receiver_user_id).document("request")
+                .set(sent).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Map<String, Object> received = new HashMap<>();
+                    received.put("request_type", "received");
+                    db.collection("friend_request").document(receiver_user_id)
+                            .collection(current_user.getUid()).document("request")
+                            .set(received).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
 
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+        Toast.makeText(getContext(), "Friend request sent!", Toast.LENGTH_SHORT).show();
     }
 
 

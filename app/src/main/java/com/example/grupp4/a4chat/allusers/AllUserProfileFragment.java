@@ -38,12 +38,14 @@ public class AllUserProfileFragment extends Fragment {
     private static final String TAG = "Error";
     private MenuItem itemAddFriend;
     private MenuItem itemRemoveFriend;
+    private Button addFriend;
+    private Button removeFriend;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser current_user;
 
-    String current_state;
+    private String current_state;
     String sender_user_id;
     String receiver_user_id;
 
@@ -62,11 +64,12 @@ public class AllUserProfileFragment extends Fragment {
         TextView allUserName = (TextView) view.findViewById(R.id.allUserProfileName);
         TextView allUserEmail = (TextView) view.findViewById(R.id.allUserProfileEmail);
         ImageView allUserImage = (ImageView) view.findViewById(R.id.allUserProfileImage);
-        Button addFriend = (Button) view.findViewById(R.id.addFriend);
-        Button removeFriend = (Button) view.findViewById(R.id.removeFriend);
+        addFriend = (Button) view.findViewById(R.id.addFriend);
+        removeFriend = (Button) view.findViewById(R.id.removeFriend);
 
         db = FirebaseFirestore.getInstance();
         current_user = FirebaseAuth.getInstance().getCurrentUser();
+        current_state = "not_friends";
 
         setHasOptionsMenu(true);
 
@@ -95,7 +98,70 @@ public class AllUserProfileFragment extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addFriend();
+                addFriend.setEnabled(false);
+
+                if (current_state.equals("not_friends")){
+                    Map<String, Object> sent = new HashMap<>();
+                    sent.put("request_type", "sent");
+
+                    db.collection("friend_request").document(current_user.getUid())
+                            .collection(receiver_user_id).document("request")
+                            .set(sent).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                Map<String, Object> received = new HashMap<>();
+                                received.put("request_type", "received");
+                                db.collection("friend_request").document(receiver_user_id)
+                                        .collection(current_user.getUid()).document("request")
+                                        .set(received).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        addFriend.setEnabled(true);
+                                        current_state = "request_sent";
+                                        addFriend.setText("Cancel Friend Request");
+
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
+                }
+
+                if (current_state.equals("request_sent")){
+                    db.collection("friend_request").document(current_user.getUid()).
+                            collection(receiver_user_id).document("request").delete()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            db.collection("friend_request").document(receiver_user_id)
+                                    .collection(current_user.getUid()).document("request")
+                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    addFriend.setEnabled(true);
+                                    current_state = "not_friends";
+                                    addFriend.setText("Send friend request");
+                                }
+                            });
+                        }
+                    });
+
+                }
+
+                Toast.makeText(getContext(), "Friend request sent!", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -126,13 +192,11 @@ public class AllUserProfileFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_addFriend:
-                addFriend();
                 itemAddFriend.setVisible(false);
                 itemRemoveFriend.setVisible(true);
                 return true;
 
             case R.id.menu_removeFriend:
-                removeFriend();
                 itemRemoveFriend.setVisible(false);
                 itemAddFriend.setVisible(true);
                 return true;
@@ -142,45 +206,4 @@ public class AllUserProfileFragment extends Fragment {
     }
 
 
-    public void addFriend() {
-        Map<String, Object> sent = new HashMap<>();
-        sent.put("request_type", "sent");
-
-        db.collection("friend_request").document(current_user.getUid())
-                .collection(receiver_user_id).document("request")
-                .set(sent).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Map<String, Object> received = new HashMap<>();
-                    received.put("request_type", "received");
-                    db.collection("friend_request").document(receiver_user_id)
-                            .collection(current_user.getUid()).document("request")
-                            .set(received).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                        }
-                    });
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
-
-        Toast.makeText(getContext(), "Friend request sent!", Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void removeFriend() {
-
-    }
 }

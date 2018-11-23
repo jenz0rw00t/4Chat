@@ -23,6 +23,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +45,7 @@ public class AllUserProfileFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore friendRequestReference;
+    private CollectionReference requestReference;
     private FirebaseUser current_user;
 
     private String current_state;
@@ -68,6 +71,7 @@ public class AllUserProfileFragment extends Fragment {
         removeFriend = (Button) view.findViewById(R.id.removeFriend);
 
         friendRequestReference = FirebaseFirestore.getInstance();
+        requestReference = friendRequestReference.collection("friend_request");
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_state = "not_friends";
 
@@ -90,73 +94,38 @@ public class AllUserProfileFragment extends Fragment {
                     allUserEmail.setText(email);
                     Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(allUserImage);
 
-                    //TODO Fix this problem cant get the request type from the firestore.
-                    friendRequestReference.collection("friend_request").document(current_user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    /* OM NI ÄNDRAR NÅGOT PÅ DENNA FRAGMENTEN SÅ SÄG TILL MIG INNAN NI GÖR DET // Kivanc
+                    TODO Fixa problemet när friend_request på firestore inte finns så crashar appen.
+
+                    This function checks if you have sent a request to other users and it updates
+                    their button if you have sent one.
+
+                     */
+                    requestReference.document(current_user.getUid()).collection(receiver_user_id).document("request").addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if (documentSnapshot.contains(current_user.getUid())){
-                                String request_type = documentSnapshot.getString("reques_type");
+                        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                            String request_type = documentSnapshot.getString("request_type");
+
+                            if(request_type.equals("received")){
+
+                                current_state = "request_received";
+                                addFriend.setText("Accept Friend Request");
+
+                                removeFriend.setVisibility(View.VISIBLE);
+                                removeFriend.setEnabled(true);
 
 
-                                //dataSnapshot.child(user_id).child("request_type").getValue().toString();
+                            } else if(request_type.equals("sent")) {
 
-                                if(request_type.equals("received")){
+                                current_state = "req_sent";
+                                addFriend.setText("Cancel Friend Request");
 
-                                    current_state = "request_received";
-                                    addFriend.setText("Accept Friend Request");
+                                removeFriend.setVisibility(View.INVISIBLE);
+                                removeFriend.setEnabled(false);
 
-                                    removeFriend.setVisibility(View.VISIBLE);
-                                    removeFriend.setEnabled(true);
-
-
-                                } else if(request_type.equals("sent")) {
-
-                                    current_state = "request_sent";
-                                    addFriend.setText("Cancel Friend Request");
-
-                                    removeFriend.setVisibility(View.INVISIBLE);
-                                    removeFriend.setEnabled(false);
-
-                                }
                             }
                         }
                     });
-
-                    // DONT REMOVE THIS CODE !
-                    /*
-                    friendRequestReference.collection("friend_request")
-                            .document(current_user.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
-                                            @javax.annotation.Nullable FirebaseFirestoreException e) {
-                            if (documentSnapshot.contains(current_user.getUid())){
-                                String request_type = documentSnapshot.getString("request_type");
-
-
-                                //dataSnapshot.child(user_id).child("request_type").getValue().toString();
-
-                                if(request_type.equals("received")){
-
-                                    current_state = "request_received";
-                                    addFriend.setText("Accept Friend Request");
-
-                                    removeFriend.setVisibility(View.VISIBLE);
-                                    removeFriend.setEnabled(true);
-
-
-                                } else if(request_type.equals("sent")) {
-
-                                    current_state = "request_sent";
-                                    addFriend.setText("Cancel Friend Request");
-
-                                    removeFriend.setVisibility(View.INVISIBLE);
-                                    removeFriend.setEnabled(false);
-
-                                }
-                            }
-                        }
-                    });
-                    */
 
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
@@ -164,7 +133,6 @@ public class AllUserProfileFragment extends Fragment {
             }
         });
 
-        //TODO Need to fix where i dont have the document "request".
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

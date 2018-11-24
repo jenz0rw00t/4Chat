@@ -3,11 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".allusers.AllUserListFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/allUser_listView"
-        android:scrollbars="vertical"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <android.support.v7.widget.SearchView
+            android:id="@+id/searchUsers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="Search here"
+            app:queryHint="@string/search_users"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/allUser_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:layout_below="@id/searchUsers"/>
+    </LinearLayout>
 </FrameLayout>

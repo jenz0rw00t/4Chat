@@ -31,6 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +47,9 @@ public class AllUserProfileFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore friendRequestReference;
+    private FirebaseFirestore acceptedFriendReference;
     private CollectionReference requestReference;
+    private CollectionReference friendsReference;
     private FirebaseUser current_user;
 
     private String current_state;
@@ -71,6 +75,8 @@ public class AllUserProfileFragment extends Fragment {
         removeFriend = (Button) view.findViewById(R.id.removeFriend);
 
         friendRequestReference = FirebaseFirestore.getInstance();
+        acceptedFriendReference = FirebaseFirestore.getInstance();
+        friendsReference = friendRequestReference.collection("friends");
         requestReference = friendRequestReference.collection("friend_request");
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_state = "not_friends";
@@ -144,6 +150,8 @@ public class AllUserProfileFragment extends Fragment {
                 /*
                 When you press on add friend button it will create new collection and document
                 in firestore, that you have sent a friend request.
+
+                NOT FRIENDS !
                 */
                 if (current_state.equals("not_friends")){
                     Map<String, Object> sent = new HashMap<>();
@@ -186,6 +194,8 @@ public class AllUserProfileFragment extends Fragment {
                 /*
                 When you have sent friend request to the other user the state will be changed to request sent
                 and you can cancel the request where the collection and document will be removed.
+
+                REQUEST SENT !
                  */
                 if (current_state.equals("request_sent")){
                     friendRequestReference.collection("friend_request").document(current_user.getUid())
@@ -198,7 +208,6 @@ public class AllUserProfileFragment extends Fragment {
                                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    addFriend.setEnabled(true);
                                     current_state = "not_friends";
                                     addFriend.setText("Send friend request");
                                 }
@@ -206,10 +215,59 @@ public class AllUserProfileFragment extends Fragment {
                         }
                     });
 
+                    addFriend.setEnabled(true);
                 }
 
                 Toast.makeText(getContext(), "Friend request sent!", Toast.LENGTH_SHORT).show();
 
+                // REQUEST RECEIVED
+
+                if(current_state.equals("request_received")){
+                    String currentDate = DateFormat.getDateInstance().format(new Date());
+                    Map<String, Object> senderFriendData = new HashMap<>();
+                    senderFriendData.put(current_user.getUid(), currentDate);
+
+                    acceptedFriendReference.collection("friends").document(current_user.getUid())
+                            .collection(receiver_user_id).document("time").set(senderFriendData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                            Map<String, Object> receiverFriendData = new HashMap<>();
+                            receiverFriendData.put(receiver_user_id, currentDate);
+
+                            friendRequestReference.collection("friends").document(receiver_user_id)
+                                    .collection(current_user.getUid()).document("time")
+                                    .set(receiverFriendData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    friendRequestReference.collection("friend_request").document(current_user.getUid())
+                                            .collection(receiver_user_id).document("request").delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    friendRequestReference.collection("friend_request").document(receiver_user_id).
+                                                            collection(current_user.getUid()).document("request")
+                                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            current_state = "friends";
+                                                            addFriend.setText("Unfriend Friend");
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                }
+                            });
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+                }
             }
         });
 

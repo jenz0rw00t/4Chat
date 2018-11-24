@@ -104,26 +104,29 @@ public class AllUserProfileFragment extends Fragment {
                     requestReference.document(current_user.getUid()).collection(receiver_user_id).document("request").addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                            String request_type = documentSnapshot.getString("request_type");
 
-                            if(request_type.equals("received")){
+                            if (documentSnapshot.exists()){
+                                String request_type = documentSnapshot.getString("request_type");
+                                if(request_type.equals("received")){
 
-                                current_state = "request_received";
-                                addFriend.setText("Accept Friend Request");
+                                    current_state = "request_received";
+                                    addFriend.setText("Accept Friend Request");
 
-                                removeFriend.setVisibility(View.VISIBLE);
-                                removeFriend.setEnabled(true);
+                                    removeFriend.setVisibility(View.VISIBLE);
+                                    removeFriend.setEnabled(true);
 
 
-                            } else if(request_type.equals("sent")) {
+                                } else if(request_type.equals("sent")) {
 
-                                current_state = "req_sent";
-                                addFriend.setText("Cancel Friend Request");
+                                    current_state = "req_sent";
+                                    addFriend.setText("Cancel Friend Request");
 
-                                removeFriend.setVisibility(View.INVISIBLE);
-                                removeFriend.setEnabled(false);
+                                    removeFriend.setVisibility(View.INVISIBLE);
+                                    removeFriend.setEnabled(false);
 
+                                }
                             }
+
                         }
                     });
 
@@ -214,41 +217,5 @@ public class AllUserProfileFragment extends Fragment {
 
         return view;
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_friend, menu);
-
-        itemAddFriend = menu.findItem(R.id.menu_addFriend);
-        itemRemoveFriend = menu.findItem(R.id.menu_removeFriend);
-
-        itemRemoveFriend.setVisible(false);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_addFriend:
-                itemAddFriend.setVisible(false);
-                itemRemoveFriend.setVisible(true);
-                return true;
-
-            case R.id.menu_removeFriend:
-                itemRemoveFriend.setVisible(false);
-                itemAddFriend.setVisible(true);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-
-    }
-
 
 }

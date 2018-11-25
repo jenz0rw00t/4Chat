@@ -39,7 +39,7 @@ public class FriendsListFragment extends Fragment {
     private DocumentReference users;
     private FirebaseUser current_user;
 
-    private AllUserAdapter adapter;
+    private FriendsAdapter adapter;
     public SearchView search_friends;
 
 
@@ -69,7 +69,7 @@ public class FriendsListFragment extends Fragment {
                 .setQuery(friendQuery, AllUsers.class)
                 .build();
 
-        adapter = new AllUserAdapter(options);
+        adapter = new FriendsAdapter(options);
         RecyclerView recyclerView = view.findViewById(R.id.friendsList);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

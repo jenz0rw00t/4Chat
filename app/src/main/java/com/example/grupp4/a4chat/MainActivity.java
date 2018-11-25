@@ -1,6 +1,5 @@
 package com.example.grupp4.a4chat;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -20,6 +19,7 @@ import com.example.grupp4.a4chat.allusers.AllUserListFragment;
 import com.example.grupp4.a4chat.chatlists.ChatFragment;
 import com.example.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.example.grupp4.a4chat.chatlists.LoginActivity;
+import com.example.grupp4.a4chat.friend.FriendsListFragment;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
         }else if (id == R.id.nav_chat_test){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
+        }else if(id == R.id.nav_friends){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;

@@ -30,7 +30,7 @@
     <string name="profile_username">Name</string>
     <string name="profile_email">Email</string>
     <string name="nav_profile_string">Profil</string>
-    <string name="nav_chatAndFriends">Chat och Vänner</string>
+    <string name="nav_chatAndFriends">Chat</string>
     <string name="nav_logout">Logga ut</string>
     <string name="nav_allUsers">Alla användare</string>
     <string name="search_users">Sök användare...</string>

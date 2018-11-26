@@ -56,7 +56,7 @@ public class ChangePhotoDialog extends DialogFragment  {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: starting camera.");
-                ChangePhotoDialog changePhotoDialog = new ChangePhotoDialog.this.onClick();
+                ChangePhotoDialog changePhotoDialog = new ChangePhotoDialog()onClick();
                 //Intent intent = new Intent(getContext(), ChangePhotoDialog.this);
                ////intent = new Intent(getContext())
                 //        startActivityForResult(intent);

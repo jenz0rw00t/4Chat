@@ -111,7 +111,12 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         if (!imagePath.toString().equals("")) {
             Context context = getActivity();
             String userId = mFirebaseAuth.getCurrentUser().getUid();
-            PhotoUploader uploader = new PhotoUploader(userId, context);
+            PhotoUploader uploader = new PhotoUploader(
+                    userId,
+                    context,
+                    userProfileImage.getWidth(),
+                    userProfileImage.getHeight()
+            );
             uploader.uploadNewPhoto(imagePath);
 
             Picasso.get().load(imagePath.toString()).placeholder(R.drawable.default_avatar).into(userProfileImage);

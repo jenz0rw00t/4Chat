@@ -29,12 +29,6 @@ import java.util.HashMap;
 
 public class PhotoUploader {
 
-    //vars
-    private Bitmap mSelectedBitmap;
-    private Uri mSelectedUri;
-    private byte[] mUploadBytes;
-    private int mImageWidth;
-    private int mImageHeight;
 
 
     public PhotoUploader(String userId, Context context, int imageWidth, int imageHeight) {
@@ -53,8 +47,10 @@ public class PhotoUploader {
     private byte[] mBytes;
     private BackgroundConversion mConvert;
     private double progress;
+    private byte[] mUploadBytes;
+    private int mImageWidth;
+    private int mImageHeight;
 
-    private ProgressBar mProgressBar;
 
     public void uploadNewPhoto(Uri imageUri) {
         Log.d(TAG, "uploadNewPhoto: uploading new image" + imageUri);
@@ -80,6 +76,9 @@ public class PhotoUploader {
     }
 
 
+
+
+
     public class BackgroundImageResize extends AsyncTask<Uri, Integer, byte[]> {
 
         Bitmap mBitmap;
@@ -96,7 +95,6 @@ public class PhotoUploader {
             Toast.makeText(mContext, "compressing image", Toast.LENGTH_SHORT).show();
             // showProgressBar();
         }
-
 
         @Override
         protected byte[] doInBackground(Uri... params) {
@@ -124,7 +122,6 @@ public class PhotoUploader {
             //hideProgressBar();
             //execute the upload task
             executeUploadTask();
-
         }
     }
 
@@ -331,12 +328,12 @@ public class PhotoUploader {
         private void updateFullProfilePicture(String downloadUrl) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            HashMap<String, Object> fullSizeAvatar = new HashMap<>();
-            fullSizeAvatar.put("fullsizeavatar", downloadUrl);
+            HashMap<String, Object> updates = new HashMap<>();
+            updates.put("fullSizeAvatar", downloadUrl);
 
             db.collection("users")
                     .document(mUserid)
-                    .set(fullSizeAvatar).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    .update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
@@ -349,7 +346,5 @@ public class PhotoUploader {
         }
     }
 }
-
-
 
 

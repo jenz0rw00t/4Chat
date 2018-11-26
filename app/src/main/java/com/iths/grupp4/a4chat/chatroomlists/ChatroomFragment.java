@@ -1,5 +1,4 @@
-package com.iths.grupp4.a4chat.chatlists;
-
+package com.iths.grupp4.a4chat.chatroomlists;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,15 +9,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.iths.grupp4.a4chat.R;
-import com.iths.grupp4.a4chat.allusers.AllUsers;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -27,45 +27,57 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+public class ChatroomFragment extends Fragment {
 
-public class ChatReferenceFragment extends Fragment {
+    private String TAG;
+    private String creatorName;
 
-
-    public ChatReferenceFragment() {
+    public ChatroomFragment() {
         // Required empty public constructor
     }
 
-    List<MessageUserRef> messagesList = new ArrayList<>();
-    private MessageReferenceViewAdapter adapter;
-    FirebaseFirestore db;
-    EditText messageField;
-    AllUsers user;
-    DocumentReference userRef;
+    private List<Chatroom> chatroomList = new ArrayList<>();
+    private ChatroomViewAdapter adapter;
+    private FirebaseFirestore db;
+    private DocumentReference userRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.chat_fragment, container, false);
+        return inflater.inflate(R.layout.chatroom_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = getActivity().findViewById(R.id.chatroom_recyclerView);
 
         db = FirebaseFirestore.getInstance();
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         userRef = db.collection("users").document(userID);
 
-        messageField = getActivity().findViewById(R.id.messageField);
-
         //Set adapter for recyclerView
-        adapter = new MessageReferenceViewAdapter(messagesList);
+        adapter = new ChatroomViewAdapter(chatroomList);
         recyclerView.setAdapter(adapter);
 
+        // Create new Chatroom in database
+        db.collection("users").document(userID)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    creatorName = documentSnapshot.getString("name");
+
+                } else {
+                    Log.w(TAG, "Error getting documents.", task.getException());
+                }
+            }
+        });
+
         //Register for change events for documents stored in collection items on firestore
-        db.collection("messagesUserRef")
+        db.collection("chatrooms")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -79,11 +91,9 @@ public class ChatReferenceFragment extends Fragment {
 
                                 String id = dc.getDocument().getId();
 
-                                MessageUserRef messageUserRef = dc.getDocument().toObject(MessageUserRef.class);
-                                messageUserRef.id = id;
-                                adapter.addItem(messageUserRef);
-                                //TODO Autoscroll funktion, och att den börjar med nyaste meddelanden
-                                //recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                                Chatroom chatroom = dc.getDocument().toObject(Chatroom.class);
+                                chatroom.chatroomId = id;
+                                adapter.addItem(chatroom);
 
                             } else if (dc.getType() == DocumentChange.Type.REMOVED) {
                                 String id = dc.getDocument().getId();
@@ -93,19 +103,17 @@ public class ChatReferenceFragment extends Fragment {
                     }
                 });
 
-        getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
+        getActivity().findViewById(R.id.create_chatroom).setOnClickListener(view -> {
 
-
-            // Create a new message with username and message
-            MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
-            messageField.setText("");
-
-            // Add a new document with a generated ID
-            db.collection("messagesUserRef")
-                    .add(info)
+            // Create new Chatroom and set data also update to set ChatroomId as data
+            Chatroom chatroom = new Chatroom(creatorName, userID);
+            db.collection("chatrooms")
+                    .add(chatroom)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
+                            chatroom.setChatroomId(documentReference.getId());
+                            documentReference.update("chatroomId", documentReference.getId());
                             Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
                         }
                     })

@@ -19,10 +19,6 @@ import com.squareup.picasso.Picasso;
 
 public class FriendsAdapter extends FirestoreRecyclerAdapter<AllUsers, FriendsAdapter.FriendsHolder> {
 
-    private FirebaseFirestore db;
-    private CollectionReference friendsCollection = db.collection("friends");
-
-
     private OnItemClicklistener onItemClicklistener;
 
     public FriendsAdapter(@NonNull FirestoreRecyclerOptions<AllUsers> options) {
@@ -45,7 +41,7 @@ public class FriendsAdapter extends FirestoreRecyclerAdapter<AllUsers, FriendsAd
         return new FriendsAdapter.FriendsHolder(view);
     }
 
-    class FriendsHolder extends RecyclerView.ViewHolder{
+    class FriendsHolder extends RecyclerView.ViewHolder {
         TextView textViewUsername;
         TextView textViewEmail;
         ImageView imageViewAvatar;
@@ -59,23 +55,24 @@ public class FriendsAdapter extends FirestoreRecyclerAdapter<AllUsers, FriendsAd
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION && onItemClicklistener!= null){
+                    if (position != RecyclerView.NO_POSITION && onItemClicklistener != null) {
                         onItemClicklistener.onItemClick(getSnapshots().getSnapshot(position), position);
                     }
                 }
             });
         }
-        public void setAvatar(String avatar){
+
+        public void setAvatar(String avatar) {
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.all_user_profile_image);
             Picasso.get().load(avatar).into(imageViewAvatar);
         }
     }
 
     public interface OnItemClicklistener {
-        void  onItemClick(DocumentSnapshot snapshot, int position);
+        void onItemClick(DocumentSnapshot snapshot, int position);
     }
 
-    public void setOnItemClickListener(FriendsAdapter.OnItemClicklistener listener){
+    public void setOnItemClickListener(FriendsAdapter.OnItemClicklistener listener) {
         onItemClicklistener = listener;
     }
 }

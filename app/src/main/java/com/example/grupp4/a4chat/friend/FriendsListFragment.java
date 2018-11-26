@@ -34,9 +34,6 @@ public class FriendsListFragment extends Fragment {
 
     private FirebaseFirestore db;
     private CollectionReference usersCollection;
-    private CollectionReference friendsCollection;
-    private DocumentReference friends;
-    private DocumentReference users;
     private FirebaseUser current_user;
 
     private FriendsAdapter adapter;
@@ -59,9 +56,8 @@ public class FriendsListFragment extends Fragment {
 
         //FIREBASE
         db = FirebaseFirestore.getInstance();
-        usersCollection = db.collection("users");
-        friendsCollection = db.collection("friends");
-        friends = friendsCollection.document(current_user.getUid());
+        usersCollection = db.collection("users").document("friends")
+                .collection(current_user.getUid());
 
         Query friendQuery = usersCollection;
 

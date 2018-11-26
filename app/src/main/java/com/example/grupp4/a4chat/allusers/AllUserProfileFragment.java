@@ -76,7 +76,7 @@ public class AllUserProfileFragment extends Fragment {
 
         friendRequestReference = FirebaseFirestore.getInstance();
         acceptedFriendReference = FirebaseFirestore.getInstance();
-        friendsReference = acceptedFriendReference.collection("friends");
+        friendsReference = acceptedFriendReference.collection("users");
         requestReference = friendRequestReference.collection("friend_request");
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_state = "not_friends";
@@ -138,7 +138,7 @@ public class AllUserProfileFragment extends Fragment {
                         }
                     });
 
-                    friendsReference.document(current_user.getUid()).collection(receiver_user_id).document("time").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    friendsReference.document("friends").collection(current_user.getUid()).document(receiver_user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
@@ -248,8 +248,8 @@ public class AllUserProfileFragment extends Fragment {
                     senderFriendData.put(current_user.getUid(), currentDate);
                     senderFriendData.put("state", "friend");
 
-                    acceptedFriendReference.collection("friends").document(current_user.getUid())
-                            .collection(receiver_user_id).document("time").set(senderFriendData)
+                    acceptedFriendReference.collection("users").document("friends")
+                            .collection(current_user.getUid()).document(receiver_user_id).set(senderFriendData)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -258,8 +258,8 @@ public class AllUserProfileFragment extends Fragment {
                             receiverFriendData.put(receiver_user_id, currentDate);
                             receiverFriendData.put("state", "friend");
 
-                            friendRequestReference.collection("friends").document(receiver_user_id)
-                                    .collection(current_user.getUid()).document("time")
+                            friendRequestReference.collection("users").document("friends")
+                                    .collection(receiver_user_id).document(current_user.getUid())
                                     .set(receiverFriendData).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {

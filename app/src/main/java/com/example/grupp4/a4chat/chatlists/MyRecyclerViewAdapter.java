@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.grupp4.a4chat.R;
-
 import java.util.List;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MessageViewHolder> {

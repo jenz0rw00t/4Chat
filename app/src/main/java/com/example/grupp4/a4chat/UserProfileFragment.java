@@ -1,8 +1,7 @@
 package com.example.grupp4.a4chat;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,9 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,7 +19,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
@@ -70,9 +66,9 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         String profile_user_id = mFirebaseAuth.getCurrentUser().getUid();
         FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
 
-        userProfileImage = (ImageView) getView().findViewById(R.id.userProfileImage);
-        userProfileName = (TextView) getView().findViewById(R.id.userProfileName);
-        userProfileEmail = (TextView) getView().findViewById(R.id.userProfileEmail);
+        userProfileImage = getView().findViewById(R.id.userProfileImage);
+        userProfileName = getView().findViewById(R.id.userProfileName);
+        userProfileEmail = getView().findViewById(R.id.userProfileEmail);
 
         userFireStoreReference.collection("users").document(profile_user_id)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -114,6 +110,7 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
     public void getImagePath(Uri imagePath) {
 
         if (!imagePath.toString().equals("")) {
+           //mSelectedImageUri =
             Context context = getActivity();
             String userId = mFirebaseAuth.getCurrentUser().getUid();
             PhotoUploader uploader = new PhotoUploader(userId, context);
@@ -122,6 +119,15 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
             Picasso.get().load(imagePath.toString()).placeholder(R.drawable.default_avatar).into(userProfileImage);
             ((MainActivity)getActivity()).updateNavProfileImage(imagePath); //för att NavBar skapas inte om, måste uppdatera dirr. Borde EJ lägga NavBar i main.
         }
+    }
+
+    @Override
+    public void getImageBitmap(Bitmap bitmap) {
+       /* if(bitmap !=null){
+            mSelectedImageUri = null;
+            mSelectedImageBitmap = bitmap;
+            Log.d(TAG),"getImageBitmap: got the image bitmap:" + mSelectedImageBitmap):
+        }*/
     }
 
     private void openChangePhotoDialog(View view) {

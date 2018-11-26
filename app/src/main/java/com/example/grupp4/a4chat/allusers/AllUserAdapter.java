@@ -1,12 +1,10 @@
 package com.example.grupp4.a4chat.allusers;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -61,7 +59,7 @@ public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAd
         }
 
         public void setAvatar(String avatar){
-            imageViewAvatar = (ImageView) itemView.findViewById(R.id.all_user_profile_image);
+            imageViewAvatar = itemView.findViewById(R.id.all_user_profile_image);
             Picasso.get().load(avatar).into(imageViewAvatar);
         }
     }

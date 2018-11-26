@@ -1,8 +1,5 @@
 package com.example.grupp4.a4chat.allusers;
 
-import android.content.Context;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,9 +34,9 @@ public class AllUserProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_all_user_profile, container, false);
 
         FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
-        TextView allUserName = (TextView)view.findViewById(R.id.allUserProfileName);
-        TextView allUserEmail = (TextView)view.findViewById(R.id.allUserProfileEmail);
-        ImageView allUserImage = (ImageView)view.findViewById(R.id.allUserProfileImage);
+        TextView allUserName = view.findViewById(R.id.allUserProfileName);
+        TextView allUserEmail = view.findViewById(R.id.allUserProfileEmail);
+        ImageView allUserImage = view.findViewById(R.id.allUserProfileImage);
 
         Bundle bundle = getArguments();
         all_user_id = bundle.getString("visit_user_id");

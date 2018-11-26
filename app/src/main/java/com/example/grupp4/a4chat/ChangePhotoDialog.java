@@ -3,6 +3,7 @@ package com.example.grupp4.a4chat;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.grupp4.a4chat.camera.Camera;
+//import com.example.grupp4.a4chat.camera.Camera;
 
 public class ChangePhotoDialog extends DialogFragment  {
 
@@ -27,6 +28,7 @@ public class ChangePhotoDialog extends DialogFragment  {
     //For communicating with UserProfileFragment
     public interface OnPhotoReceivedListener{
         void getImagePath(Uri imagePath);
+        void getImageBitmap(Bitmap bitmap);
     }
 
     OnPhotoReceivedListener mOnPhotoReceived;
@@ -38,7 +40,7 @@ public class ChangePhotoDialog extends DialogFragment  {
 
 
         //Initialize the textview for choosing an image from memory
-        TextView selectCamera = view.findViewById(R.id.dialogOpenCamera);
+
         TextView selectPhoto =  view.findViewById(R.id.dialogChoosePhoto);
         selectPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,17 +51,27 @@ public class ChangePhotoDialog extends DialogFragment  {
                 startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
-
+       TextView selectCamera = view.findViewById(R.id.dialogOpenCamera);
         selectCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: starting camera.");
+                ChangePhotoDialog changePhotoDialog = new ChangePhotoDialog.this.onClick();
+                //Intent intent = new Intent(getContext(), ChangePhotoDialog.this);
+               ////intent = new Intent(getContext())
+                //        startActivityForResult(intent);
+                //Context.getSystemService(CameraManager.class);
+                //CameraManager cameraManager = new CameraManager;
+                //MainActivity.CAMERA_POSITION_FRONT;
+
                 //Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 //startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                //Intent intent = new Intent(Intent.ACTION_VIEW );
+                //startActivityForResult(intent, 1234);
+                //CameraManager manager = new CameraManager(Context.CAMERA_SERVICE);
+                //String cameraId = manager.getCameraIdList()[0];
+                //syncTask.THREAD_POOL_EXECUTOR.
 
-                Log.d(TAG, "onClick: starting camera.");
-                Intent intent1 = new Intent(getContext(), Camera.class);
-                startActivity(intent1);
-                
             }
         });
 
@@ -82,7 +94,13 @@ public class ChangePhotoDialog extends DialogFragment  {
         }
 
         else if(requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            Log.d(TAG, "onActivityResult: done taking a photo.");
 
+           /*Bitmat bitmap;
+            bitmap = (Bitmap) data.getExtras().get("data");
+
+            mOnPhotoReceived.getImageBitmap(bitmap);
+            getDialog().dismiss();*/
 
         }
     }

@@ -1,8 +1,6 @@
 package com.example.grupp4.a4chat.chatlists;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +11,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.grupp4.a4chat.MainActivity;
-import com.example.grupp4.a4chat.R;
 import com.example.grupp4.a4chat.allusers.AllUsers;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -38,8 +35,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 
 import java.util.Arrays;
 
@@ -94,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // [START initialize_fblogin]
         // Initialize Facebook Login button
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton = findViewById(R.id.login_button);
 
         mCallbackManager = CallbackManager.Factory.create();
 

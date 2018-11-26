@@ -32,7 +32,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         messageUserRef.user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                textUser.setText((String) documentSnapshot.get("name")+":");
+                textUser.setText(documentSnapshot.get("name") +":");
             }
         });
         textMessage.setText(messageUserRef.message);

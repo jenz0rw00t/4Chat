@@ -1,4 +1,4 @@
-package com.example.grupp4.a4chat.friend;
+package com.iths.grupp4.a4chat.friend;
 
 
 import android.os.Bundle;
@@ -14,10 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.grupp4.a4chat.R;
-import com.example.grupp4.a4chat.allusers.AllUserAdapter;
-import com.example.grupp4.a4chat.allusers.AllUserProfileFragment;
-import com.example.grupp4.a4chat.allusers.AllUsers;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +22,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.allusers.AllUsers;
 
 /**
  * A simple {@link Fragment} subclass.

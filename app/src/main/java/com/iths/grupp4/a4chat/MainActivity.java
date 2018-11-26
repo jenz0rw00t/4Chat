@@ -15,17 +15,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.grupp4.a4chat.allusers.AllUserListFragment;
-import com.example.grupp4.a4chat.chatlists.ChatFragment;
-import com.example.grupp4.a4chat.chatlists.ChatReferenceFragment;
-import com.example.grupp4.a4chat.chatlists.LoginActivity;
-import com.example.grupp4.a4chat.friend.FriendsListFragment;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
+import com.iths.grupp4.a4chat.chatlists.ChatFragment;
+import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
+import com.iths.grupp4.a4chat.chatlists.LoginActivity;
+import com.iths.grupp4.a4chat.friend.FriendsListFragment;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener

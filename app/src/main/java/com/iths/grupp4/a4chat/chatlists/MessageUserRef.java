@@ -1,25 +1,26 @@
-package com.example.grupp4.a4chat.chatlists;
+package com.iths.grupp4.a4chat.chatlists;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
 
-public class Message {
+public class MessageUserRef {
 
-    public String user;
+    public DocumentReference user;
     public String message;
     @Exclude public String id;
     @ServerTimestamp public Date timeStamp;
 
-    public Message() {}
+    public MessageUserRef() {}
 
-    public Message(String user, String message) {
+    public MessageUserRef(DocumentReference user, String message) {
         this.user = user;
         this.message = message;
     }
 
-    public String getUser() {
+    public DocumentReference getUser() {
         return user;
     }
 

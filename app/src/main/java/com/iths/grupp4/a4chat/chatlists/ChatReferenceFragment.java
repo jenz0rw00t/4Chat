@@ -1,4 +1,4 @@
-package com.example.grupp4.a4chat.chatlists;
+package com.iths.grupp4.a4chat.chatlists;
 
 
 import android.os.Bundle;
@@ -12,7 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.example.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,18 +31,20 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ChatFragment extends Fragment {
+public class ChatReferenceFragment extends Fragment {
 
 
-    public ChatFragment() {
+    public ChatReferenceFragment() {
         // Required empty public constructor
     }
 
-    private List<Message> messagesList = new ArrayList<>();
-    private MyRecyclerViewAdapter adapter;
-    private FirebaseFirestore db;
-    private FirebaseAuth mFirebaseAuth;
-    private EditText messageField;
+    List<MessageUserRef> messagesList = new ArrayList<>();
+    private MessageReferenceViewAdapter adapter;
+    FirebaseFirestore db;
+    EditText messageField;
+    AllUsers user;
+    DocumentReference userRef;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,16 +59,17 @@ public class ChatFragment extends Fragment {
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
 
         db = FirebaseFirestore.getInstance();
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        String uid = mFirebaseAuth.getCurrentUser().getUid();
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userRef = db.collection("users").document(userID);
+
         messageField = getActivity().findViewById(R.id.messageField);
 
         //Set adapter for recyclerView
-        adapter = new MyRecyclerViewAdapter(messagesList);
+        adapter = new MessageReferenceViewAdapter(messagesList);
         recyclerView.setAdapter(adapter);
 
         //Register for change events for documents stored in collection items on firestore
-        db.collection("messages")
+        db.collection("messagesUserRef")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -79,11 +83,12 @@ public class ChatFragment extends Fragment {
 
                         String id = dc.getDocument().getId();
 
-                        Message message = dc.getDocument().toObject(Message.class);
-                        message.id = id;
-                        adapter.addItem(message);
-                        //TODO Hur funkar detta
-                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                        MessageUserRef messageUserRef = dc.getDocument().toObject(MessageUserRef.class);
+                        messageUserRef.id = id;
+                        adapter.addItem(messageUserRef);
+                        //TODO Autoscroll funktion, och att den börjar med nyaste meddelanden
+                        //recyclerView.smoothScrollToPosition(adapter.getItemCount());
+
                     }
                     else if(dc.getType() == DocumentChange.Type.REMOVED){
                         String id = dc.getDocument().getId();
@@ -94,13 +99,15 @@ public class ChatFragment extends Fragment {
         });
 
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
+
+
             // Create a new message with username and message
-            Message chatMessage = new Message(mFirebaseAuth.getCurrentUser().getDisplayName(), messageField.getText().toString());
+            MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
             messageField.setText("");
 
             // Add a new document with a generated ID
-            db.collection("messages")
-                    .add(chatMessage)
+            db.collection("messagesUserRef")
+                    .add(info)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {

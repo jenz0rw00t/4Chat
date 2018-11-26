@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="173dp"
-        tools:context="com.example.grupp4.a4chat.chatlists.LoginActivity"/>
+        tools:context="com.iths.grupp4.a4chat.chatlists.LoginActivity"/>
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_btn"

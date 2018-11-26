@@ -1,6 +1,5 @@
-package com.example.grupp4.a4chat;
+package com.iths.grupp4.a4chat;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -16,10 +15,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.grupp4.a4chat.allusers.AllUserListFragment;
-import com.example.grupp4.a4chat.chatlists.ChatFragment;
-import com.example.grupp4.a4chat.chatlists.ChatReferenceFragment;
-import com.example.grupp4.a4chat.chatlists.LoginActivity;
+import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
+import com.iths.grupp4.a4chat.chatlists.ChatFragment;
+import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
+import com.iths.grupp4.a4chat.chatlists.LoginActivity;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

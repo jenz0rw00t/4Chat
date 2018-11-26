@@ -1,4 +1,4 @@
-package com.example.grupp4.a4chat.allusers;
+package com.iths.grupp4.a4chat.allusers;
 
 import com.google.firebase.firestore.IgnoreExtraProperties;
 

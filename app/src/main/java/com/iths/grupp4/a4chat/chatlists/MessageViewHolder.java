@@ -1,11 +1,11 @@
-package com.example.grupp4.a4chat.chatlists;
+package com.iths.grupp4.a4chat.chatlists;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 

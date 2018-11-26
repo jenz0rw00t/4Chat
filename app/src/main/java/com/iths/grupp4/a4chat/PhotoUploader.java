@@ -1,4 +1,4 @@
-package com.example.grupp4.a4chat;
+package com.iths.grupp4.a4chat;
 
 import android.content.Context;
 import android.net.Uri;

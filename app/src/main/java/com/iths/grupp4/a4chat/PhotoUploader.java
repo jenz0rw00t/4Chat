@@ -51,6 +51,7 @@ public class PhotoUploader {
     private Context mContext;
     private String mUserid;
     private byte[] mBytes;
+    private BackgroundConversion mConvert;
     private double progress;
 
     private ProgressBar mProgressBar;
@@ -59,26 +60,41 @@ public class PhotoUploader {
         Log.d(TAG, "uploadNewPhoto: uploading new image" + imageUri);
 
         //background process to convert the image to an byteArray
-        BackgroundImageResize resize = new BackgroundImageResize(null);
-        resize.execute(imageUri);
+        BackgroundImageResize uploadResizedImage = new BackgroundImageResize(null);
+
+        uploadResizedImage.execute(imageUri);
+        uploadFullSizeNewPhoto(imageUri);
+    }
+
+    public void uploadFullSizeNewPhoto(Uri imageUri) {
+        Log.d(TAG, "uploadNewPhoto: uploading new image" + imageUri);
+        //Only accept image sizes that are compressed to under 5MB. If thats not possible
+        //then do not allow image to be uploaded, then interrupt
+        if (mConvert != null) {
+            mConvert.cancel(true);
+        }
+
+        //background process to convert the image to an byteArray
+        mConvert = new BackgroundConversion();
+        mConvert.execute(imageUri);
     }
 
 
-    public class BackgroundImageResize extends AsyncTask<Uri, Integer, byte[]>{
+    public class BackgroundImageResize extends AsyncTask<Uri, Integer, byte[]> {
 
         Bitmap mBitmap;
 
         public BackgroundImageResize(Bitmap bitmap) {
-            if(bitmap != null){
+            if (bitmap != null) {
                 this.mBitmap = bitmap;
             }
         }
-        
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             Toast.makeText(mContext, "compressing image", Toast.LENGTH_SHORT).show();
-           // showProgressBar();
+            // showProgressBar();
         }
 
 
@@ -86,12 +102,12 @@ public class PhotoUploader {
         protected byte[] doInBackground(Uri... params) {
             Log.d(TAG, "doInBackground: started.");
 
-            if(mBitmap == null){
-                try{
+            if (mBitmap == null) {
+                try {
                     Log.d(TAG, "doInBackground: bitmap is null");
                     mBitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), params[0]);
 
-                }catch (IOException e){
+                } catch (IOException e) {
                     Log.e(TAG, "doInBackground: IOException: " + e.getMessage());
                 }
             }
@@ -108,12 +124,13 @@ public class PhotoUploader {
             //hideProgressBar();
             //execute the upload task
             executeUploadTask();
+
         }
     }
 
-    public static byte[] getBytesFromBitmap(Bitmap bitmap, int quality){
+    public static byte[] getBytesFromBitmap(Bitmap bitmap, int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, quality,stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();
     }
 
@@ -132,9 +149,88 @@ public class PhotoUploader {
     }
 
 
-/*
     // the compressing of image and uploading of image will be able to go in the background while
     // user navigates
+
+
+    private void executeUploadTask() {
+        Toast.makeText(mContext, "Uploading image...", Toast.LENGTH_SHORT).show();
+        String uploadPath = "";
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference()
+                .child("images/users" + "/" + mUserid + "/profile_image");
+
+        //if the image size is valid then we can submit to database
+        if (mUploadBytes.length / MB < MB_THRESHHOLD) {
+
+            UploadTask uploadTask;
+            uploadTask = storageReference.putBytes(mUploadBytes);
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    //Now insert the download url into the firebase database
+                    Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                    while (!urlTask.isSuccessful()) ;
+                    Uri firebaseURL = urlTask.getResult();
+
+                    Toast.makeText(mContext, "Upload Success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "uploadNewPhoto: uploading new image " + firebaseURL.toString());
+
+                    updateProfilePicture(firebaseURL.toString());
+                }
+
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Toast.makeText(mContext, "could not upload photo", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double currentProgress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    if (currentProgress > (progress + 15)) {
+                        progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        Log.d(TAG, "onProgress: Upload is " + progress + "% done");
+                        Toast.makeText(mContext, progress + "%", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            })
+            ;
+        } else {
+            Toast.makeText(mContext, "Image is too Large", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    //Updates the new URL that points to Firebase Storage to database FireStore Cloud
+    private void updateProfilePicture(String downloadUrl) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("avatar", downloadUrl);
+
+        db.collection("users")
+                .document(mUserid)
+                .update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: avatar is updated");
+                } else {
+                    Log.d(TAG, "onComplete: avatar update failed");
+                }
+            }
+        });
+    }
+
+
+
+
+
+
+
+
     public class BackgroundConversion extends AsyncTask<Uri, Integer, byte[]> {
 
         @Override
@@ -181,33 +277,32 @@ public class PhotoUploader {
             executeUploadTask();
         }
 
-      */
-
         private void executeUploadTask() {
             Toast.makeText(mContext, "Uploading image...", Toast.LENGTH_SHORT).show();
             String uploadPath = "";
 
             StorageReference storageReference = FirebaseStorage.getInstance().getReference()
-                    .child("images/users" + "/" + mUserid + "/profile_image");
+                    .child("images/users" + "/" + mUserid + "/profile_image_fullsize");
 
             //if the image size is valid then we can submit to database
-            if(mUploadBytes.length/MB < MB_THRESHHOLD) {
+            if (mBytes.length / MB < MB_THRESHHOLD) {
 
                 UploadTask uploadTask;
-                uploadTask = storageReference.putBytes(mUploadBytes);
+                uploadTask = storageReference.putBytes(mBytes);
 
                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         //Now insert the download url into the firebase database
+
                         Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while (!urlTask.isSuccessful());
+                        while (!urlTask.isSuccessful()) ;
                         Uri firebaseURL = urlTask.getResult();
 
                         Toast.makeText(mContext, "Upload Success", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "uploadNewPhoto: uploading new image " + firebaseURL.toString());
 
-                        updateProfilePicture(firebaseURL.toString());
+                        updateFullProfilePicture(firebaseURL.toString());
                     }
 
                 }).addOnFailureListener(new OnFailureListener() {
@@ -219,7 +314,7 @@ public class PhotoUploader {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                         double currentProgress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                        if(currentProgress > (progress + 15)){
+                        if (currentProgress > (progress + 15)) {
                             progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                             Log.d(TAG, "onProgress: Upload is " + progress + "% done");
                             Toast.makeText(mContext, progress + "%", Toast.LENGTH_SHORT).show();
@@ -227,50 +322,31 @@ public class PhotoUploader {
                     }
                 })
                 ;
-            }else{
+            } else {
                 Toast.makeText(mContext, "Image is too Large", Toast.LENGTH_SHORT).show();
             }
         }
 
-        //Updates the new URL that points to Firebase Storage to database FireStore Cloud
-        private void updateProfilePicture(String downloadUrl) {
+
+        private void updateFullProfilePicture(String downloadUrl) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            HashMap<String, Object> updates = new HashMap<>();
-            updates.put("avatar", downloadUrl);
+            HashMap<String, Object> fullSizeAvatar = new HashMap<>();
+            fullSizeAvatar.put("fullsizeavatar", downloadUrl);
 
             db.collection("users")
                     .document(mUserid)
-                    .update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    .set(fullSizeAvatar).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        Log.d(TAG, "onComplete: avatar is updated");
+                        Log.d(TAG, "onComplete: fullsizeavatar is updated");
                     } else {
-                        Log.d(TAG, "onComplete: avatar update failed");
+                        Log.d(TAG, "onComplete: fullsizeavatar update failed");
                     }
                 }
             });
         }
-
-    private void updateFullProfilePicture(String downloadUrl) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        HashMap<String, Object> fullSizeAvatar = new HashMap<>();
-        fullSizeAvatar.put("fullsizeavatar", downloadUrl);
-
-        db.collection("users")
-                .document(mUserid)
-                .set(fullSizeAvatar).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "onComplete: avatar is updated");
-                } else {
-                    Log.d(TAG, "onComplete: avatar update failed");
-                }
-            }
-        });
     }
 }
 

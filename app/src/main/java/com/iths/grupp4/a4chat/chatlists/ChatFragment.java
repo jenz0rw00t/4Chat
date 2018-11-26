@@ -42,6 +42,8 @@ public class ChatFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth mFirebaseAuth;
     private EditText messageField;
+    private static final String CHATROOM_ID = "ChatroomId";
+    private String chatroomId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,6 +55,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
 
         db = FirebaseFirestore.getInstance();
@@ -60,12 +63,19 @@ public class ChatFragment extends Fragment {
         String uid = mFirebaseAuth.getCurrentUser().getUid();
         messageField = getActivity().findViewById(R.id.messageField);
 
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            chatroomId = bundle.getString(CHATROOM_ID,null);
+        }
+
         //Set adapter for recyclerView
         adapter = new MyRecyclerViewAdapter(messagesList);
         recyclerView.setAdapter(adapter);
 
         //Register for change events for documents stored in collection items on firestore
-        db.collection("messages")
+        db.collection("chatrooms")
+                .document(chatroomId)
+                .collection("messages")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -99,7 +109,9 @@ public class ChatFragment extends Fragment {
             messageField.setText("");
 
             // Add a new document with a generated ID
-            db.collection("messages")
+            db.collection("chatrooms")
+                    .document(chatroomId)
+                    .collection("messages")
                     .add(chatMessage)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override

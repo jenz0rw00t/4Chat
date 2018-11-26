@@ -2,7 +2,9 @@ package com.iths.grupp4.a4chat.chatroomlists;
 
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Chatroom {
 
@@ -20,7 +22,6 @@ public class Chatroom {
         this.creatorName = creatorName;
         this.chatName = creatorName;
         this.creatorId = creatorId;
-
     }
 
     public String getCreatorId() {

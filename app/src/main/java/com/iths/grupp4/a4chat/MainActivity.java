@@ -27,6 +27,7 @@ import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.iths.grupp4.a4chat.chatlists.LoginActivity;
 import com.iths.grupp4.a4chat.friend.FriendsListFragment;
 import com.squareup.picasso.Picasso;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
       {
@@ -78,9 +79,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //k
 
+        navUserImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayFullsizeAvatar();
+            }
+        });
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -123,6 +130,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void updateNavProfileName(String name) {
         navUserName.setText(name);
     }
+
+          private void displayFullsizeAvatar() {
+
+              FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
+              userFireStoreReference.collection("users").document(mAuth.getCurrentUser().getUid())
+                      .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                  @Override
+                  public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                      if (task.isSuccessful()) {
+                          DocumentSnapshot documentSnapshot = task.getResult();
+                          String fullsizeAvatar = documentSnapshot.getString("fullSizeAvatar");
+                          Log.d(TAG, "onComplete: fullsizeavatar = : " + fullsizeAvatar);
+
+                          Intent viewIntent =
+                                  new Intent("android.intent.action.VIEW",
+                                          Uri.parse(fullsizeAvatar));
+                          startActivity(viewIntent);
+                      } else {
+                          Log.w(TAG, "Error getting documents.", task.getException());
+                      }
+                  }
+              });
+          }
 
 }
 

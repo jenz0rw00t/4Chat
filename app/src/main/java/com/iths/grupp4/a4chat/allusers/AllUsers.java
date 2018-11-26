@@ -6,16 +6,18 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 public class AllUsers {
     public String name;
     public String avatar;
+    public String fullSizeAvatar;
     public String email;
     public String userId;
 
     public AllUsers() {
     }
 
-    public AllUsers(String name, String email, String avatar, String userId) {
+    public AllUsers(String name, String email, String avatar, String fullSizeAvatar, String userId) {
         this.name = name;
         this.email = email;
         this.avatar = avatar;
+        this.fullSizeAvatar = fullSizeAvatar;
         this.userId = userId;
     }
 

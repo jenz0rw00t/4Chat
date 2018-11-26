@@ -22,6 +22,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+
 public class UserProfileFragment extends Fragment implements ChangePhotoDialog.OnPhotoReceivedListener,
         ChangeNameDialog.OnNameReceivedListener, View.OnClickListener {
 
@@ -80,7 +82,7 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
                     String image = documentSnapshot.getString("avatar");
                     userProfileName.setText(name);
                     userProfileEmail.setText(email);
-                    Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(userProfileImage);
+                    Picasso.get().load(image).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(userProfileImage);
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
@@ -119,7 +121,10 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
             );
             uploader.uploadNewPhoto(imagePath);
 
-            Picasso.get().load(imagePath.toString()).placeholder(R.drawable.default_avatar).into(userProfileImage);
+            Picasso.get().load(imagePath.toString()).
+                    transform(new CropCircleTransformation()).
+                            placeholder(R.drawable.default_avatar).
+                    into(userProfileImage);
             ((MainActivity)getActivity()).updateNavProfileImage(imagePath); //för att NavBar skapas inte om, måste uppdatera dirr. Borde EJ lägga NavBar i main.
         }
     }

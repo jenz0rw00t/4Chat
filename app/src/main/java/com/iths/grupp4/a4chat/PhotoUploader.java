@@ -296,7 +296,7 @@ public class PhotoUploader {
                         while (!urlTask.isSuccessful()) ;
                         Uri firebaseURL = urlTask.getResult();
 
-                        Toast.makeText(mContext, "Upload Success", Toast.LENGTH_SHORT).show();
+
                         Log.d(TAG, "uploadNewPhoto: uploading new image " + firebaseURL.toString());
 
                         updateFullProfilePicture(firebaseURL.toString());

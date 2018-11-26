@@ -34,6 +34,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -64,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String name = documentSnapshot.getString("name");
                     String image = documentSnapshot.getString("avatar");
                     navUserName.setText(name);
-                    Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(navUserImage);
+                    Picasso.get().load(image).
+                            transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(navUserImage);
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
@@ -126,7 +129,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);
-        Picasso.get().load(imagePath.toString()).placeholder(R.drawable.default_avatar).into(navUserImage);
+        Picasso.get().load(imagePath.toString()).transform(new CropCircleTransformation()).
+                placeholder(R.drawable.default_avatar).into(navUserImage);
     }
 
     public void updateNavProfileName(String name) {

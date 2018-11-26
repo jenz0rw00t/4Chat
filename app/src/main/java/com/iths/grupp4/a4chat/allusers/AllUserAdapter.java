@@ -14,6 +14,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+
 public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAdapter.AllUsersHolder> {
 
     private OnItemClicklistener mOnItemClicklistener;
@@ -60,7 +62,7 @@ public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAd
 
         public void setAvatar(String avatar){
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.all_user_profile_image);
-            Picasso.get().load(avatar).into(imageViewAvatar);
+            Picasso.get().load(avatar).transform(new CropCircleTransformation()).into(imageViewAvatar);
         }
     }
 

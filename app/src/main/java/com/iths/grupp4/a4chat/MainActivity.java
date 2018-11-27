@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
@@ -97,8 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_profile){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
-        }else if (id == R.id.nav_chatAndFriends){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatFragment()).commit();
+        }else if (id == R.id.nav_chatrooms){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment()).commit();
         }else if (id == R.id.nav_logout){
             mAuth.signOut();
             LoginManager.getInstance().logOut();

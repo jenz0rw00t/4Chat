@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp">
 
     <EditText
-        android:id="@+id/edittext_create_chatroom_name"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:ems="10"
+        android:id="@+id/dialog_chatname_chatName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
         android:gravity="center_vertical"
         android:hint="Chatroom Name"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_chatname_saveButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_create_chatroom_button"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_below="@+id/edittext_create_chatroom_name"
+        android:id="@+id/dialog_chatname_saveButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="41dp"
         android:gravity="center_vertical"
-        android:text="Save" />
+        android:text="Save"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/chatroom_item_name"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

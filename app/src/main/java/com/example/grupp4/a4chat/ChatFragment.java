@@ -51,7 +51,7 @@ public class ChatFragment extends Fragment {
         return inflater.inflate(R.layout.chat_fragment, container, false);
     }
 
-    int s = 5;
+    int s = 7;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

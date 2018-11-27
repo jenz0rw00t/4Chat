@@ -318,6 +318,7 @@ public class LoginActivity extends AppCompatActivity {
                         currentUser.getDisplayName(),
                         currentUser.getEmail(),
                         currentUser.getPhotoUrl().toString(),
+                        currentUser.getPhotoUrl().toString(),
                         currentUser.getUid()
                 );
 

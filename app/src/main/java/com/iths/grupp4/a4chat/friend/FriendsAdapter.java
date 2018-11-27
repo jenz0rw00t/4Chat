@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat.allusers;
+package com.iths.grupp4.a4chat.friend;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,23 +8,26 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.iths.grupp4.a4chat.R;
+
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.squareup.picasso.Picasso;
 
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+public class FriendsAdapter extends FirestoreRecyclerAdapter<AllUsers, FriendsAdapter.FriendsHolder> {
 
-public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAdapter.AllUsersHolder> {
+    private OnItemClicklistener onItemClicklistener;
 
-    private OnItemClicklistener mOnItemClicklistener;
-    public AllUserAdapter(@NonNull FirestoreRecyclerOptions<AllUsers> options) {
+    public FriendsAdapter(@NonNull FirestoreRecyclerOptions<AllUsers> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull AllUsersHolder holder, int position, @NonNull AllUsers model) {
+    protected void onBindViewHolder(@NonNull FriendsHolder holder, int position, @NonNull AllUsers model) {
         holder.textViewUsername.setText(String.valueOf(model.getName()));
         holder.textViewEmail.setText(model.getEmail());
         holder.setAvatar(model.getAvatar());
@@ -33,45 +36,44 @@ public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAd
 
     @NonNull
     @Override
-    public AllUsersHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public FriendsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.all_user_list_display, viewGroup, false);
-        return new AllUsersHolder(view);
+        return new FriendsAdapter.FriendsHolder(view);
     }
 
-    class AllUsersHolder extends RecyclerView.ViewHolder{
+    class FriendsHolder extends RecyclerView.ViewHolder {
         TextView textViewUsername;
         TextView textViewEmail;
         ImageView imageViewAvatar;
 
-        public AllUsersHolder(@NonNull View itemView) {
+        public FriendsHolder(@NonNull View itemView) {
             super(itemView);
+
             textViewUsername = itemView.findViewById(R.id.all_user_username);
             textViewEmail = itemView.findViewById(R.id.all_user_userEmail);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION && mOnItemClicklistener!= null){
-                        mOnItemClicklistener.onItemClick(getSnapshots().getSnapshot(position), position);
+                    if (position != RecyclerView.NO_POSITION && onItemClicklistener != null) {
+                        onItemClicklistener.onItemClick(getSnapshots().getSnapshot(position), position);
                     }
                 }
             });
-
         }
 
-        public void setAvatar(String avatar){
+        public void setAvatar(String avatar) {
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.all_user_profile_image);
-            Picasso.get().load(avatar).transform(new CropCircleTransformation()).into(imageViewAvatar);
+            Picasso.get().load(avatar).into(imageViewAvatar);
         }
     }
 
     public interface OnItemClicklistener {
-        void  onItemClick(DocumentSnapshot snapshot, int position);
+        void onItemClick(DocumentSnapshot snapshot, int position);
     }
 
-    public void setOnItemClickListener(OnItemClicklistener listener){
-        mOnItemClicklistener = listener;
+    public void setOnItemClickListener(FriendsAdapter.OnItemClicklistener listener) {
+        onItemClicklistener = listener;
     }
-
 }

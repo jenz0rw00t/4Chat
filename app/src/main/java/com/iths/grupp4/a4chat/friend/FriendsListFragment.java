@@ -18,12 +18,17 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
+import com.iths.grupp4.a4chat.chatlists.Message;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,10 +59,17 @@ public class FriendsListFragment extends Fragment {
 
         //FIREBASE
         db = FirebaseFirestore.getInstance();
-        usersCollection = db.collection("users").document("friends")
-                .collection(current_user.getUid());
+        usersCollection = db.collection("users").document(current_user.getUid())
+                .collection("friends");
 
         Query friendQuery = usersCollection;
+
+        friendQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+
+            }
+        });
 
         FirestoreRecyclerOptions<AllUsers> options = new FirestoreRecyclerOptions.Builder<AllUsers>()
                 .setQuery(friendQuery, AllUsers.class)

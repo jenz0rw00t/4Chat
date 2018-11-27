@@ -41,17 +41,19 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setData(MessageUserRef messageUserRef){
-        messageUserRef.user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                textUser.setText((String) documentSnapshot.get("name"));
-                String avatar = (String) documentSnapshot.get("avatar");
-                Picasso.get().load(avatar)
-                        .placeholder(R.drawable.default_avatar)
-                        .transform(new CropCircleTransformation())
-                        .into(imageUser);
-            }
-        });
+        if (textUser != null) {
+            messageUserRef.user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    textUser.setText((String) documentSnapshot.get("name"));
+                    String avatar = (String) documentSnapshot.get("avatar");
+                    Picasso.get().load(avatar)
+                            .placeholder(R.drawable.default_avatar)
+                            .transform(new CropCircleTransformation())
+                            .into(imageUser);
+                }
+            });
+        }
         textMessage.setText(messageUserRef.message);
         Date date = messageUserRef.timeStamp;
         if (date != null) {

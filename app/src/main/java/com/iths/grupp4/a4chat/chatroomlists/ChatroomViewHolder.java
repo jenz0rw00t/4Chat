@@ -1,12 +1,18 @@
 package com.iths.grupp4.a4chat.chatroomlists;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.chatlists.ChatFragment;
 
 public class ChatroomViewHolder extends RecyclerView.ViewHolder {
 
@@ -24,7 +30,7 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setData(Chatroom chatroom){
-        textViewName.setText(chatroom.getChatName() + "'s Chatroom");
+        textViewName.setText(chatroom.getChatroomId());
         textViewCreator.setText(chatroom.getCreatorName());
     }
 

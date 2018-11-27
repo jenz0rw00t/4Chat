@@ -20,8 +20,8 @@ public class Chatroom {
 
     public Chatroom(String creatorName, String creatorId) {
         this.creatorName = creatorName;
-        this.chatName = creatorName;
         this.creatorId = creatorId;
+        this.chatName = creatorId;
     }
 
     public String getCreatorId() {

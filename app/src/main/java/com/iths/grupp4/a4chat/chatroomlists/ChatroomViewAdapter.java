@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
-import com.iths.grupp4.a4chat.chatlists.ChatFragment;
+import com.iths.grupp4.a4chat.chatlists.ChatroomReferenceFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,12 +90,12 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
 
                 Bundle bundle = new Bundle();
                 bundle.putString(CHATROOM_ID,chatroomId);
-                ChatFragment chatFragment = new ChatFragment();
-                chatFragment.setArguments(bundle);
+                ChatroomReferenceFragment chatroomReferenceFragment = new ChatroomReferenceFragment();
+                chatroomReferenceFragment.setArguments(bundle);
                 FragmentManager manager = ((MainActivity) v.getContext()).getSupportFragmentManager();
                 manager.beginTransaction()
                         .addToBackStack("Chatrooms")
-                        .replace(R.id.frameLayout,chatFragment,null)
+                        .replace(R.id.frameLayout,chatroomReferenceFragment,null)
                         .commit();
             }
         });

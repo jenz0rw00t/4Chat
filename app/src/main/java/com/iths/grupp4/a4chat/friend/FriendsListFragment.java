@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.allusers.AllUserAdapter;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.iths.grupp4.a4chat.chatlists.Message;
 
@@ -38,7 +39,6 @@ public class FriendsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference usersCollection;
     private FirebaseUser current_user;
-
     private FriendsAdapter adapter;
     public SearchView search_friends;
 
@@ -64,6 +64,7 @@ public class FriendsListFragment extends Fragment {
 
         Query friendQuery = usersCollection;
 
+
         FirestoreRecyclerOptions<AllUsers> options = new FirestoreRecyclerOptions.Builder<AllUsers>()
                 .setQuery(friendQuery, AllUsers.class)
                 .build();
@@ -74,11 +75,46 @@ public class FriendsListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
+        search_friends = view.findViewById(R.id.searchFriends);
 
-
+        search_friends.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                //Returning the recyclerview to its original view. If user types letter, then delets letter.
+                if (s.trim().isEmpty()){
+                    getList(usersCollection);
+                    adapter.startListening();
+                    //Getting the name and saving it in searchQuery, then setting it in getList
+                }else {
+                    CollectionReference usersRef = db.collection("users").document(current_user.getUid()).collection("friends");
+                    Query searchQuery = usersRef.orderBy("name").startAt(s.trim()).endAt(s.trim() +"\uf8ff");
+                    getList(searchQuery);
+                    adapter.startListening();
+                }
+                return false;
+            }
+        });
 
         return view;
     }
+
+    private void getList(Query q) {
+
+        FirestoreRecyclerOptions<AllUsers> recyclerOptions = new FirestoreRecyclerOptions.Builder<AllUsers>()
+                .setQuery(q, AllUsers.class)
+                .build();
+
+        adapter = new FriendsAdapter(recyclerOptions);
+        RecyclerView recyclerView = getView().findViewById(R.id.friendsList);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+    }
+
 
     @Override
     public void onStart() {

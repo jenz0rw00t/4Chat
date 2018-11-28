@@ -245,7 +245,8 @@ public class AllUserProfileFragment extends Fragment {
                 // REQUEST RECEIVED
 
                 if(current_state.equals("request_received")){
-                    userFireStoreReference.collection("users").document(receiver_user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    userFireStoreReference.collection("users").document(receiver_user_id)
+                            .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             DocumentSnapshot documentSnapshot = task.getResult();
@@ -266,7 +267,8 @@ public class AllUserProfileFragment extends Fragment {
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            userFireStoreReference.collection("users").document(current_user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            userFireStoreReference.collection("users").document(current_user.getUid())
+                                                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                     DocumentSnapshot documentSnapshot2 = task.getResult();
@@ -325,10 +327,12 @@ public class AllUserProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (current_state.equals("friends")){
-                    friendsReference.document(current_user.getUid()).collection(receiver_user_id).document("time").delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    friendsReference.document(current_user.getUid()).collection("friends")
+                            .document(receiver_user_id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            friendsReference.document(receiver_user_id).collection(current_user.getUid()).document("time").delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            friendsReference.document(receiver_user_id).collection("friends").document(current_user.getUid())
+                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     current_state = "not_friends";

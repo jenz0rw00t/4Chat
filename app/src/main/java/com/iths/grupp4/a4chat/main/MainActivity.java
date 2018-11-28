@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat;
+package com.iths.grupp4.a4chat.main;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,8 +17,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
-import com.iths.grupp4.a4chat.chatlists.ChatFragment;
 import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.iths.grupp4.a4chat.chatlists.LoginActivity;
 import com.facebook.login.LoginManager;
@@ -28,7 +28,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
+import com.iths.grupp4.a4chat.dialogs.FullScreenDialog;
 import com.iths.grupp4.a4chat.friend.FriendsListFragment;
+import com.iths.grupp4.a4chat.user.UserProfileFragment;
 import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 

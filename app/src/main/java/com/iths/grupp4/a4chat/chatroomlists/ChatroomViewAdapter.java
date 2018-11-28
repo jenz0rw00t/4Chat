@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.iths.grupp4.a4chat.MainActivity;
+import com.iths.grupp4.a4chat.main.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.chatlists.ChatroomReferenceFragment;
 

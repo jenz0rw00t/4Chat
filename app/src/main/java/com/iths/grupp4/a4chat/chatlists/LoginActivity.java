@@ -10,7 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.iths.grupp4.a4chat.MainActivity;
+import com.iths.grupp4.a4chat.main.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.facebook.AccessToken;

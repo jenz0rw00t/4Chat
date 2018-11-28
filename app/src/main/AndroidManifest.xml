@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.iths.grupp4.a4chat.MainActivity" />
+        <activity android:name="com.iths.grupp4.a4chat.main.MainActivity" />
 
         <meta-data
             tools:replace="android:value"

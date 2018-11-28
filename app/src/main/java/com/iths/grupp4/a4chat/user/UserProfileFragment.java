@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat;
+package com.iths.grupp4.a4chat.user;
 
 import android.content.Context;
 import android.net.Uri;
@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +21,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.main.MainActivity;
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.dialogs.ChangeNameDialog;
+import com.iths.grupp4.a4chat.dialogs.ChangePhotoDialog;
+import com.iths.grupp4.a4chat.dialogs.FullScreenDialog;
+import com.iths.grupp4.a4chat.dialogs.PhotoUploader;
 import com.squareup.picasso.Picasso;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;

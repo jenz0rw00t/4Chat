@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat;
+package com.iths.grupp4.a4chat.dialogs;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.iths.grupp4.a4chat.R;
 
 public class ChangeNameDialog extends DialogFragment {
 

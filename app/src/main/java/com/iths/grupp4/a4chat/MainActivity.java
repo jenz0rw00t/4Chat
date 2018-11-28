@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navUserImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayFullsizeAvatar();
+                displayFullsizeAvatar(user_id);
             }
         });
     }
@@ -131,28 +133,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navUserName.setText(name);
     }
 
-          private void displayFullsizeAvatar() {
-
-              FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
-              userFireStoreReference.collection("users").document(mAuth.getCurrentUser().getUid())
-                      .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                  @Override
-                  public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                      if (task.isSuccessful()) {
-                          DocumentSnapshot documentSnapshot = task.getResult();
-                          String fullsizeAvatar = documentSnapshot.getString("fullSizeAvatar");
-                          Log.d(TAG, "onComplete: fullsizeavatar = : " + fullsizeAvatar);
-
-                          Intent viewIntent =
-                                  new Intent("android.intent.action.VIEW",
-                                          Uri.parse(fullsizeAvatar));
-                          startActivity(viewIntent);
-                      } else {
-                          Log.w(TAG, "Error getting documents.", task.getException());
-                      }
-                  }
-              });
+          private void displayFullsizeAvatar(String receiverUserid) {
+              FragmentManager fragmentManager = getSupportFragmentManager();
+              FullScreenDialog dialog = new FullScreenDialog();
+              Bundle bundle = new Bundle();
+              bundle.putString("receiver_user_id", receiverUserid);
+              dialog.setArguments(bundle);
+              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+              dialog.show(fragmentTransaction, FullScreenDialog.TAG);
           }
+      }
 
-}
 

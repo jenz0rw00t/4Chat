@@ -3,6 +3,8 @@ package com.iths.grupp4.a4chat.allusers;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -13,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.iths.grupp4.a4chat.FullScreenDialog;
 import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -85,6 +88,13 @@ public class AllUserProfileFragment extends Fragment {
         receiver_user_id = bundle.getString("visit_user_id");
         removeFriend.setVisibility(View.INVISIBLE);
 
+
+        allUserImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                displayFullsizeAvatar(receiver_user_id);
+            }
+        });
 
         userFireStoreReference.collection("users").document(receiver_user_id)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -334,6 +344,16 @@ public class AllUserProfileFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void displayFullsizeAvatar(String receiverUserid) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FullScreenDialog dialog = new FullScreenDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("receiver_user_id", receiverUserid);
+        dialog.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        dialog.show(fragmentTransaction, FullScreenDialog.TAG);
     }
 
 }

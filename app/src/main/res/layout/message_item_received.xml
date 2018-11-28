@@ -37,8 +37,8 @@
 
     <ImageView
         android:id="@+id/imageUser"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,10 +49,10 @@
         android:id="@+id/textTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="2dp"
         android:layout_marginBottom="4dp"
-        tools:text="11:06"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textMessage" />
+        app:layout_constraintStart_toEndOf="@+id/textMessage"
+        tools:text="11:06" />
 </android.support.constraint.ConstraintLayout>

@@ -24,10 +24,12 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView textMessage;
     public ImageView imageUser;
     public TextView textTime;
+    public int viewType;
 
-    public MessageViewHolder(@NonNull View itemView) {
+    public MessageViewHolder(@NonNull View itemView, int viewType) {
         super(itemView);
         this.itemView = itemView;
+        this.viewType = viewType;
         textUser = itemView.findViewById(R.id.textUser);
         textMessage = itemView.findViewById(R.id.textMessage);
         imageUser = itemView.findViewById(R.id.imageUser);
@@ -41,7 +43,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setData(MessageUserRef messageUserRef){
-        if (textUser != null) {
+        if (viewType == 2) {
             messageUserRef.user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -62,5 +64,36 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             textTime.setText(time);
         }
 
+    }
+
+    public void setDataSent(MessageUserRef messageUserRef) {
+        textMessage.setText(messageUserRef.message);
+        Date date = messageUserRef.timeStamp;
+        if (date != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            String time = dateFormat.format(date);
+            textTime.setText(time);
+        }
+    }
+
+    public void setDataReceived(MessageUserRef messageUserRef) {
+        messageUserRef.user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                textUser.setText((String) documentSnapshot.get("name"));
+                String avatar = (String) documentSnapshot.get("avatar");
+                Picasso.get().load(avatar)
+                        .placeholder(R.drawable.default_avatar)
+                        .transform(new CropCircleTransformation())
+                        .into(imageUser);
+            }
+        });
+        textMessage.setText(messageUserRef.message);
+        Date date = messageUserRef.timeStamp;
+        if (date != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            String time = dateFormat.format(date);
+            textTime.setText(time);
+        }
     }
 }

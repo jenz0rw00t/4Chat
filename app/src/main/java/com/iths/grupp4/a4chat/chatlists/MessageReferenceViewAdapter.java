@@ -36,15 +36,16 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view;
-
+    //     Debug stop to test to se what viewType it is!
+    //    int viewType = i;
         if (i == VIEW_TYPE_MESSAGE_RECEIVED) {
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.message_item_received, viewGroup, false);
-            return new MessageViewHolder(view);
+            return new MessageViewHolder(view, VIEW_TYPE_MESSAGE_RECEIVED);
         } else if (i == VIEW_TYPE_MESSAGE_SENT) {
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.message_item_sent, viewGroup, false);
-            return new MessageViewHolder(view);
+            return new MessageViewHolder(view, i);
         }
 
         return null;
@@ -53,7 +54,14 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int i) {
         MessageUserRef messageUserRef = list.get(i);
-        messageViewHolder.setData(messageUserRef);
+             
+        switch (messageViewHolder.getItemViewType()) {
+                    case VIEW_TYPE_MESSAGE_SENT:
+                      messageViewHolder.setDataSent(messageUserRef);
+                      break;
+                    case VIEW_TYPE_MESSAGE_RECEIVED:
+                      messageViewHolder.setDataReceived(messageUserRef);
+                }
     }
 
     @Override

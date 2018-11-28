@@ -23,7 +23,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MessageViewHolde
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.message_item_received, viewGroup,false);
-        return new MessageViewHolder(view);
+        return new MessageViewHolder(view, 0);
     }
 
     @Override

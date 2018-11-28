@@ -2,14 +2,12 @@ package com.iths.grupp4.a4chat;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,12 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class PhotoUploader {
-
-
 
     public PhotoUploader(String userId, Context context, int imageWidth, int imageHeight) {
         mUserid = userId;
@@ -44,36 +39,35 @@ public class PhotoUploader {
 
     private Context mContext;
     private String mUserid;
-    private byte[] mBytes;
+    private byte[] mFullSizeBytes;
+    private byte[] mSmallSizeBytes;
     private BackgroundConversion mConvert;
     private double progress;
-    private byte[] mUploadBytes;
     private int mImageWidth;
     private int mImageHeight;
 
 
     public void uploadNewPhoto(Uri imageUri) {
         Log.d(TAG, "uploadNewPhoto: uploading new image" + imageUri);
-
-        //background process to convert the image to an byteArray
         BackgroundImageResize uploadResizedImage = new BackgroundImageResize(null);
+
 
         uploadResizedImage.execute(imageUri);
         uploadFullSizeNewPhoto(imageUri);
     }
 
     public void uploadFullSizeNewPhoto(Uri imageUri) {
-        Log.d(TAG, "uploadNewPhoto: uploading new image" + imageUri);
+        Log.d(TAG, "uploadFullSizeNewPhoto: uploading new image" + imageUri);
+
         //Only accept image sizes that are compressed to under 5MB. If thats not possible
         //then do not allow image to be uploaded, then interrupt
-        if (mConvert != null) {
-            mConvert.cancel(true);
-        }
-
-        //background process to convert the image to an byteArray
-        mConvert = new BackgroundConversion();
-        mConvert.execute(imageUri);
+        BackgroundConversion uploadFullsizeImage = new BackgroundConversion(null);
+       // if (uploadFullsizeImage != null) {
+       //     uploadFullsizeImage.cancel(true);
+      //  }
+        uploadFullsizeImage.execute(imageUri);
     }
+
 
 
 
@@ -92,17 +86,17 @@ public class PhotoUploader {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(mContext, "compressing image", Toast.LENGTH_SHORT).show();
-            // showProgressBar();
+           // Toast.makeText(mContext, "compressing image", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onPreExecute: Compress image");
         }
 
         @Override
         protected byte[] doInBackground(Uri... params) {
-            Log.d(TAG, "doInBackground: started.");
+            Log.d(TAG, "BackgroundImageResize -> doInBackground: started.");
 
             if (mBitmap == null) {
                 try {
-                    Log.d(TAG, "doInBackground: bitmap is null");
+                    Log.d(TAG, "BackgroundImageResize -> doInBackground: bitmap is null");
                     mBitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), params[0]);
 
                 } catch (IOException e) {
@@ -118,7 +112,7 @@ public class PhotoUploader {
         @Override
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
-            mUploadBytes = bytes;
+            mSmallSizeBytes = bytes;
             //hideProgressBar();
             //execute the upload task
             executeUploadTask();
@@ -146,22 +140,17 @@ public class PhotoUploader {
     }
 
 
-    // the compressing of image and uploading of image will be able to go in the background while
-    // user navigates
-
 
     private void executeUploadTask() {
-        Toast.makeText(mContext, "Uploading image...", Toast.LENGTH_SHORT).show();
-        String uploadPath = "";
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference()
                 .child("images/users" + "/" + mUserid + "/profile_image");
 
-        //if the image size is valid then we can submit to database
-        if (mUploadBytes.length / MB < MB_THRESHHOLD) {
+        if (mSmallSizeBytes.length / MB < MB_THRESHHOLD) {
+            Log.d(TAG, "BackgroundImageResize -> executeUploadTask: ");
 
             UploadTask uploadTask;
-            uploadTask = storageReference.putBytes(mUploadBytes);
+            uploadTask = storageReference.putBytes(mSmallSizeBytes);
 
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -171,41 +160,29 @@ public class PhotoUploader {
                     while (!urlTask.isSuccessful()) ;
                     Uri firebaseURL = urlTask.getResult();
 
-                    Toast.makeText(mContext, "Upload Success", Toast.LENGTH_SHORT).show();
+
                     Log.d(TAG, "uploadNewPhoto: uploading new image " + firebaseURL.toString());
 
-                    updateProfilePicture(firebaseURL.toString());
+                    updateSmallProfilePicture(firebaseURL.toString());
                 }
 
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    Toast.makeText(mContext, "could not upload photo", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "BackgroundImageResize -> onFailure: TASK FAILED " + exception);
                 }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double currentProgress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                    if (currentProgress > (progress + 15)) {
-                        progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                        Log.d(TAG, "onProgress: Upload is " + progress + "% done");
-                        Toast.makeText(mContext, progress + "%", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            })
-            ;
-        } else {
-            Toast.makeText(mContext, "Image is too Large", Toast.LENGTH_SHORT).show();
-        }
-    }
+            });
+            }
 
+        }
 
     //Updates the new URL that points to Firebase Storage to database FireStore Cloud
-    private void updateProfilePicture(String downloadUrl) {
+    private void updateSmallProfilePicture(String downloadUrl) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         HashMap<String, Object> updates = new HashMap<>();
         updates.put("avatar", downloadUrl);
+        updates.put("fullSizeAvatar", downloadUrl); // will get overridden by the real fullsize once its uploaded
 
         db.collection("users")
                 .document(mUserid)
@@ -230,9 +207,18 @@ public class PhotoUploader {
 
     public class BackgroundConversion extends AsyncTask<Uri, Integer, byte[]> {
 
+        Bitmap mBitmap;
+
+        public BackgroundConversion(Bitmap bitmap) {
+            if (bitmap != null) {
+                this.mBitmap = bitmap;
+            }
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
         }
 
         //this class is for compressing the image in iterations
@@ -240,35 +226,39 @@ public class PhotoUploader {
         //image by 10% for each iteration, until the picture is less than 5 MB.
         @Override
         protected byte[] doInBackground(Uri... params) {
-            Log.d(TAG, "doInBackground: started.");
-            InputStream iStream = null;
-            try {
-                iStream = mContext.getContentResolver().openInputStream(params[0]);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-            int bufferSize = 1024;
-            byte[] buffer = new byte[bufferSize];
 
-            int len = 0;
-            try {
-                while ((len = iStream.read(buffer)) != -1) {
-                    byteBuffer.write(buffer, 0, len);
+            if (mBitmap == null) {
+
+                try {
+                    Log.d(TAG, "BackgroundFullSizeImage -> doInBackground: bitmap is null");
+                    mBitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), params[0]);
+                    Log.d(TAG, "doInBackground: bitmap size: megabytes: " + mBitmap.getByteCount()/MB + "MB");
+                } catch (IOException e) {
+                    Log.e(TAG, "doInBackground: IOException: " + e.getMessage());
                 }
-                iStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-
-            return byteBuffer.toByteArray();
+            byte[] bytes = null;
+            for (int i = 1; i < 11; i++) {
+                if (i == 10) {
+                  Toast.makeText(mContext, "Image is too Large", Toast.LENGTH_SHORT).show();
+                  break;
+                  }
+                bytes = getBytesFromBitmap(mBitmap, 100 / i);
+                Log.d(TAG, "doInBackground: megabytes(" + (11 - i) + "0%) " + bytes.length / MB + "MB");
+                if (bytes.length / MB < MB_THRESHHOLD) {
+                    return bytes;
+                }
+            }
+            return bytes;
         }
+
 
         @Override
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
 
-            mBytes = bytes;
+           mFullSizeBytes = bytes;
+            Log.d(TAG, "onPostExecute: mFullbyteSize is " + mFullSizeBytes);
 
             //execute the upload
             executeUploadTask();
@@ -278,14 +268,17 @@ public class PhotoUploader {
             Toast.makeText(mContext, "Uploading image...", Toast.LENGTH_SHORT).show();
             String uploadPath = "";
 
+
             StorageReference storageReference = FirebaseStorage.getInstance().getReference()
                     .child("images/users" + "/" + mUserid + "/profile_image_fullsize");
 
+
+           // Log.d(TAG, "BackgroundFullSizeImage -> executeUploadTask: " + mFullSizeBytes.length);
             //if the image size is valid then we can submit to database
-            if (mBytes.length / MB < MB_THRESHHOLD) {
+            if (mFullSizeBytes.length / MB < MB_THRESHHOLD) {
 
                 UploadTask uploadTask;
-                uploadTask = storageReference.putBytes(mBytes);
+                uploadTask = storageReference.putBytes(mFullSizeBytes);
 
                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -296,8 +289,8 @@ public class PhotoUploader {
                         while (!urlTask.isSuccessful()) ;
                         Uri firebaseURL = urlTask.getResult();
 
-
-                        Log.d(TAG, "uploadNewPhoto: uploading new image " + firebaseURL.toString());
+                        Toast.makeText(mContext, "Upload Success", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "uploadBIGSIZEPhoto: uploading new image " + firebaseURL.toString());
 
                         updateFullProfilePicture(firebaseURL.toString());
                     }
@@ -305,7 +298,7 @@ public class PhotoUploader {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
-                        Toast.makeText(mContext, "could not upload photo", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(mContext, "could not upload photo", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -338,6 +331,7 @@ public class PhotoUploader {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: fullsizeavatar is updated");
+
                     } else {
                         Log.d(TAG, "onComplete: fullsizeavatar update failed");
                     }

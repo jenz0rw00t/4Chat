@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,6 +27,7 @@ import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
 import com.iths.grupp4.a4chat.chatlists.ChatFragment;
 import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.iths.grupp4.a4chat.chatlists.LoginActivity;
+import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
 import com.iths.grupp4.a4chat.friend.FriendsListFragment;
 import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
@@ -40,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView navUserName;
     private ImageView navUserImage;
     private FirebaseAuth mAuth;
-
 
 
     @Override
@@ -99,28 +101,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
+          @Override
+          public boolean onNavigationItemSelected(MenuItem item) {
+              int id = item.getItemId();
 
-        if (id == R.id.nav_profile){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
-        }else if (id == R.id.nav_chatrooms){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatFragment()).commit();
-        }else if (id == R.id.nav_logout){
-            mAuth.signOut();
-            LoginManager.getInstance().logOut();
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        }else if (id == R.id.nav_all_users){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
-        }else if (id == R.id.nav_chat_test){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
-        }else if(id == R.id.nav_friends){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
-        }
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
+              if (id == R.id.nav_profile){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
+              }else if (id == R.id.nav_chatrooms){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment()).commit();
+              }else if (id == R.id.nav_logout){
+                  mAuth.signOut();
+                  LoginManager.getInstance().logOut();
+                  startActivity(new Intent(MainActivity.this, LoginActivity.class));
+              }else if (id == R.id.nav_all_users){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
+              }else if (id == R.id.nav_chat_test){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
+              }
+              mDrawerLayout.closeDrawer(GravityCompat.START);
+              return true;
+          }
 
     public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);

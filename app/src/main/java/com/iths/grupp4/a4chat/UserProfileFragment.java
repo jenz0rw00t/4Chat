@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,11 +29,11 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 public class UserProfileFragment extends Fragment implements ChangePhotoDialog.OnPhotoReceivedListener,
         ChangeNameDialog.OnNameReceivedListener, View.OnClickListener {
 
+    String profile_user_id;
     private ImageView userProfileImage;
     private TextView userProfileName;
     private TextView userProfileEmail;
     private FirebaseAuth mFirebaseAuth;
-    private ProgressBar mProgressBar;
     private String TAG = "UserProfileFragment";
 
     public UserProfileFragment() {}
@@ -40,22 +42,23 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         view.findViewById(R.id.userProfileImage).setOnClickListener(this);
-        view.findViewById(R.id.userProfileName).setOnClickListener(this);
-        view.findViewById(R.id.userProfileNameHeader).setOnClickListener(this);
+        view.findViewById(R.id.userProfilePen).setOnClickListener(this);
+        view.findViewById(R.id.userProfileCamera).setOnClickListener(this);
         return view;
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.userProfileImage:
+            case R.id.userProfileCamera:
                 openChangePhotoDialog(view);
                 break;
-            case R.id.userProfileName:
+            case R.id.userProfileImage:
+                displayFullsizeAvatar(profile_user_id);
+                break;
+            case R.id.userProfilePen:
                 openChangeNameDialog(view);
                 break;
-            case R.id.userProfileNameHeader:
-                openChangeNameDialog(view);
         }
     }
 
@@ -64,7 +67,7 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         super.onViewCreated(view, savedInstanceState);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-        String profile_user_id = mFirebaseAuth.getCurrentUser().getUid();
+        profile_user_id = mFirebaseAuth.getCurrentUser().getUid();
         FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
 
         userProfileImage = (ImageView) getView().findViewById(R.id.userProfileImage);
@@ -142,9 +145,16 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         dialog.show(getFragmentManager(), "ChangeNameDialog");
     }
 
-    private void showLoader() {
-        mProgressBar.setVisibility(View.VISIBLE);
+    private void displayFullsizeAvatar(String receiverUserid) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FullScreenDialog dialog = new FullScreenDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("receiver_user_id", receiverUserid);
+        dialog.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        dialog.show(fragmentTransaction, FullScreenDialog.TAG);
     }
+
 
 }
 

@@ -3,6 +3,7 @@
     <color name="colorPrimary">#a5d6a7</color>
     <color name="colorPrimaryDark">#75a478</color>
     <color name="colorAccent">#ffcdd2</color>
-    <color name="colorButtonNormal">#ffcdd2</color>
+    <color name="colorChatbubble">#cb9ca1</color>
     <color name="windowBackground">#edf6ed</color>
 </resources>
+

@@ -15,17 +15,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
+import com.iths.grupp4.a4chat.chatlists.ChatFragment;
+import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
+import com.iths.grupp4.a4chat.chatlists.LoginActivity;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
-import com.iths.grupp4.a4chat.chatlists.ChatFragment;
-import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
-import com.iths.grupp4.a4chat.chatlists.LoginActivity;
-import com.iths.grupp4.a4chat.friend.FriendsListFragment;
+import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
 import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
@@ -61,7 +61,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String name = documentSnapshot.getString("name");
                     String image = documentSnapshot.getString("avatar");
                     navUserName.setText(name);
-                    Picasso.get().load(image).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(navUserImage);
+                    Picasso.get().load(image)
+                            .placeholder(R.drawable.default_avatar)
+                            .transform(new CropCircleTransformation())
+                            .into(navUserImage);
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
@@ -79,15 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //k
 
-        navUserImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                displayFullsizeAvatar();
-            }
-        });
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -105,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_profile){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
-        }else if (id == R.id.nav_chatAndFriends){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatFragment()).commit();
+        }else if (id == R.id.nav_chatrooms){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment()).commit();
         }else if (id == R.id.nav_logout){
             mAuth.signOut();
             LoginManager.getInstance().logOut();
@@ -115,8 +112,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
         }else if (id == R.id.nav_chat_test){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
-        }else if(id == R.id.nav_friends){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -124,35 +119,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);
-            Picasso.get().load(imagePath.toString()).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(navUserImage);
+            Picasso.get().load(imagePath.toString()).placeholder(R.drawable.default_avatar).into(navUserImage);
         }
 
     public void updateNavProfileName(String name) {
         navUserName.setText(name);
     }
-
-          private void displayFullsizeAvatar() {
-
-              FirebaseFirestore userFireStoreReference = FirebaseFirestore.getInstance();
-              userFireStoreReference.collection("users").document(mAuth.getCurrentUser().getUid())
-                      .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                  @Override
-                  public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                      if (task.isSuccessful()) {
-                          DocumentSnapshot documentSnapshot = task.getResult();
-                          String fullsizeAvatar = documentSnapshot.getString("fullSizeAvatar");
-                          Log.d(TAG, "onComplete: fullsizeavatar = : " + fullsizeAvatar);
-
-                          Intent viewIntent =
-                                  new Intent("android.intent.action.VIEW",
-                                          Uri.parse(fullsizeAvatar));
-                          startActivity(viewIntent);
-                      } else {
-                          Log.w(TAG, "Error getting documents.", task.getException());
-                      }
-                  }
-              });
-          }
 
 }
 

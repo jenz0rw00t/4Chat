@@ -6,11 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.iths.grupp4.a4chat.R;
 
 import java.util.List;
 
 public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageViewHolder> {
+
+    private static final int VIEW_TYPE_MESSAGE_SENT = 1;
+    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
     private List<MessageUserRef> list;
 
@@ -18,18 +22,46 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
         this.list = list;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        MessageUserRef message = list.get(position);
+        if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(message.user.getId())){
+            return VIEW_TYPE_MESSAGE_SENT;
+        } else {
+             return VIEW_TYPE_MESSAGE_RECEIVED;
+        }
+    }
+
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.message_item, viewGroup,false);
-        return new MessageViewHolder(view);
+        View view;
+    //     Debug stop to test to se what viewType it is!
+    //    int viewType = i;
+        if (i == VIEW_TYPE_MESSAGE_RECEIVED) {
+            view = LayoutInflater.from(viewGroup.getContext())
+                    .inflate(R.layout.message_item_received, viewGroup, false);
+            return new MessageViewHolder(view, VIEW_TYPE_MESSAGE_RECEIVED);
+        } else if (i == VIEW_TYPE_MESSAGE_SENT) {
+            view = LayoutInflater.from(viewGroup.getContext())
+                    .inflate(R.layout.message_item_sent, viewGroup, false);
+            return new MessageViewHolder(view, i);
+        }
+
+        return null;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int i) {
         MessageUserRef messageUserRef = list.get(i);
-        messageViewHolder.setData(messageUserRef);
+             
+        switch (messageViewHolder.getItemViewType()) {
+                    case VIEW_TYPE_MESSAGE_SENT:
+                      messageViewHolder.setDataSent(messageUserRef);
+                      break;
+                    case VIEW_TYPE_MESSAGE_RECEIVED:
+                      messageViewHolder.setDataReceived(messageUserRef);
+                }
     }
 
     @Override

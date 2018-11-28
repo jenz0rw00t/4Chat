@@ -10,7 +10,8 @@ public class Message {
     public String user;
     public String message;
     @Exclude public String id;
-    @ServerTimestamp public Date timeStamp;
+    @ServerTimestamp
+    public Date timeStamp;
 
     public Message() {}
 

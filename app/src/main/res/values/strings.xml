@@ -30,11 +30,12 @@
     <string name="profile_username">Name</string>
     <string name="profile_email">Email</string>
     <string name="nav_profile_string">Profil</string>
-    <string name="nav_chatAndFriends">Chat</string>
+    <string name="nav_chatAndFriends">Chat och Vänner</string>
     <string name="nav_logout">Logga ut</string>
     <string name="nav_allUsers">Alla användare</string>
     <string name="search_users">Sök användare...</string>
 
     <string name="facebook_app_id">288776491772638</string>
     <string name="fb_login_protocol_scheme">fb288776491772638</string>
+    <string name="nav_chatrooms">Chatrooms</string>
 </resources>

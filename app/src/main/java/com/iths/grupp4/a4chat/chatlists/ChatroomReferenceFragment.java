@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,26 +22,26 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.allusers.AllUsers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class ChatFragment extends Fragment {
+public class ChatroomReferenceFragment extends Fragment {
 
 
-    public ChatFragment() {
+    public ChatroomReferenceFragment() {
         // Required empty public constructor
     }
 
-    private List<Message> messagesList = new ArrayList<>();
-    private MyRecyclerViewAdapter adapter;
-    private FirebaseFirestore db;
-    private FirebaseAuth mFirebaseAuth;
-    private EditText messageField;
+    List<MessageUserRef> messagesList = new ArrayList<>();
+    private MessageReferenceViewAdapter adapter;
+    FirebaseFirestore db;
+    EditText messageField;
+    AllUsers user;
+    DocumentReference userRef;
     private static final String CHATROOM_ID = "ChatroomId";
     private String chatroomId;
 
@@ -56,22 +55,22 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
-
-        db = FirebaseFirestore.getInstance();
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        String uid = mFirebaseAuth.getCurrentUser().getUid();
-        messageField = getActivity().findViewById(R.id.messageField);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             chatroomId = bundle.getString(CHATROOM_ID,null);
         }
 
+        db = FirebaseFirestore.getInstance();
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userRef = db.collection("users").document(userID);
+
+        messageField = getActivity().findViewById(R.id.messageField);
+
         //Set adapter for recyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        adapter = new MyRecyclerViewAdapter(messagesList);
+        adapter = new MessageReferenceViewAdapter(messagesList);
         recyclerView.setAdapter(adapter);
 
         //Sets the recyclerview to bottom if keybord is visible
@@ -96,43 +95,45 @@ public class ChatFragment extends Fragment {
         //Register for change events for documents stored in collection items on firestore
         db.collection("chatrooms")
                 .document(chatroomId)
-                .collection("messages")
+                .collection("messagesUserRef")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    return;
-                }
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            return;
+                        }
 
-                for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                    if (dc.getType() == DocumentChange.Type.ADDED) {
+                        for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
 
-                        String id = dc.getDocument().getId();
+                                String id = dc.getDocument().getId();
 
-                        Message message = dc.getDocument().toObject(Message.class);
-                        message.id = id;
-                        adapter.addItem(message);
-                        recyclerView.smoothScrollToPosition(messagesList.size() -1);
+                                MessageUserRef messageUserRef = dc.getDocument().toObject(MessageUserRef.class);
+                                messageUserRef.id = id;
+                                adapter.addItem(messageUserRef);
+                                recyclerView.smoothScrollToPosition(messagesList.size() - 1);
+
+                            } else if (dc.getType() == DocumentChange.Type.REMOVED) {
+                                String id = dc.getDocument().getId();
+                                adapter.removeItem(id);
+                            }
+                        }
                     }
-                    else if(dc.getType() == DocumentChange.Type.REMOVED){
-                        String id = dc.getDocument().getId();
-                        adapter.removeItem(id);
-                    }
-                }
-            }
-        });
+                });
 
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
+
+
             // Create a new message with username and message
-            Message chatMessage = new Message(mFirebaseAuth.getCurrentUser().getDisplayName(), messageField.getText().toString());
+            MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
             messageField.setText("");
 
             // Add a new document with a generated ID
             db.collection("chatrooms")
                     .document(chatroomId)
-                    .collection("messages")
-                    .add(chatMessage)
+                    .collection("messagesUserRef")
+                    .add(info)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
@@ -154,7 +155,7 @@ public class ChatFragment extends Fragment {
         db.collection("chatrooms")
                 .document(chatroomId)
                 .collection("active_users")
-                .document(mFirebaseAuth.getCurrentUser().getUid())
+                .document(userRef.getId())
                 .delete();
     }
 }

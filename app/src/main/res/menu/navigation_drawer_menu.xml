@@ -5,22 +5,17 @@
         android:title="@string/nav_profile_string"
         android:icon="@drawable/ic_account_circle_black_24dp"/>
     <item
-        android:id="@+id/nav_chatAndFriends"
-        android:title="@string/nav_chatAndFriends"
-        android:icon="@drawable/ic_message"/>
+        android:id="@+id/nav_chatrooms"
+        android:title="@string/nav_chatrooms"
+        android:icon="@drawable/ic_group_black_24dp"/>
     <item
         android:id="@+id/nav_chat_test"
         android:title="Chat BETA"
-        android:icon="@drawable/ic_message"/>
+        android:icon="@drawable/ic_group_black_24dp"/>
     <item
         android:id="@+id/nav_all_users"
         android:title="@string/nav_allUsers"
         android:icon="@drawable/ic_person_add_black_add_24dp"/>
-
-    <item
-        android:id="@+id/nav_friends"
-        android:title="Friends"
-        android:icon="@drawable/ic_group_black_24dp"/>
 
     <item
         android:id="@+id/nav_logout"

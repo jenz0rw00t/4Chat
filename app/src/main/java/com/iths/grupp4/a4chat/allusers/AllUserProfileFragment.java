@@ -26,6 +26,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Picasso;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -97,7 +98,10 @@ public class AllUserProfileFragment extends Fragment {
                     String image = documentSnapshot.getString("avatar");
                     allUserName.setText(name);
                     allUserEmail.setText(email);
-                    Picasso.get().load(image).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(allUserImage);
+                    Picasso.get().load(image)
+                            .placeholder(R.drawable.default_avatar)
+                            .transform(new CropCircleTransformation())
+                            .into(allUserImage);
 
                     /* OM NI ÄNDRAR NÅGOT PÅ DENNA FRAGMENTEN SÅ SÄG TILL MIG INNAN NI GÖR DET // Kivanc
                     TODO Fixa problemet när friend_request på firestore inte finns så crashar appen.

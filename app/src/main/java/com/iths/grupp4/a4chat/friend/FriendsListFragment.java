@@ -64,13 +64,6 @@ public class FriendsListFragment extends Fragment {
 
         Query friendQuery = usersCollection;
 
-        friendQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-
-            }
-        });
-
         FirestoreRecyclerOptions<AllUsers> options = new FirestoreRecyclerOptions.Builder<AllUsers>()
                 .setQuery(friendQuery, AllUsers.class)
                 .build();

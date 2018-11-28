@@ -26,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
-import com.iths.grupp4.a4chat.friend.FriendsListFragment;
 import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
@@ -83,8 +82,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //k
 
+        navUserImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayFullsizeAvatar(user_id);
+            }
+        });
     }
 
     @Override
@@ -97,28 +101,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
+          @Override
+          public boolean onNavigationItemSelected(MenuItem item) {
+              int id = item.getItemId();
 
-        if (id == R.id.nav_profile){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
-        }else if (id == R.id.nav_chatrooms){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment()).commit();
-        }else if (id == R.id.nav_logout){
-            mAuth.signOut();
-            LoginManager.getInstance().logOut();
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        }else if (id == R.id.nav_all_users){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
-        }else if (id == R.id.nav_chat_test){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
-        }else if (id == R.id.nav_friends){
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
-        }
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
+              if (id == R.id.nav_profile){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
+              }else if (id == R.id.nav_chatrooms){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment()).commit();
+              }else if (id == R.id.nav_logout){
+                  mAuth.signOut();
+                  LoginManager.getInstance().logOut();
+                  startActivity(new Intent(MainActivity.this, LoginActivity.class));
+              }else if (id == R.id.nav_all_users){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
+              }else if (id == R.id.nav_chat_test){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
+              }else if (id == R.id.nav_friends){
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
+              }
+              mDrawerLayout.closeDrawer(GravityCompat.START);
+              return true;
+          }
 
     public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);
@@ -128,6 +132,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void updateNavProfileName(String name) {
         navUserName.setText(name);
     }
+
+          private void displayFullsizeAvatar(String receiverUserid) {
+              FragmentManager fragmentManager = getSupportFragmentManager();
+              FullScreenDialog dialog = new FullScreenDialog();
+              Bundle bundle = new Bundle();
+              bundle.putString("receiver_user_id", receiverUserid);
+              dialog.setArguments(bundle);
+              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+              dialog.show(fragmentTransaction, FullScreenDialog.TAG);
+          }
+      }
 
 }
 

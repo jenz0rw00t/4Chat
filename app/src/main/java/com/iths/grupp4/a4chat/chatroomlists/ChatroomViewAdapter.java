@@ -101,6 +101,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         });
     }
 
+
     @Override
     public int getItemCount() {
         return chatroomList.size();

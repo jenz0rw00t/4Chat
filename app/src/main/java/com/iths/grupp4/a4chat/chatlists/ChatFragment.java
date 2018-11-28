@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -69,8 +70,28 @@ public class ChatFragment extends Fragment {
         }
 
         //Set adapter for recyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         adapter = new MyRecyclerViewAdapter(messagesList);
         recyclerView.setAdapter(adapter);
+
+        //Sets the recyclerview to bottom if keybord is visible
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                //If bottom < oldBottom, keyboard is up.
+                if (bottom < oldBottom) {
+                    recyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (messagesList.size() > 0) {
+                                recyclerView.smoothScrollToPosition(
+                                        recyclerView.getAdapter().getItemCount() - 1);
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
         //Register for change events for documents stored in collection items on firestore
         db.collection("chatrooms")
@@ -92,8 +113,7 @@ public class ChatFragment extends Fragment {
                         Message message = dc.getDocument().toObject(Message.class);
                         message.id = id;
                         adapter.addItem(message);
-                        //TODO Hur funkar detta
-                        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                        recyclerView.smoothScrollToPosition(messagesList.size() -1);
                     }
                     else if(dc.getType() == DocumentChange.Type.REMOVED){
                         String id = dc.getDocument().getId();

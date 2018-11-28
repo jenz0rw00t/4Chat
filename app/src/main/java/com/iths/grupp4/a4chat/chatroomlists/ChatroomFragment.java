@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,13 +24,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.chatlists.MessageReferenceViewAdapter;
+import com.iths.grupp4.a4chat.chatlists.MessageUserRef;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnNameReceivedListener {
 
-    private List<Chatroom> chatroomList;
+    private List<Chatroom> chatroomList = new ArrayList<>();
     private ChatroomViewAdapter adapter;
     private FirebaseFirestore db;
     private String TAG;
@@ -56,9 +59,28 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         //Set adapter for recyclerView
-        chatroomList = new ArrayList<>();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         adapter = new ChatroomViewAdapter(chatroomList);
         recyclerView.setAdapter(adapter);
+
+        //Sets the recyclerview to bottom if keybord is visible
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                //If bottom < oldBottom, keyboard is up.
+                if (bottom < oldBottom) {
+                    recyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (chatroomList.size() > 0) {
+                                recyclerView.smoothScrollToPosition(
+                                        recyclerView.getAdapter().getItemCount()-1);
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
         db.collection("users").document(userID)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -90,6 +112,7 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
                                 Chatroom chatroom = dc.getDocument().toObject(Chatroom.class);
                                 chatroom.chatroomId = id;
                                 adapter.addItem(chatroom);
+                                recyclerView.smoothScrollToPosition(chatroomList.size() - 1);
 
                             } else if (dc.getType() == DocumentChange.Type.REMOVED) {
                                 String id = dc.getDocument().getId();

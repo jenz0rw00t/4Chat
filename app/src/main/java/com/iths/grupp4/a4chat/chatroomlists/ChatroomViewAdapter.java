@@ -69,7 +69,6 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                     if (chatroomList.isEmpty()) {
                         chatroomList = new ArrayList<>();
                     }
-                    notifyDataSetChanged();
                 }
                 else {
                     Toast.makeText(view.getContext(),"You can't delete " + chatroomList.get(position).getChatroomId(),Toast.LENGTH_SHORT).show();

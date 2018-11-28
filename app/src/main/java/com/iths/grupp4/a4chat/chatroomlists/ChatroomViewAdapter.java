@@ -17,6 +17,7 @@ import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.chatlists.ChatFragment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,11 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
             public void onClick(View v) {
                 if (auth.getCurrentUser().getUid().equals(chatroomList.get(position).getCreatorId())) {
                     Toast.makeText(view.getContext(),chatroom.getChatroomName() + " deleted",Toast.LENGTH_SHORT).show();
+                    removeItem(position);
                     db.collection("chatrooms").document(chatroomId).delete();
+                    if (chatroomList.isEmpty()) {
+                        chatroomList = new ArrayList<>();
+                    }
                     notifyDataSetChanged();
                 }
                 else {
@@ -111,7 +116,6 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         for (int i = 0; i < chatroomList.size(); i++) {
             if( chatroomList.get(i).chatroomId.equals(chatroomId) ) {
                 removeItem(i);
-                return;
             }
         }
     }

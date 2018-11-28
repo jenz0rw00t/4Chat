@@ -144,9 +144,4 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
         }
         adapter.notifyDataSetChanged();
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 }

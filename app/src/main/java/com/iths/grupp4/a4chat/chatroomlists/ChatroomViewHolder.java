@@ -26,10 +26,7 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setData(Chatroom chatroom){
-        textViewName.setText(chatroom.getChatroomId());
+        textViewName.setText(chatroom.getChatroomName());
         textViewCreator.setText(chatroom.getCreatorName());
-        /*SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss yyyy:MM:dd");
-        String timeStamp = sdf.format(chatroom.getTimeStamp());
-        textViewCreatedOn.setText(timeStamp);*/
     }
 }

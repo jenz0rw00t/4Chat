@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,29 +22,29 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.iths.grupp4.a4chat.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatroomFragment extends Fragment {
+public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnNameReceivedListener {
 
+    private List<Chatroom> chatroomList;
+    private ChatroomViewAdapter adapter;
+    private FirebaseFirestore db;
     private String TAG;
+    private String chatroomId;
     private String creatorName;
 
     public ChatroomFragment() {
-        // Required empty public constructor
+
     }
 
-    private List<Chatroom> chatroomList = new ArrayList<>();
-    private ChatroomViewAdapter adapter;
-    private FirebaseFirestore db;
-    private DocumentReference userRef;
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.chatroom_fragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.chatroom_fragment, container, false);
+
+        return view;
     }
 
     @Override
@@ -55,13 +54,12 @@ public class ChatroomFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        userRef = db.collection("users").document(userID);
 
         //Set adapter for recyclerView
+        chatroomList = new ArrayList<>();
         adapter = new ChatroomViewAdapter(chatroomList);
         recyclerView.setAdapter(adapter);
 
-        // Create new Chatroom in database
         db.collection("users").document(userID)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -69,14 +67,12 @@ public class ChatroomFragment extends Fragment {
                 if (task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     creatorName = documentSnapshot.getString("name");
-
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
             }
         });
 
-        //Register for change events for documents stored in collection items on firestore
         db.collection("chatrooms")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -103,26 +99,49 @@ public class ChatroomFragment extends Fragment {
                     }
                 });
 
-        getActivity().findViewById(R.id.create_chatroom).setOnClickListener(view -> {
+        getActivity().findViewById(R.id.create_chatroom)
+                .setOnClickListener(view -> {
 
-            // Create new Chatroom and set data also update to set ChatroomId as data
-            Chatroom chatroom = new Chatroom(creatorName, userID);
-            db.collection("chatrooms")
-                    .add(chatroom)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            chatroom.setChatroomId(documentReference.getId());
-                            documentReference.update("chatroomId", documentReference.getId());
-                            Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("firebase", "Error adding document", e);
-                        }
-                    });
-        });
+                    // Create new Chatroom and set data also update to set ChatroomId as data
+                    Chatroom chatroom = new Chatroom(creatorName, userID);
+                    db.collection("chatrooms")
+                            .add(chatroom)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    chatroomId = documentReference.getId();
+                                    chatroom.setChatroomId(chatroomId);
+                                    documentReference.update("chatroomId", chatroomId);
+
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("ChatroomId", chatroomId);
+                                    ChatroomNameDialog dialog = new ChatroomNameDialog();
+                                    dialog.setArguments(bundle);
+                                    dialog.setTargetFragment(ChatroomFragment.this, 1);
+                                    dialog.show(getFragmentManager(), "ChatroomNameDialog");
+
+                                    Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("firebase", "Error adding document", e);
+                                }
+                            });
+                });
+    }
+
+    @Override
+    public void getName(String chatroomId, String chatroomName) {
+        db.collection("chatrooms")
+                .document(chatroomId)
+                .update("chatroomName", chatroomName);
+        for (Chatroom chatroom : chatroomList) {
+            if (chatroom.getChatroomId().equals(chatroomId)) {
+                chatroom.setChatroomName(chatroomName);
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 }

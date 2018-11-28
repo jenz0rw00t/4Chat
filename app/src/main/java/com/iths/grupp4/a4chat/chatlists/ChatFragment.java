@@ -127,4 +127,14 @@ public class ChatFragment extends Fragment {
                     });
         });
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        db.collection("chatrooms")
+                .document(chatroomId)
+                .collection("active_users")
+                .document(mFirebaseAuth.getCurrentUser().getUid())
+                .delete();
+    }
 }

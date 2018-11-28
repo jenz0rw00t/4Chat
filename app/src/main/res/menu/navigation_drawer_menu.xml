@@ -5,8 +5,8 @@
         android:title="@string/nav_profile_string"
         android:icon="@drawable/ic_account_circle_black_24dp"/>
     <item
-        android:id="@+id/nav_chatAndFriends"
-        android:title="@string/nav_chatAndFriends"
+        android:id="@+id/nav_chatrooms"
+        android:title="@string/nav_chatrooms"
         android:icon="@drawable/ic_group_black_24dp"/>
     <item
         android:id="@+id/nav_chat_test"

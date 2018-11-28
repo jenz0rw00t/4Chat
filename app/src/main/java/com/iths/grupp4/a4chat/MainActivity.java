@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);
-            Picasso.get().load(imagePath.toString()).placeholder(R.drawable.default_avatar).into(navUserImage);
+            Picasso.get().load(imagePath.toString()).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(navUserImage);
         }
 
     public void updateNavProfileName(String name) {

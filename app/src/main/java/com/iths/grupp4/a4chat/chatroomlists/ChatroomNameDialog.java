@@ -20,18 +20,24 @@ public class ChatroomNameDialog extends DialogFragment {
     Button buttonSaveButton;
 
     private static final String TAG = "ChatNameDialog";
-    String name;
+    String chatroomName;
+    String chatroomId;
 
-    public interface OnNameReceivedListener{
-        void getName(String name);
+    public interface OnNameReceivedListener {
+        void getName(String chatroomId, String chatroomName);
     }
 
-    ChatroomNameDialog.OnNameReceivedListener mOnNameReceivedListener;
+    OnNameReceivedListener mOnNameReceivedListener;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_chatname, container, false);
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            chatroomId = bundle.getString("ChatroomId", null);
+        }
 
         editTextChatName = (EditText) view.findViewById(R.id.dialog_chatname_chatName);
         buttonSaveButton = (Button) view.findViewById(R.id.dialog_chatname_saveButton);
@@ -41,7 +47,8 @@ public class ChatroomNameDialog extends DialogFragment {
             public void onClick(View view) {
                 switch (view.getId()) {
                     case R.id.dialog_chatname_saveButton:
-                        mOnNameReceivedListener.getName(editTextChatName.getText().toString());
+                        chatroomName = editTextChatName.getText().toString();
+                        mOnNameReceivedListener.getName(chatroomId, chatroomName);
                         getDialog().dismiss();
                 }
             }
@@ -52,10 +59,10 @@ public class ChatroomNameDialog extends DialogFragment {
 
     @Override
     public void onAttach(Context context) {
-        try{
+        try {
             mOnNameReceivedListener = (ChatroomNameDialog.OnNameReceivedListener) getTargetFragment();
-        }catch (ClassCastException e){
-            Log.e(TAG, "onAttach: ClassCastException", e.getCause() );
+        } catch (ClassCastException e) {
+            Log.e(TAG, "onAttach: ClassCastException", e.getCause());
         }
         super.onAttach(context);
     }

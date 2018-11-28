@@ -4,16 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.iths.grupp4.a4chat.ChangePhotoDialog;
-import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,30 +22,29 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.iths.grupp4.a4chat.UserProfileFragment;
+import com.iths.grupp4.a4chat.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnNameReceivedListener {
 
+    private List<Chatroom> chatroomList;
+    private ChatroomViewAdapter adapter;
+    private FirebaseFirestore db;
     private String TAG;
+    private String chatroomId;
     private String creatorName;
 
     public ChatroomFragment() {
-        // Required empty public constructor
+
     }
 
-    private List<Chatroom> chatroomList = new ArrayList<>();
-    private ChatroomViewAdapter adapter;
-    private FirebaseFirestore db;
-    private DocumentReference userRef;
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.chatroom_fragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.chatroom_fragment, container, false);
+
+        return view;
     }
 
     @Override
@@ -59,13 +54,12 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
 
         db = FirebaseFirestore.getInstance();
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        userRef = db.collection("users").document(userID);
 
         //Set adapter for recyclerView
+        chatroomList = new ArrayList<>();
         adapter = new ChatroomViewAdapter(chatroomList);
         recyclerView.setAdapter(adapter);
 
-        // Create new Chatroom in database
         db.collection("users").document(userID)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -73,14 +67,12 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
                 if (task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     creatorName = documentSnapshot.getString("name");
-
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
             }
         });
 
-        //Register for change events for documents stored in collection items on firestore
         db.collection("chatrooms")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -110,7 +102,6 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
         getActivity().findViewById(R.id.create_chatroom)
                 .setOnClickListener(view -> {
 
-
                     // Create new Chatroom and set data also update to set ChatroomId as data
                     Chatroom chatroom = new Chatroom(creatorName, userID);
                     db.collection("chatrooms")
@@ -118,8 +109,17 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
-                                    chatroom.setChatroomId(documentReference.getId());
-                                    documentReference.update("chatroomId", documentReference.getId());
+                                    chatroomId = documentReference.getId();
+                                    chatroom.setChatroomId(chatroomId);
+                                    documentReference.update("chatroomId", chatroomId);
+
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("ChatroomId", chatroomId);
+                                    ChatroomNameDialog dialog = new ChatroomNameDialog();
+                                    dialog.setArguments(bundle);
+                                    dialog.setTargetFragment(ChatroomFragment.this, 1);
+                                    dialog.show(getFragmentManager(), "ChatroomNameDialog");
+
                                     Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
                                 }
                             })
@@ -133,14 +133,20 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
     }
 
     @Override
-    public void getName(String name) {
-
+    public void getName(String chatroomId, String chatroomName) {
+        db.collection("chatrooms")
+                .document(chatroomId)
+                .update("chatroomName", chatroomName);
+        for (Chatroom chatroom : chatroomList) {
+            if (chatroom.getChatroomId().equals(chatroomId)) {
+                chatroom.setChatroomName(chatroomName);
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 
-    private void openChatroomNameDialog(View view) {
-        Log.d(TAG, "onClick: Image button clicked");
-        ChatroomNameDialog dialog = new ChatroomNameDialog();
-        dialog.setTargetFragment(ChatroomFragment.this, 1);
-        dialog.show(getFragmentManager(), "ChatroomNameDialog");
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

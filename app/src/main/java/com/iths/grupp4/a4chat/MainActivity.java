@@ -60,7 +60,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String name = documentSnapshot.getString("name");
                     String image = documentSnapshot.getString("avatar");
                     navUserName.setText(name);
-                    Picasso.get().load(image).placeholder(R.drawable.default_avatar).into(navUserImage);
+                    Picasso.get().load(image)
+                            .placeholder(R.drawable.default_avatar)
+                            .transform(new CropCircleTransformation())
+                            .into(navUserImage);
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }

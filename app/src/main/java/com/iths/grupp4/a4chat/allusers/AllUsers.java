@@ -9,6 +9,7 @@ public class AllUsers {
     public String fullSizeAvatar;
     public String email;
     public String userId;
+    public String searchName;
 
     public AllUsers() {
     }
@@ -19,6 +20,7 @@ public class AllUsers {
         this.avatar = avatar;
         this.fullSizeAvatar = fullSizeAvatar;
         this.userId = userId;
+        this.searchName = name.toUpperCase();
     }
 
     public String getName() {

@@ -24,6 +24,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class UserProfileFragment extends Fragment implements ChangePhotoDialog.OnPhotoReceivedListener,
@@ -99,8 +101,31 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
     public void getName(String name) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("searchName", name.toUpperCase());
+
+        db.collection("users")
+                .document(user.getUid())
+                .update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: fullsizeavatar is updated");
+
+                } else {
+                    Log.d(TAG, "onComplete: fullsizeavatar update failed");
+                }
+            }
+        });
+
+
+       /*
         db.collection("users").document(user.getUid()).update(
                 "name", name);
+                */
 
         userProfileName.setText(name);
 

@@ -98,7 +98,7 @@ public class FriendsListFragment extends Fragment {
                     //Getting the name and saving it in searchQuery, then setting it in getList
                 }else {
                     CollectionReference usersRef = db.collection("users").document(current_user.getUid()).collection("friends");
-                    Query searchQuery = usersRef.orderBy("name").startAt(s.trim()).endAt(s.trim() +"\uf8ff");
+                    Query searchQuery = usersRef.orderBy("searchName").startAt(s.trim().toUpperCase()).endAt(s.trim().toUpperCase() +"\uf8ff");
                     getList(searchQuery);
                     adapter.startListening();
                 }

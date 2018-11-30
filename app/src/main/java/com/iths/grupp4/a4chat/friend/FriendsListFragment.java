@@ -77,6 +77,13 @@ public class FriendsListFragment extends Fragment {
 
         search_friends = view.findViewById(R.id.searchFriends);
 
+        search_friends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search_friends.setIconified(false);
+            }
+        });
+
         search_friends.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {

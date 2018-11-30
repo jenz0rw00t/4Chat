@@ -60,6 +60,13 @@ public class AllUserListFragment extends Fragment{
 
         search_users = view.findViewById(R.id.searchUsers);
 
+        search_users.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search_users.setIconified(false);
+            }
+        });
+
         search_users.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {

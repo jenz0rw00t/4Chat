@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.iths.grupp4.a4chat.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -17,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAdapter.AllUsersHolder> {
+
+
 
     private OnItemClicklistener mOnItemClicklistener;
     public AllUserAdapter(@NonNull FirestoreRecyclerOptions<AllUsers> options) {

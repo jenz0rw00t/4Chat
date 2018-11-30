@@ -9,22 +9,27 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.iths.grupp4.a4chat.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.iths.grupp4.a4chat.UserProfileFragment;
 
 
 public class AllUserListFragment extends Fragment{
+    private static final String TAG = "AllUserListFragment";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference allUsers = db.collection("users");
 
+    FirebaseAuth firebaseAuth;
     private AllUserAdapter mUserAdapter;
     public SearchView search_users;
 
@@ -36,6 +41,8 @@ public class AllUserListFragment extends Fragment{
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_all_user_list, container, false);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         Query query = allUsers;
 
@@ -101,12 +108,22 @@ public class AllUserListFragment extends Fragment{
                 String id = snapshot.getId();
                 Bundle bundle = new Bundle();
                 bundle.putString("visit_user_id", id);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                AllUserProfileFragment fragment = new AllUserProfileFragment();
-                fragment.setArguments(bundle);
-                fragmentTransaction.replace(R.id.frameLayout, fragment);
-                fragmentTransaction.commit();
+                String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                if (id.equals(userID)) {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    UserProfileFragment fragment = new UserProfileFragment();
+                    fragmentTransaction.replace(R.id.frameLayout, fragment);
+                    fragmentTransaction.commit();
+                } else {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    AllUserProfileFragment fragment = new AllUserProfileFragment();
+                    fragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.frameLayout, fragment);
+                    fragmentTransaction.commit();
+                }
             }
         });
     }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -56,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAuth = FirebaseAuth.getInstance();
         String user_id = mAuth.getCurrentUser().getUid();
         FirebaseFirestore databaseReference = FirebaseFirestore.getInstance();
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottomNavigationBar);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         databaseReference.collection("users").document(user_id)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -131,6 +135,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               mDrawerLayout.closeDrawer(GravityCompat.START);
               return true;
           }
+
+
+          private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+                  = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+              @Override
+              public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                  switch (item.getItemId()){
+                      case R.id.navigationBottom_recents:
+                          return true;
+                      case R.id.bottomNavigation_friends:
+                          getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
+                          return true;
+
+                      case R.id.bottomNavigation_request:
+                          return true;
+                  }
+                  return false;
+              }
+          };
+
+
 
     public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);

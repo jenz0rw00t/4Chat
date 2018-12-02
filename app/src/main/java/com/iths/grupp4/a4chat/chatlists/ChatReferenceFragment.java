@@ -1,6 +1,8 @@
 package com.iths.grupp4.a4chat.chatlists;
 
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,12 +10,18 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 
+import com.iths.grupp4.a4chat.ChangePhotoDialog;
+import com.iths.grupp4.a4chat.PhotoUploader;
 import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.UserProfileFragment;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,8 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ChatReferenceFragment extends Fragment {
+public class ChatReferenceFragment extends Fragment implements
+        ChangePhotoDialog.OnPhotoReceivedListener, PhotoUploader.ImageUploadCallback {
 
+    private static final String TAG = "ChatReferenceFragment";
 
     public ChatReferenceFragment() {
         // Required empty public constructor
@@ -136,5 +146,64 @@ public class ChatReferenceFragment extends Fragment {
                         }
                     });
         });
+
+
+        getActivity().findViewById(R.id.attachment).setOnClickListener(view -> {
+            openChangePhotoDialog(view);
+        });
     }
+
+
+
+    @Override
+    public void getImagePath(Uri imagePath) {
+        Log.d(TAG, "getImagePath: imagepath is " + imagePath);
+
+        //MessageUserRef info = new MessageUserRef(userRef, "", true);
+
+        if (!imagePath.toString().equals("")) {
+            Context context = getActivity();
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            PhotoUploader uploader = new PhotoUploader(userId, context, true, this);
+            uploader.uploadFullSizeNewPhoto(imagePath);
+        }
+
+    }
+
+    @Override
+    public void updateImageUrl(String downloadUrl) {
+        Log.d(TAG, "messageImageUrl: downUrl is: " + downloadUrl);
+
+        MessageUserRef info = new MessageUserRef(userRef, "" + downloadUrl, true);
+        //messageField.setText("");
+
+        // Add a new document with a generated ID
+        db.collection("messagesUserRef")
+                .add(info)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("firebase", "Error adding document", e);
+                    }
+                });
+    }
+
+
+    private void openChangePhotoDialog(View view) {
+        Log.d(TAG, "onClick: Image button clicked");
+        ChangePhotoDialog dialog = new ChangePhotoDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("position", "bottom_position");
+        dialog.setArguments(bundle);
+        dialog.setTargetFragment(ChatReferenceFragment.this, 1);
+        dialog.show(getFragmentManager(), "ChangePhotoDialog");
+
+    }
+
 }

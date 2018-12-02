@@ -102,7 +102,6 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
         HashMap<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("searchName", name.toUpperCase());
@@ -121,12 +120,6 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
             }
         });
 
-
-       /*
-        db.collection("users").document(user.getUid()).update(
-                "name", name);
-                */
-
         userProfileName.setText(name);
 
         ((MainActivity)getActivity()).updateNavProfileName(name); //för att NavBar skapas inte om, måste uppdatera dirr. Borde EJ lägga NavBar i main.
@@ -137,7 +130,7 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
     //Sätter bild i UserProfileFragment och i NavToolbar
     @Override
     public void getImagePath(Uri imagePath) {
-
+        Log.d(TAG, "getImagePath: Image path is " + imagePath);
         if (!imagePath.toString().equals("")) {
             Context context = getActivity();
             String userId = mFirebaseAuth.getCurrentUser().getUid();
@@ -145,7 +138,8 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
                     userId,
                     context,
                     userProfileImage.getWidth(),
-                    userProfileImage.getHeight()
+                    userProfileImage.getHeight(),
+                    false
             );
             uploader.uploadNewPhoto(imagePath);
 
@@ -179,7 +173,6 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         dialog.show(fragmentTransaction, FullScreenDialog.TAG);
     }
-
 
 }
 

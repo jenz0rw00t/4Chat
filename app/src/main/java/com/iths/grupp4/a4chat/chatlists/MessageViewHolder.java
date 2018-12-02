@@ -23,6 +23,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView textUser;
     public TextView textMessage;
     public ImageView imageUser;
+    public ImageView imageMessage;
     public TextView textTime;
     public int viewType;
 
@@ -32,8 +33,10 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         this.viewType = viewType;
         textUser = itemView.findViewById(R.id.textUser);
         textMessage = itemView.findViewById(R.id.textMessage);
+        imageMessage = itemView.findViewById(R.id.imageMessage);
         imageUser = itemView.findViewById(R.id.imageUser);
         textTime = itemView.findViewById(R.id.textTime);
+
     }
 
     public void setData(Message message){
@@ -96,4 +99,49 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             textTime.setText(time);
         }
     }
+
+    public void setDataImageSent(MessageUserRef messageUserRef) {
+
+
+        Picasso.get().load(messageUserRef.message)
+                .placeholder(R.drawable.default_avatar)
+                .resize(600, 300)
+                .centerCrop()
+                .into(imageMessage);
+
+        Date date = messageUserRef.timeStamp;
+        if (date != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            String time = dateFormat.format(date);
+            textTime.setText(time);
+        }
+    }
+
+    public void setDataImageReceived(MessageUserRef messageUserRef) {
+        messageUserRef.user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                textUser.setText((String) documentSnapshot.get("name"));
+                String avatar = (String) documentSnapshot.get("avatar");
+                Picasso.get().load(avatar)
+                        .placeholder(R.drawable.default_avatar)
+                        .transform(new CropCircleTransformation())
+                        .into(imageUser);
+            }
+        });
+
+        Picasso.get().load(messageUserRef.message)
+                .placeholder(R.drawable.default_avatar)
+                .resize(600, 300)
+                .centerCrop()
+                .into(imageMessage);
+
+        Date date = messageUserRef.timeStamp;
+        if (date != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            String time = dateFormat.format(date);
+            textTime.setText(time);
+        }
+    }
+
 }

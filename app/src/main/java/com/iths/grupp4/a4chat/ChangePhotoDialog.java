@@ -3,15 +3,19 @@ package com.iths.grupp4.a4chat;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.util.BuddhistCalendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 public class ChangePhotoDialog extends DialogFragment {
@@ -21,7 +25,7 @@ public class ChangePhotoDialog extends DialogFragment {
     public static final int  CAMERA_REQUEST_CODE = 2;
     private static final int RESULT_LOAD_IMAGE = 1;
 
-    //For communicating with UserProfileFragment
+    //For communicating with other Fragments
     public interface OnPhotoReceivedListener{
         void getImagePath(Uri imagePath);
     }
@@ -32,6 +36,10 @@ public class ChangePhotoDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_changephoto, container, false);
+
+        if (getArguments() != null) {
+            bottomPosition();
+        }
 
         //Initialize the textview for choosing an image from memory
         TextView selectPhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
@@ -44,6 +52,7 @@ public class ChangePhotoDialog extends DialogFragment {
                 startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
+
         return view;
     }
 
@@ -74,6 +83,18 @@ public class ChangePhotoDialog extends DialogFragment {
             Log.e(TAG, "onAttach: ClassCastException", e.getCause() );
         }
         super.onAttach(context);
+    }
+
+
+    private void bottomPosition() {
+        Window window = getDialog().getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = (Gravity.LEFT | Gravity.BOTTOM);
+        wlp.y = 100; // The new position of the Y coordinates
+        wlp.width = 300; // Width
+        wlp.height = 300; // Height
+        getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setAttributes(wlp);
     }
 
 }

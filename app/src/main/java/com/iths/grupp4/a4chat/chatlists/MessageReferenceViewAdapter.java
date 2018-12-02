@@ -15,6 +15,8 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
 
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private static final int VIEW_TYPE_IMAGE_SENT = 3;
+    private static final int VIEW_TYPE_IMAGE_RECEIVED = 4;
 
     private List<MessageUserRef> list;
 
@@ -25,9 +27,16 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
     @Override
     public int getItemViewType(int position) {
         MessageUserRef message = list.get(position);
+
         if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(message.user.getId())){
+            if (message.isImage) {
+                return VIEW_TYPE_IMAGE_SENT;
+            }
             return VIEW_TYPE_MESSAGE_SENT;
         } else {
+            if (message.isImage) {
+                return VIEW_TYPE_IMAGE_RECEIVED;
+            }
              return VIEW_TYPE_MESSAGE_RECEIVED;
         }
     }
@@ -46,8 +55,15 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.message_item_sent, viewGroup, false);
             return new MessageViewHolder(view, i);
+        } else if (i == VIEW_TYPE_IMAGE_RECEIVED) {
+            view = LayoutInflater.from(viewGroup.getContext())
+                    .inflate(R.layout.image_item_received, viewGroup, false);
+            return new MessageViewHolder(view, i);
+        } else if (i == VIEW_TYPE_IMAGE_SENT) {
+            view = LayoutInflater.from(viewGroup.getContext())
+                    .inflate(R.layout.image_item_sent, viewGroup, false);
+            return new MessageViewHolder(view, i);
         }
-
         return null;
     }
 
@@ -59,8 +75,15 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
                     case VIEW_TYPE_MESSAGE_SENT:
                       messageViewHolder.setDataSent(messageUserRef);
                       break;
+                    case VIEW_TYPE_IMAGE_SENT:
+                      messageViewHolder.setDataImageSent(messageUserRef);
+                      break;
                     case VIEW_TYPE_MESSAGE_RECEIVED:
                       messageViewHolder.setDataReceived(messageUserRef);
+                      break;
+                    case VIEW_TYPE_IMAGE_RECEIVED:
+                      messageViewHolder.setDataImageReceived(messageUserRef);
+                      break;
                 }
     }
 

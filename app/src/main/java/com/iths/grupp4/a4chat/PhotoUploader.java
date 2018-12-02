@@ -13,25 +13,19 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 public class PhotoUploader {
-
-    public PhotoUploader(String userId, Context context, int imageWidth, int imageHeight) {
-        mUserid = userId;
-        mContext = context;
-        mImageWidth = imageWidth;
-        mImageHeight = imageHeight;
-    }
 
     private static String TAG = "PhotoUploader";
     private static double MB_THRESHHOLD = 5.0;
@@ -43,16 +37,41 @@ public class PhotoUploader {
     private byte[] mSmallSizeBytes;
     private BackgroundConversion mConvert;
     private double progress;
-    private int mImageWidth;
     private int mImageHeight;
+    private int mImageWidth;
+    private boolean mUploadAttachment;
+    private ImageUploadCallback mImageUploadCallback;
+
+
+    public interface ImageUploadCallback {
+        void updateImageUrl(String downloadUrl);
+    }
+
+    public PhotoUploader(String userId, Context context, int imageWidth, int imageHeight,
+                          boolean uploadAttachment) {
+        mUserid = userId;
+        mContext = context;
+        mImageWidth = imageWidth;
+        mImageHeight = imageHeight;
+        mUploadAttachment = uploadAttachment;
+    }
+
+
+    public PhotoUploader(String userId, Context context,
+                         boolean uploadAttachment, ImageUploadCallback imageUploadCallback) {
+        mUserid = userId;
+        mContext = context;
+        mUploadAttachment = uploadAttachment;
+        mImageUploadCallback = imageUploadCallback;
+    }
 
 
     public void uploadNewPhoto(Uri imageUri) {
         Log.d(TAG, "uploadNewPhoto: uploading new image" + imageUri);
-        BackgroundImageResize uploadResizedImage = new BackgroundImageResize(null);
-
-
-        uploadResizedImage.execute(imageUri);
+        if (!mUploadAttachment) {
+            BackgroundImageResize uploadResizedImage = new BackgroundImageResize(null);
+            uploadResizedImage.execute(imageUri);
+        }
         uploadFullSizeNewPhoto(imageUri);
     }
 
@@ -62,12 +81,9 @@ public class PhotoUploader {
         //Only accept image sizes that are compressed to under 5MB. If thats not possible
         //then do not allow image to be uploaded, then interrupt
         BackgroundConversion uploadFullsizeImage = new BackgroundConversion(null);
-       // if (uploadFullsizeImage != null) {
-       //     uploadFullsizeImage.cancel(true);
-      //  }
+
         uploadFullsizeImage.execute(imageUri);
     }
-
 
 
 
@@ -113,8 +129,6 @@ public class PhotoUploader {
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
             mSmallSizeBytes = bytes;
-            //hideProgressBar();
-            //execute the upload task
             executeUploadTask();
         }
     }
@@ -139,8 +153,6 @@ public class PhotoUploader {
         return resizedBitmap;
     }
 
-
-
     private void executeUploadTask() {
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference()
@@ -159,7 +171,6 @@ public class PhotoUploader {
                     Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
                     while (!urlTask.isSuccessful()) ;
                     Uri firebaseURL = urlTask.getResult();
-
 
                     Log.d(TAG, "uploadNewPhoto: uploading new image " + firebaseURL.toString());
 
@@ -197,9 +208,6 @@ public class PhotoUploader {
             }
         });
     }
-
-
-
 
 
 
@@ -252,7 +260,6 @@ public class PhotoUploader {
             return bytes;
         }
 
-
         @Override
         protected void onPostExecute(byte[] bytes) {
             super.onPostExecute(bytes);
@@ -266,12 +273,20 @@ public class PhotoUploader {
 
         private void executeUploadTask() {
             Toast.makeText(mContext, "Uploading image...", Toast.LENGTH_SHORT).show();
+            StorageReference storageReference;
             String uploadPath = "";
+            String format = "";
 
-
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference()
-                    .child("images/users" + "/" + mUserid + "/profile_image_fullsize");
-
+            if (!mUploadAttachment) {
+                storageReference = FirebaseStorage.getInstance().getReference()
+                        .child("images/users" + "/" + mUserid + "/profile_image_fullsize");
+            } else {
+                SimpleDateFormat s = new SimpleDateFormat("ddMMyyyhhmmss");
+                format = s.format(new Date());
+                storageReference = FirebaseStorage.getInstance().getReference().child(
+                        "images/attachments" + "/" + mUserid + "/image_" + format);
+            }
+            final String imageName = "image_" + format;
 
            // Log.d(TAG, "BackgroundFullSizeImage -> executeUploadTask: " + mFullSizeBytes.length);
             //if the image size is valid then we can submit to database
@@ -286,13 +301,17 @@ public class PhotoUploader {
                         //Now insert the download url into the firebase database
 
                         Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while (!urlTask.isSuccessful()) ;
+                        while (!urlTask.isSuccessful());
                         Uri firebaseURL = urlTask.getResult();
 
                         Toast.makeText(mContext, "Upload Success", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "uploadBIGSIZEPhoto: uploading new image " + firebaseURL.toString());
 
-                        updateFullProfilePicture(firebaseURL.toString());
+                        if (!mUploadAttachment) {
+                            updateFullProfilePicture(firebaseURL.toString());
+                        } else {
+                            setNewImageAttachment(firebaseURL.toString());
+                        }
                     }
 
                 }).addOnFailureListener(new OnFailureListener() {
@@ -318,6 +337,13 @@ public class PhotoUploader {
         }
 
 
+        private void setNewImageAttachment(final String downloadUrl) {
+            mImageUploadCallback.updateImageUrl(downloadUrl);
+        }
+
+
+
+
         private void updateFullProfilePicture(String downloadUrl) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -339,6 +365,8 @@ public class PhotoUploader {
             });
         }
     }
+
+
 }
 
 

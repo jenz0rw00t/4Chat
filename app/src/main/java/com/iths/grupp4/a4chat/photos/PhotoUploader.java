@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat;
+package com.iths.grupp4.a4chat.photos;
 
 import android.content.Context;
 import android.graphics.Bitmap;

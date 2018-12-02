@@ -10,20 +10,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.iths.grupp4.a4chat.ChangePhotoDialog;
-import com.iths.grupp4.a4chat.PhotoUploader;
+import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
+import com.iths.grupp4.a4chat.photos.PhotoUploader;
 import com.iths.grupp4.a4chat.R;
-import com.iths.grupp4.a4chat.UserProfileFragment;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,7 +30,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -162,7 +155,14 @@ public class ChatReferenceFragment extends Fragment implements
     public void getImagePath(Uri imagePath) {
         Log.d(TAG, "getImagePath: imagepath is " + imagePath);
 
-        MessageUserRef loadingImage = new MessageUserRef(userRef, "", true);
+        if (!imagePath.toString().equals("")) {
+            Context context = getActivity();
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            PhotoUploader uploader = new PhotoUploader(userId, context, true, this);
+            uploader.uploadFullSizeNewPhoto(imagePath);
+        }
+
+        MessageUserRef loadingImage = new MessageUserRef(userRef, "default", true);
 
         db.collection("messagesUserRef")
                 .add(loadingImage)
@@ -179,13 +179,6 @@ public class ChatReferenceFragment extends Fragment implements
                         Log.w("firebase", "Error adding document", e);
                     }
                 });
-
-        if (!imagePath.toString().equals("")) {
-            Context context = getActivity();
-            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            PhotoUploader uploader = new PhotoUploader(userId, context, true, this);
-            uploader.uploadFullSizeNewPhoto(imagePath);
-        }
     }
 
 

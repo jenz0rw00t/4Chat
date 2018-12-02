@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +21,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.photos.ChangeNameDialog;
+import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
+import com.iths.grupp4.a4chat.photos.FullScreenDialog;
+import com.iths.grupp4.a4chat.photos.PhotoUploader;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;

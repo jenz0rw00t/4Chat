@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat;
+package com.iths.grupp4.a4chat.photos;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.iths.grupp4.a4chat.R;
 
 public class ChangePhotoDialog extends DialogFragment {
 

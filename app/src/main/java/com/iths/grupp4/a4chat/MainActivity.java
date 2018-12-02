@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
-import com.iths.grupp4.a4chat.chatlists.ChatFragment;
 import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.iths.grupp4.a4chat.chatlists.LoginActivity;
 import com.facebook.login.LoginManager;
@@ -31,6 +30,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
 import com.iths.grupp4.a4chat.friend.FriendsListFragment;
+import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 

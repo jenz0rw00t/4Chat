@@ -1,13 +1,7 @@
 package com.iths.grupp4.a4chat.chatlists;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -15,9 +9,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.iths.grupp4.a4chat.DownloadViewDialog;
-import com.iths.grupp4.a4chat.FullScreenDialog;
-import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,7 +30,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView textTime;
     public ProgressBar progressBar;
     public int viewType;
-    Context context;
+
 
 
     public MessageViewHolder(@NonNull View itemView, int viewType) {
@@ -129,7 +120,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             textTime.setText(time);
         }
 
-        if (messageUserRef.message.equals("")) {
+        if (messageUserRef.message.equals("default")) {
             showLoader();
             Picasso.get().load(R.drawable.default_avatar)
                     .resize(600, 300)

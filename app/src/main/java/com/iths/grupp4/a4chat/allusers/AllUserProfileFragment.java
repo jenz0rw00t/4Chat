@@ -55,7 +55,6 @@ public class AllUserProfileFragment extends Fragment {
     private FirebaseUser current_user;
 
     private String current_state;
-    String sender_user_id;
     String receiver_user_id;
 
 
@@ -79,7 +78,7 @@ public class AllUserProfileFragment extends Fragment {
         friendRequestReference = FirebaseFirestore.getInstance();
         acceptedFriendReference = FirebaseFirestore.getInstance();
         friendsReference = acceptedFriendReference.collection("users");
-        requestReference = friendRequestReference.collection("friend_request");
+        requestReference = friendRequestReference.collection("users");
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_state = "not_friends";
 

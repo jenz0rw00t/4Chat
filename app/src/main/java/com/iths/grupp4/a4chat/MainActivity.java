@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
+import com.iths.grupp4.a4chat.friend.FriendRequestListFragment;
 import com.iths.grupp4.a4chat.friend.FriendsListFragment;
 import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottomNavigationBar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
 
         databaseReference.collection("users").document(user_id)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -100,7 +102,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    @Override
+          @Override
+          protected void onStart() {
+              super.onStart();
+
+          }
+
+          @Override
+          protected void onStop() {
+              super.onStop();
+          }
+
+          @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (mToggle.onOptionsItemSelected(item)){
@@ -143,13 +156,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               @Override
               public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                   switch (item.getItemId()){
-                      case R.id.navigationBottom_recents:
+                      case R.id.bottomNavigation_recents:
                           return true;
                       case R.id.bottomNavigation_friends:
                           getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
                           return true;
 
                       case R.id.bottomNavigation_request:
+                          getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendRequestListFragment()).commit();
                           return true;
                   }
                   return false;

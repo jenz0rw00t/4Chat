@@ -121,13 +121,9 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         });
 
         userProfileName.setText(name);
-
         ((MainActivity)getActivity()).updateNavProfileName(name); //för att NavBar skapas inte om, måste uppdatera dirr. Borde EJ lägga NavBar i main.
     }
 
-    //Så fort bild ändras i fragmentet ChangePhotoDialog notifieras OnPhotoRecievedListener och ändrad bildURL skickas hit
-    //Laddar upp vald bild på databas Storage via PhotoUploader. Det är denna URL som sedan OnPhotoRecievedListener notifieras och skickar hit
-    //Sätter bild i UserProfileFragment och i NavToolbar
     @Override
     public void getImagePath(Uri imagePath) {
         Log.d(TAG, "getImagePath: Image path is " + imagePath);

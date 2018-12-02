@@ -52,7 +52,6 @@ public class ChangePhotoDialog extends DialogFragment {
                 startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
-
         return view;
     }
 

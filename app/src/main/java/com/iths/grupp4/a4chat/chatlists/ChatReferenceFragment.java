@@ -18,6 +18,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.iths.grupp4.a4chat.ChangePhotoDialog;
 import com.iths.grupp4.a4chat.PhotoUploader;
 import com.iths.grupp4.a4chat.R;
@@ -34,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -52,6 +55,7 @@ public class ChatReferenceFragment extends Fragment implements
     EditText messageField;
     AllUsers user;
     DocumentReference userRef;
+    String snapshotId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,8 +131,8 @@ public class ChatReferenceFragment extends Fragment implements
 
 
             // Create a new message with username and message
-            MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
-            messageField.setText("");
+           MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
+           messageField.setText("");
 
             // Add a new document with a generated ID
             db.collection("messagesUserRef")
@@ -154,36 +158,19 @@ public class ChatReferenceFragment extends Fragment implements
     }
 
 
-
     @Override
     public void getImagePath(Uri imagePath) {
         Log.d(TAG, "getImagePath: imagepath is " + imagePath);
 
-        //MessageUserRef info = new MessageUserRef(userRef, "", true);
+        MessageUserRef loadingImage = new MessageUserRef(userRef, "", true);
 
-        if (!imagePath.toString().equals("")) {
-            Context context = getActivity();
-            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            PhotoUploader uploader = new PhotoUploader(userId, context, true, this);
-            uploader.uploadFullSizeNewPhoto(imagePath);
-        }
-
-    }
-
-    @Override
-    public void updateImageUrl(String downloadUrl) {
-        Log.d(TAG, "messageImageUrl: downUrl is: " + downloadUrl);
-
-        MessageUserRef info = new MessageUserRef(userRef, "" + downloadUrl, true);
-        //messageField.setText("");
-
-        // Add a new document with a generated ID
         db.collection("messagesUserRef")
-                .add(info)
+                .add(loadingImage)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
+                        snapshotId = documentReference.getId();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -192,8 +179,46 @@ public class ChatReferenceFragment extends Fragment implements
                         Log.w("firebase", "Error adding document", e);
                     }
                 });
+
+        if (!imagePath.toString().equals("")) {
+            Context context = getActivity();
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            PhotoUploader uploader = new PhotoUploader(userId, context, true, this);
+            uploader.uploadFullSizeNewPhoto(imagePath);
+        }
     }
 
+
+    @Override
+    public void updateImageUrl(String downloadUrl) {
+        Log.d(TAG, "messageImageUrl: downUrl is: " + downloadUrl);
+        Log.d(TAG, "snapshotid Is: " + snapshotId);
+
+        db.collection("messagesUserRef")
+                .document(snapshotId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        MessageUserRef uploadedImage = new MessageUserRef(userRef, "" + downloadUrl, true);
+
+                        db.collection("messagesUserRef")
+                                .add(uploadedImage)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("firebase", "Error adding document", e);
+                                    }
+                                });
+                    }
+                });
+    }
 
     private void openChangePhotoDialog(View view) {
         Log.d(TAG, "onClick: Image button clicked");

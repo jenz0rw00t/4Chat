@@ -104,7 +104,6 @@ public class FullScreenDialog extends DialogFragment {
                     public void onSuccess() {
                         hideLoader();
                     }
-
                     @Override
                     public void onError(Exception e) {
 
@@ -123,7 +122,6 @@ public class FullScreenDialog extends DialogFragment {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
-
 
 }
 

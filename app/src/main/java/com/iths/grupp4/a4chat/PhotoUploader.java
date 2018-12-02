@@ -329,8 +329,7 @@ public class PhotoUploader {
                             Toast.makeText(mContext, progress + "%", Toast.LENGTH_SHORT).show();
                         }
                     }
-                })
-                ;
+                });
             } else {
                 Toast.makeText(mContext, "Image is too Large", Toast.LENGTH_SHORT).show();
             }

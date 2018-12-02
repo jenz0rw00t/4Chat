@@ -34,4 +34,5 @@ public class MessageUserRef {
     public String getMessage() {
         return message;
     }
+
 }

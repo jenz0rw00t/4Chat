@@ -65,7 +65,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                 if (auth.getCurrentUser().getUid().equals(chatroomList.get(position).getCreatorId())) {
                     Toast.makeText(view.getContext(),chatroom.getChatroomName() + " deleted",Toast.LENGTH_SHORT).show();
                     removeItem(position);
-                    db.collection("chatrooms").document(chatroomId).delete();
+                    db.collection("chatroomsTest").document(chatroomId).delete();
                     if (chatroomList.isEmpty()) {
                         chatroomList = new ArrayList<>();
                     }
@@ -82,7 +82,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                 Map<String, String> user = new HashMap<>();
                 user.put(USER_NAME,auth.getCurrentUser().getDisplayName());
 
-                db.collection("chatrooms")
+                db.collection("chatroomsTest")
                         .document(chatroomId)
                         .collection("active_users")
                         .document(auth.getCurrentUser().getUid())

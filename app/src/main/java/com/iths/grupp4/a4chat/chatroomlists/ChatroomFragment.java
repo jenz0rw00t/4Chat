@@ -28,6 +28,7 @@ import com.iths.grupp4.a4chat.chatlists.MessageReferenceViewAdapter;
 import com.iths.grupp4.a4chat.chatlists.MessageUserRef;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnNameReceivedListener {
@@ -38,6 +39,8 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
     private String TAG;
     private String chatroomId;
     private String creatorName;
+
+    private DocumentReference userRef;
 
     public ChatroomFragment() {
 
@@ -76,7 +79,11 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
             }
         });
 
-        db.collection("chatrooms")
+        userRef = db.collection("users").document(userID);
+
+        db.collection("chatroomsTest")
+               //  Sortering av chatrooms där man bara ser rum man är satt som user i
+               // .whereArrayContains("users", userID)
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -106,8 +113,8 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
                 .setOnClickListener(view -> {
 
                     // Create new Chatroom and set data also update to set ChatroomId as data
-                    Chatroom chatroom = new Chatroom(creatorName, userID);
-                    db.collection("chatrooms")
+                    Chatroom chatroom = new Chatroom(userRef, userID);
+                    db.collection("chatroomsTest")
                             .add(chatroom)
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
@@ -115,6 +122,8 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
                                     chatroomId = documentReference.getId();
                                     chatroom.setChatroomId(chatroomId);
                                     documentReference.update("chatroomId", chatroomId);
+                             //       Test för att göra chatrooms med en user array i
+                             //       documentReference.update("users", Arrays.asList(userID, "random-user-id"));
 
                                     Bundle bundle = new Bundle();
                                     bundle.putString("ChatroomId", chatroomId);
@@ -137,7 +146,7 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
 
     @Override
     public void getName(String chatroomId, String chatroomName) {
-        db.collection("chatrooms")
+        db.collection("chatroomsTest")
                 .document(chatroomId)
                 .update("chatroomName", chatroomName);
         for (Chatroom chatroom : chatroomList) {

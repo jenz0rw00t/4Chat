@@ -6,15 +6,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -27,9 +31,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
-import com.iths.grupp4.a4chat.allusers.AllUserAdapter;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
-import com.iths.grupp4.a4chat.chatlists.Message;
+import com.iths.grupp4.a4chat.chatlists.ChatroomPrivateReferenceFragment;
+import com.iths.grupp4.a4chat.chatroomlists.Chatroom;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +48,9 @@ public class FriendsListFragment extends Fragment {
     private FirebaseUser current_user;
     private FriendsAdapter adapter;
     public SearchView search_friends;
+    private static final String CHATROOM_ID = "ChatroomId";
+    private static final String USER_NAME = "UserName";
+    private String TAG;
 
 
     public FriendsListFragment() {
@@ -89,20 +99,259 @@ public class FriendsListFragment extends Fragment {
             public boolean onQueryTextSubmit(String s) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
                 //Returning the recyclerview to its original view. If user types letter, then delets letter.
-                if (s.trim().isEmpty()){
+                if (s.trim().isEmpty()) {
                     getList(usersCollection);
                     adapter.startListening();
                     //Getting the name and saving it in searchQuery, then setting it in getList
-                }else {
+                } else {
                     CollectionReference usersRef = db.collection("users").document(current_user.getUid()).collection("friends");
-                    Query searchQuery = usersRef.orderBy("searchName").startAt(s.trim().toUpperCase()).endAt(s.trim().toUpperCase() +"\uf8ff");
+                    Query searchQuery = usersRef.orderBy("searchName").startAt(s.trim().toUpperCase()).endAt(s.trim().toUpperCase() + "\uf8ff");
                     getList(searchQuery);
                     adapter.startListening();
                 }
                 return false;
+            }
+        });
+
+        db.collection("chatrooms")
+                .orderBy("timeStamp")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            return;
+                        }
+
+                        for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+
+                                String id = dc.getDocument().getId();
+
+                                Chatroom chatroom = dc.getDocument().toObject(Chatroom.class);
+                                chatroom.chatroomId = id;
+
+                            } else if (dc.getType() == DocumentChange.Type.REMOVED) {
+                                String id = dc.getDocument().getId();
+                            }
+                        }
+                    }
+                });
+
+        adapter.setOnItemClickListener(new FriendsAdapter.OnItemClicklistener() {
+            @Override
+            public void onItemClick(DocumentSnapshot snapshot, int position) {
+
+                String uniqueId = current_user.getUid() + snapshot.getId();
+
+                DocumentReference docRef = db.collection("cities").document(uniqueId);
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+
+                                Toast.makeText(getContext(), document.getId() + " exists", Toast.LENGTH_SHORT).show();
+
+                                Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+
+                                Map<String, String> user = new HashMap<>();
+                                user.put(USER_NAME, current_user.getDisplayName());
+
+                                db.collection("pms")
+                                        .document(uniqueId)
+                                        .collection("active_users")
+                                        .document(current_user.getUid())
+                                        .set(user);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(CHATROOM_ID, uniqueId);
+                                ChatroomPrivateReferenceFragment chatroomPrivateReferenceFragment = new ChatroomPrivateReferenceFragment();
+                                chatroomPrivateReferenceFragment.setArguments(bundle);
+                                FragmentManager manager = getFragmentManager();
+                                manager.beginTransaction()
+                                        .addToBackStack("Chatrooms")
+                                        .replace(R.id.frameLayout, chatroomPrivateReferenceFragment, null)
+                                        .commit();
+
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            } else {
+
+                                Toast.makeText(getContext(), uniqueId + " didn't exist", Toast.LENGTH_SHORT).show();
+
+                                // Document didn't exist, so it is created
+                                Chatroom chatroom = new Chatroom(current_user.getDisplayName(), current_user.getUid());
+                                db.collection("pms")
+                                        .document(uniqueId)
+                                        .set(chatroom)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                                                String chatroomName = "PM with " + snapshot.getString("name");
+                                                chatroom.setChatroomId(uniqueId);
+                                                chatroom.setChatroomName(chatroomName);
+
+                                                Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+
+                                                Map<String, Object> allowed_users = new HashMap<>();
+                                                allowed_users.put("User1", current_user.getUid());
+                                                allowed_users.put("User2", snapshot.getId());
+
+                                                db.collection("pms")
+                                                        .document(uniqueId)
+                                                        .collection("private")
+                                                        .document("allowed_users")
+                                                        .set(allowed_users);
+
+                                                Map<String, String> user = new HashMap<>();
+                                                user.put(USER_NAME, current_user.getDisplayName());
+
+                                                db.collection("pms")
+                                                        .document(uniqueId)
+                                                        .collection("active_users")
+                                                        .document(current_user.getUid())
+                                                        .set(user);
+
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString(CHATROOM_ID, uniqueId);
+                                                ChatroomPrivateReferenceFragment chatroomPrivateReferenceFragment = new ChatroomPrivateReferenceFragment();
+                                                chatroomPrivateReferenceFragment.setArguments(bundle);
+                                                FragmentManager manager = getFragmentManager();
+                                                manager.beginTransaction()
+                                                        .addToBackStack("Chatrooms")
+                                                        .replace(R.id.frameLayout, chatroomPrivateReferenceFragment, null)
+                                                        .commit();
+
+                                                Log.d("firebase", "DocumentSnapshot added with ID: " + uniqueId);
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w("firebase", "Error adding document", e);
+                                            }
+                                        });
+
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.d(TAG, "get failed with ", task.getException());
+                        }
+                    }
+                });
+
+                /*
+                // Create new Chatroom and set data also update to set ChatroomId as data
+                Chatroom chatroom = new Chatroom(current_user.getDisplayName(), current_user.getUid());
+                db.collection("pms")
+                        .document(uniqueId)
+                        .set(chatroom)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                                String chatroomName = "PM with " + snapshot.getString("name");
+                                chatroom.setChatroomId(uniqueId);
+                                chatroom.setChatroomName(chatroomName);
+
+                                Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+
+                                Map<String, Object> allowed_users = new HashMap<>();
+                                allowed_users.put("User1", current_user.getUid());
+                                allowed_users.put("User2", snapshot.getId());
+
+                                db.collection("pms")
+                                        .document(uniqueId)
+                                        .collection("private")
+                                        .document("allowed_users")
+                                        .set(allowed_users);
+
+                                Map<String, String> user = new HashMap<>();
+                                user.put(USER_NAME, current_user.getDisplayName());
+
+                                db.collection("pms")
+                                        .document(uniqueId)
+                                        .collection("active_users")
+                                        .document(current_user.getUid())
+                                        .set(user);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(CHATROOM_ID, uniqueId);
+                                ChatroomReferenceFragment chatroomReferenceFragment = new ChatroomReferenceFragment();
+                                chatroomReferenceFragment.setArguments(bundle);
+                                FragmentManager manager = getFragmentManager();
+                                manager.beginTransaction()
+                                        .addToBackStack("Chatrooms")
+                                        .replace(R.id.frameLayout, chatroomReferenceFragment, null)
+                                        .commit();
+
+                                Log.d("firebase", "DocumentSnapshot added with ID: " + uniqueId);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("firebase", "Error adding document", e);
+                            }
+                        });
+
+                        /*.add(chatroom)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                String chatroomId = current_user.getUid() + snapshot.getId();
+
+                                String chatroomName = "PM with " + snapshot.getString("name");
+                                chatroom.setChatroomId(chatroomId);
+                                chatroom.setChatroomName(chatroomName);
+                                documentReference.update("chatroomId", chatroomId);
+                                documentReference.update("chatroomName",chatroomName);
+
+                                Toast.makeText(getContext(),"Clicked!",Toast.LENGTH_SHORT).show();
+
+                                Map<String, Object> allowed_users = new HashMap<>();
+                                allowed_users.put("User1",current_user.getUid());
+                                allowed_users.put("User2",snapshot.getId());
+
+                                db.collection("pms")
+                                        .document(chatroomId)
+                                        .collection("private")
+                                        .document("allowed_users")
+                                        .set(allowed_users);
+
+                                Map<String, String> user = new HashMap<>();
+                                user.put(USER_NAME, current_user.getDisplayName());
+
+                                db.collection("pms")
+                                        .document(chatroomId)
+                                        .collection("active_users")
+                                        .document(current_user.getUid())
+                                        .set(user);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(CHATROOM_ID, chatroomId);
+                                ChatroomReferenceFragment chatroomReferenceFragment = new ChatroomReferenceFragment();
+                                chatroomReferenceFragment.setArguments(bundle);
+                                FragmentManager manager = getFragmentManager();
+                                manager.beginTransaction()
+                                        .addToBackStack("Chatrooms")
+                                        .replace(R.id.frameLayout, chatroomReferenceFragment, null)
+                                        .commit();
+
+                                Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("firebase", "Error adding document", e);
+                            }
+                        });*/
             }
         });
 

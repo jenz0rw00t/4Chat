@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat;
+package com.iths.grupp4.a4chat.photos;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,10 +9,16 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.camera.CameraMainActivity;
 
 public class ChangePhotoDialog extends DialogFragment {
 
@@ -38,7 +44,7 @@ public class ChangePhotoDialog extends DialogFragment {
         }
 
         //Initialize the textview for choosing an image from memory
-        TextView selectPhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
+        TextView selectPhoto = view.findViewById(R.id.dialogChoosePhoto);
         selectPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

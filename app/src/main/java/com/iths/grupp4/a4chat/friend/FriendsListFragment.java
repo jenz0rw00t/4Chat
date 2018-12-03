@@ -151,7 +151,6 @@ public class FriendsListFragment extends Fragment {
                                 pmReferenceFragment.setArguments(bundle);
                                 FragmentManager manager = getFragmentManager();
                                 manager.beginTransaction()
-                                        .addToBackStack("FriendsList")
                                         .replace(R.id.frameLayout, pmReferenceFragment, null)
                                         .commit();
                             } else {
@@ -172,7 +171,6 @@ public class FriendsListFragment extends Fragment {
                                         pmReferenceFragment.setArguments(bundle);
                                         FragmentManager manager = getFragmentManager();
                                         manager.beginTransaction()
-                                                .addToBackStack("FriendsList")
                                                 .replace(R.id.frameLayout, pmReferenceFragment, null)
                                                 .commit();
                                     }

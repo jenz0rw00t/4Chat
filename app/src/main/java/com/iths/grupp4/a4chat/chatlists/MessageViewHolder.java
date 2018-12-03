@@ -223,10 +223,12 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     private void redirectToProfil(String userToVisit) {
         Bundle bundle = new Bundle();
         bundle.putString("visit_user_id", visit_user_id);
-        FragmentTransaction fragmentTransaction = MainActivity.sFragmentManager.beginTransaction();
-        AllUserProfileFragment fragment = new AllUserProfileFragment();
-        fragment.setArguments(bundle);
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
-        fragmentTransaction.commit();
+        if (visit_user_id!=null) {
+            FragmentTransaction fragmentTransaction = MainActivity.sFragmentManager.beginTransaction();
+            AllUserProfileFragment fragment = new AllUserProfileFragment();
+            fragment.setArguments(bundle);
+            fragmentTransaction.replace(R.id.frameLayout, fragment);
+            fragmentTransaction.commit();
+        }
     }
 }

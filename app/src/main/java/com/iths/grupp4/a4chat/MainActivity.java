@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
                 .commit();
 

@@ -122,14 +122,16 @@ public class AllUserListFragment extends Fragment{
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     UserProfileFragment fragment = new UserProfileFragment();
                     fragmentTransaction.replace(R.id.frameLayout, fragment);
-                    fragmentTransaction.commit();
+                    fragmentTransaction.addToBackStack("allUsers")
+                            .commit();
                 } else {
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     AllUserProfileFragment fragment = new AllUserProfileFragment();
                     fragment.setArguments(bundle);
                     fragmentTransaction.replace(R.id.frameLayout, fragment);
-                    fragmentTransaction.commit();
+                    fragmentTransaction.addToBackStack("allUsers")
+                            .commit();
                 }
             }
         });

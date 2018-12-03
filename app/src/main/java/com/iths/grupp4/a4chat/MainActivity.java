@@ -53,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
+                .commit();
+
         mAuth = FirebaseAuth.getInstance();
         String user_id = mAuth.getCurrentUser().getUid();
         FirebaseFirestore databaseReference = FirebaseFirestore.getInstance();
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .addToBackStack("LateTransaction").commit();
         }else if (id == R.id.nav_chatrooms){
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
-                    .addToBackStack("ChattRoomF").commit();
+                    .commit();
         }else if (id == R.id.nav_logout){
             mAuth.signOut();
             LoginManager.getInstance().logOut();
@@ -137,25 +140,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    //Handles the backstack, going one fragment a time back. Sets the chatRoomFragment as default.
-    //if backpressed in chatRoomFragment then going out of the app
+    //When backpressed is pressed, checking if backstackcount is over 0, if it is then trying to pop allUsers backstack.
+          //If no allUsers in backstack then going back to ChatRoomFragment.
+          //If 0, exit application
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 1) {
-            /*
-            Deleting all fragments with tagname "LateTransaction"
-            fragmentManager.popBackStack("LateTransaction", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            */
-            fragmentManager.popBackStack();
-        }
-        else if (fragmentManager.getBackStackEntryCount() == 0){
-            supportFinishAfterTransition();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            if (!fragmentManager.popBackStackImmediate("allUsers", FragmentManager.POP_BACK_STACK_INCLUSIVE)){
+                fragmentManager.popBackStack("Chatrooms",FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentManager.popBackStack("LateTransaction", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
         }
         else {
-            fragmentManager.beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
-                    .commit();
-            fragmentManager.popBackStack();
+            supportFinishAfterTransition();
         }
     }
 

@@ -67,7 +67,8 @@ public class FriendsListFragment extends Fragment {
         usersCollection = db.collection("users").document(current_user.getUid())
                 .collection("friends");
 
-        Query friendQuery = usersCollection;
+        Query friendQuery = db.collection("users").whereArrayContains("friends", current_user.getUid());
+
 
 
         FirestoreRecyclerOptions<AllUsers> options = new FirestoreRecyclerOptions.Builder<AllUsers>()
@@ -99,12 +100,11 @@ public class FriendsListFragment extends Fragment {
             public boolean onQueryTextChange(String s) {
                 //Returning the recyclerview to its original view. If user types letter, then delets letter.
                 if (s.trim().isEmpty()) {
-                    getList(usersCollection);
+                    getList(friendQuery);
                     adapter.startListening();
                     //Getting the name and saving it in searchQuery, then setting it in getList
                 } else {
-                    CollectionReference usersRef = db.collection("users").document(current_user.getUid()).collection("friends");
-                    Query searchQuery = usersRef.orderBy("searchName").startAt(s.trim().toUpperCase()).endAt(s.trim().toUpperCase() + "\uf8ff");
+                    Query searchQuery = friendQuery.orderBy("searchName").startAt(s.trim().toUpperCase()).endAt(s.trim().toUpperCase() + "\uf8ff");
                     getList(searchQuery);
                     adapter.startListening();
                 }

@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView navUserName;
     private ImageView navUserImage;
     private FirebaseAuth mAuth;
-
+    public static FragmentManager sFragmentManager;
 
 
     @Override
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        sFragmentManager = getSupportFragmentManager();
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
                 .commit();
 

@@ -117,7 +117,8 @@ public class FriendsListFragment extends Fragment {
             }
         });
 
-        db.collection("chatrooms")
+        db.collection("pms").document(current_user.getUid())
+                .collection("messageUserRef")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -145,9 +146,10 @@ public class FriendsListFragment extends Fragment {
             @Override
             public void onItemClick(DocumentSnapshot snapshot, int position) {
 
-                String uniqueId = current_user.getUid() + snapshot.getId();
+                String uniqueId = snapshot.getId();
 
-                DocumentReference docRef = db.collection("cities").document(uniqueId);
+                DocumentReference docRef = db.collection("pms").document(current_user.getUid())
+                        .collection("messageUserRef").document(uniqueId);
                 docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -157,16 +159,8 @@ public class FriendsListFragment extends Fragment {
 
                                 Toast.makeText(getContext(), document.getId() + " exists", Toast.LENGTH_SHORT).show();
 
-                                Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_SHORT).show();
-
                                 Map<String, String> user = new HashMap<>();
                                 user.put(USER_NAME, current_user.getDisplayName());
-
-                                db.collection("pms")
-                                        .document(uniqueId)
-                                        .collection("active_users")
-                                        .document(current_user.getUid())
-                                        .set(user);
 
                                 Bundle bundle = new Bundle();
                                 bundle.putString(CHATROOM_ID, uniqueId);
@@ -185,37 +179,23 @@ public class FriendsListFragment extends Fragment {
 
                                 // Document didn't exist, so it is created
                                 Chatroom chatroom = new Chatroom(current_user.getDisplayName(), current_user.getUid());
-                                db.collection("pms")
-                                        .document(uniqueId)
+                                db.collection("pms").document(current_user.getUid())
+                                        .collection("messageUserRef").document(uniqueId)
                                         .set(chatroom)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
+
                                                 Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+
                                                 String chatroomName = "PM with " + snapshot.getString("name");
                                                 chatroom.setChatroomId(uniqueId);
                                                 chatroom.setChatroomName(chatroomName);
 
                                                 Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_SHORT).show();
 
-                                                Map<String, Object> allowed_users = new HashMap<>();
-                                                allowed_users.put("User1", current_user.getUid());
-                                                allowed_users.put("User2", snapshot.getId());
-
-                                                db.collection("pms")
-                                                        .document(uniqueId)
-                                                        .collection("private")
-                                                        .document("allowed_users")
-                                                        .set(allowed_users);
-
                                                 Map<String, String> user = new HashMap<>();
                                                 user.put(USER_NAME, current_user.getDisplayName());
-
-                                                db.collection("pms")
-                                                        .document(uniqueId)
-                                                        .collection("active_users")
-                                                        .document(current_user.getUid())
-                                                        .set(user);
 
                                                 Bundle bundle = new Bundle();
                                                 bundle.putString(CHATROOM_ID, uniqueId);
@@ -242,6 +222,8 @@ public class FriendsListFragment extends Fragment {
                         } else {
                             Log.d(TAG, "get failed with ", task.getException());
                         }
+
+                        Toast.makeText(getContext(), "Friend Clicked!", Toast.LENGTH_SHORT).show();
                     }
                 });
 

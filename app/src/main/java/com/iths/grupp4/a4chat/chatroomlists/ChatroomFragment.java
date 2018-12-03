@@ -35,6 +35,7 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
     private String TAG;
     private String chatroomId;
     private String creatorName;
+    private String userID;
 
     public ChatroomFragment() {
 
@@ -51,9 +52,8 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         RecyclerView recyclerView = getActivity().findViewById(R.id.chatroom_recyclerView);
-
+        userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
-        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         //Set adapter for recyclerView
         chatroomList = new ArrayList<>();
@@ -72,7 +72,11 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
                 }
             }
         });
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
         db.collection("chatrooms")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {

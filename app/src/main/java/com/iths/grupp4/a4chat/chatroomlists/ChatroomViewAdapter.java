@@ -11,9 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
@@ -31,13 +32,13 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
     private static final String USER_NAME = "UserName";
     private FirebaseFirestore db;
     private FirebaseUser current_user;
-    private CollectionReference allowed_users;
     private View view;
     private String TAG;
 
     public ChatroomViewAdapter(@NonNull List<Chatroom> chatroomList) {
         this.chatroomList = chatroomList;
     }
+
 
     @NonNull
     @Override
@@ -55,9 +56,6 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
 
         db = FirebaseFirestore.getInstance();
         current_user = FirebaseAuth.getInstance().getCurrentUser();
-        allowed_users = db.collection("chatrooms")
-                .document("security")
-                .collection("allowed_users");
 
         int position = chatroomViewHolder.getAdapterPosition();
         String chatroomId = chatroomList.get(position).getChatroomId();
@@ -70,9 +68,20 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
             @Override
             public void onClick(View v) {
                 if (current_user.getUid().equals(chatroomList.get(position).getCreatorId())) {
-                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " deleted", Toast.LENGTH_SHORT).show();
                     removeItem(position);
-                    db.collection("chatrooms").document(chatroomId).delete();
+                    db.collection("chatrooms").document(chatroomId).delete()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " deleted", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " wasn't deleted", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                     if (chatroomList.isEmpty()) {
                         chatroomList = new ArrayList<>();
                     }
@@ -130,6 +139,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         if (index >= 0 && index < chatroomList.size()) {
             chatroomList.remove(index);
             this.notifyItemRemoved(index);
+            this.notifyItemChanged(index);
         }
     }
 }

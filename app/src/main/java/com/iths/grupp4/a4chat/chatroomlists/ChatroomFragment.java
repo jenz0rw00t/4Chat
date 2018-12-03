@@ -83,7 +83,7 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
 
         db.collection("chatroomsTest")
                //  Sortering av chatrooms där man bara ser rum man är satt som user i
-               // .whereArrayContains("users", userID)
+                .whereArrayContains("users", userID)
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -123,7 +123,7 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
                                     chatroom.setChatroomId(chatroomId);
                                     documentReference.update("chatroomId", chatroomId);
                              //       Test för att göra chatrooms med en user array i
-                             //       documentReference.update("users", Arrays.asList(userID, "random-user-id"));
+                                   documentReference.update("users", Arrays.asList(userID, "random-user-id"));
 
                                     Bundle bundle = new Bundle();
                                     bundle.putString("ChatroomId", chatroomId);

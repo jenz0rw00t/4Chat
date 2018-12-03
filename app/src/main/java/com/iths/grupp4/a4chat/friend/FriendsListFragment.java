@@ -61,8 +61,7 @@ public class FriendsListFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         usersCollection = db.collection("users").document(current_user.getUid())
                 .collection("friends");
-
-        Query friendQuery = usersCollection;
+        Query friendQuery = db.collection("users").whereArrayContains("friends", current_user.getUid());
 
 
         FirestoreRecyclerOptions<AllUsers> options = new FirestoreRecyclerOptions.Builder<AllUsers>()

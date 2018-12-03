@@ -16,6 +16,7 @@ import android.widget.EditText;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -39,11 +40,14 @@ public class ChatroomPrivateReferenceFragment extends Fragment {
     List<MessageUserRef> messagesList = new ArrayList<>();
     private MessageReferenceViewAdapter adapter;
     FirebaseFirestore db;
+    FirebaseUser current_user;
     EditText messageField;
     AllUsers user;
     DocumentReference userRef;
     private static final String CHATROOM_ID = "ChatroomId";
+    private static final String RECEIVER_ID = "Receiver";
     private String chatroomId;
+    private String receiverId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,6 +64,7 @@ public class ChatroomPrivateReferenceFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             chatroomId = bundle.getString(CHATROOM_ID,null);
+            receiverId = bundle.getString(RECEIVER_ID,null);
         }
 
         db = FirebaseFirestore.getInstance();
@@ -94,6 +99,8 @@ public class ChatroomPrivateReferenceFragment extends Fragment {
 
         //Register for change events for documents stored in collection items on firestore
         db.collection("pms")
+                .document(receiverId)
+                .collection("sender")
                 .document(chatroomId)
                 .collection("messageUserRef")
                 .orderBy("timeStamp")
@@ -131,6 +138,8 @@ public class ChatroomPrivateReferenceFragment extends Fragment {
 
             // Add a new document with a generated ID
             db.collection("pms")
+                    .document(receiverId)
+                    .collection("sender")
                     .document(chatroomId)
                     .collection("messageUserRef")
                     .add(info)
@@ -147,15 +156,5 @@ public class ChatroomPrivateReferenceFragment extends Fragment {
                         }
                     });
         });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        db.collection("pms")
-                .document(chatroomId)
-                .collection("active_users")
-                .document(userRef.getId())
-                .delete();
     }
 }

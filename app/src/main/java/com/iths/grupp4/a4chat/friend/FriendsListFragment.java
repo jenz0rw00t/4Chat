@@ -49,6 +49,7 @@ public class FriendsListFragment extends Fragment {
     private FriendsAdapter adapter;
     public SearchView search_friends;
     private static final String CHATROOM_ID = "ChatroomId";
+    private static final String RECEIVER_ID = "Receiver";
     private static final String USER_NAME = "UserName";
     private String TAG;
 
@@ -118,7 +119,7 @@ public class FriendsListFragment extends Fragment {
         });
 
         db.collection("pms").document(current_user.getUid())
-                .collection("messagesUserRef")
+                .collection("sender")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -146,10 +147,8 @@ public class FriendsListFragment extends Fragment {
             @Override
             public void onItemClick(DocumentSnapshot snapshot, int position) {
 
-                String uniqueId = snapshot.getId();
-
-                DocumentReference docRef = db.collection("pms").document(uniqueId)
-                        .collection("messagesUserRef").document(current_user.getUid());
+                DocumentReference docRef = db.collection("pms").document(snapshot.getId())
+                        .collection("sender").document(current_user.getUid());
                 docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -164,6 +163,7 @@ public class FriendsListFragment extends Fragment {
 
                                 Bundle bundle = new Bundle();
                                 bundle.putString(CHATROOM_ID, current_user.getUid());
+                                bundle.putString(RECEIVER_ID,snapshot.getId());
                                 ChatroomPrivateReferenceFragment chatroomPrivateReferenceFragment = new ChatroomPrivateReferenceFragment();
                                 chatroomPrivateReferenceFragment.setArguments(bundle);
                                 FragmentManager manager = getFragmentManager();
@@ -179,8 +179,8 @@ public class FriendsListFragment extends Fragment {
 
                                 // Document didn't exist, so it is created
                                 Chatroom chatroom = new Chatroom(current_user.getDisplayName(), current_user.getUid());
-                                db.collection("pms").document(uniqueId)
-                                        .collection("messagesUserRef").document(current_user.getUid())
+                                db.collection("pms").document(snapshot.getId())
+                                        .collection("sender").document(current_user.getUid())
                                         .set(chatroom)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
@@ -196,7 +196,8 @@ public class FriendsListFragment extends Fragment {
                                                 user.put(USER_NAME, current_user.getDisplayName());
 
                                                 Bundle bundle = new Bundle();
-                                                bundle.putString(CHATROOM_ID, current_user.getUid());
+                                                bundle.putString(CHATROOM_ID,current_user.getUid());
+                                                bundle.putString(RECEIVER_ID,snapshot.getId());
                                                 ChatroomPrivateReferenceFragment chatroomPrivateReferenceFragment = new ChatroomPrivateReferenceFragment();
                                                 chatroomPrivateReferenceFragment.setArguments(bundle);
                                                 FragmentManager manager = getFragmentManager();
@@ -205,7 +206,7 @@ public class FriendsListFragment extends Fragment {
                                                         .replace(R.id.frameLayout, chatroomPrivateReferenceFragment, null)
                                                         .commit();
 
-                                                Log.d("firebase", "DocumentSnapshot added with ID: " + uniqueId);
+                                                Log.d("firebase", "DocumentSnapshot added with ID: " + snapshot.getId());
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {

@@ -1,24 +1,18 @@
-package com.iths.grupp4.a4chat.photos;
+package com.iths.grupp4.a4chat;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.util.BuddhistCalendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
-
-import com.iths.grupp4.a4chat.R;
 
 public class ChangePhotoDialog extends DialogFragment {
 
@@ -27,7 +21,7 @@ public class ChangePhotoDialog extends DialogFragment {
     public static final int  CAMERA_REQUEST_CODE = 2;
     private static final int RESULT_LOAD_IMAGE = 1;
 
-    //For communicating with other Fragments
+    //For communicating with UserProfileFragment
     public interface OnPhotoReceivedListener{
         void getImagePath(Uri imagePath);
     }
@@ -54,6 +48,33 @@ public class ChangePhotoDialog extends DialogFragment {
                 startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
+        TextView selectCamera = view.findViewById(R.id.dialogOpenCamera);
+        selectCamera.setOnClickListener (new View.OnClickListener () {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: starting camera.");
+
+                //Intent cameraIntent = new Intent (Intent.ACTION_VIEW );
+                Intent cameraIntent = new Intent(getContext (), CameraMainActivity.class);
+                //cameraIntent.setType ("");
+                startActivityForResult (cameraIntent,CAMERA_REQUEST_CODE);
+                //Intent cameraIntent = new Intent(ChangePhotoManager.this,CameraMainActivity.class)
+                //startActivityForResult(cameraIntent);
+
+                //Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+
+
+                //Intent intent = new Intent(getContext (), CameraMainActivity.class);
+                //Intent intent = new Intent(this, CameraMainActivity.class);
+                //startIntentSenderForResult (intent);
+                //startActivityForResult (intent);
+
+
+            }
+        });
+
+
         return view;
     }
 
@@ -85,7 +106,6 @@ public class ChangePhotoDialog extends DialogFragment {
         }
         super.onAttach(context);
     }
-
 
     private void bottomPosition() {
         Window window = getDialog().getWindow();

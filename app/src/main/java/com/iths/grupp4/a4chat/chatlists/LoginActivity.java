@@ -10,9 +10,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.iths.grupp4.a4chat.MainActivity;
-import com.iths.grupp4.a4chat.R;
-import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -36,6 +33,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.MainActivity;
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.allusers.AllUsers;
 
 import java.util.Arrays;
 
@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // [START initialize_fblogin]
         // Initialize Facebook Login button
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton = findViewById(R.id.login_button);
 
         mCallbackManager = CallbackManager.Factory.create();
 
@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign in success, update UI with the signed-in user'Sounds information
                             Log.d(TAG, "signInWithCredential:success");
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             if (isNew) {

@@ -1,4 +1,4 @@
-package com.iths.grupp4.a4chat;
+package com.iths.grupp4.a4chat.photos;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -104,7 +105,6 @@ public class FullScreenDialog extends DialogFragment {
                     public void onSuccess() {
                         hideLoader();
                     }
-
                     @Override
                     public void onError(Exception e) {
 
@@ -123,7 +123,6 @@ public class FullScreenDialog extends DialogFragment {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
-
 
 }
 

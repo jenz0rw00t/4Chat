@@ -124,7 +124,7 @@ public class ChatroomReferenceFragment extends Fragment {
 
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
 
-
+            
             // Create a new message with username and message
             MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
             messageField.setText("");

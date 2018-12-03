@@ -10,6 +10,7 @@ public class MessageUserRef {
 
     public DocumentReference user;
     public String message;
+    public boolean isImage;
     @Exclude public String id;
     @ServerTimestamp public Date timeStamp;
 
@@ -20,6 +21,12 @@ public class MessageUserRef {
         this.message = message;
     }
 
+    public MessageUserRef(DocumentReference user, String message, boolean isImage) {
+        this.user = user;
+        this.message = message;
+        this.isImage = isImage;
+    }
+
     public DocumentReference getUser() {
         return user;
     }
@@ -27,4 +34,5 @@ public class MessageUserRef {
     public String getMessage() {
         return message;
     }
+
 }

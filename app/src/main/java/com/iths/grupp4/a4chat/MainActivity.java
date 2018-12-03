@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
-import com.iths.grupp4.a4chat.chatlists.ChatFragment;
 import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.iths.grupp4.a4chat.chatlists.LoginActivity;
 import com.facebook.login.LoginManager;
@@ -33,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.chatroomlists.ChatroomFragment;
 import com.iths.grupp4.a4chat.friend.FriendRequestListFragment;
 import com.iths.grupp4.a4chat.friend.FriendsListFragment;
+import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
+                .commit();
 
         mAuth = FirebaseAuth.getInstance();
         String user_id = mAuth.getCurrentUser().getUid();
@@ -126,28 +129,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-          @Override
-          public boolean onNavigationItemSelected(MenuItem item) {
-              int id = item.getItemId();
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-              if (id == R.id.nav_profile){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
-              }else if (id == R.id.nav_chatrooms){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment()).commit();
-              }else if (id == R.id.nav_logout){
-                  mAuth.signOut();
-                  LoginManager.getInstance().logOut();
-                  startActivity(new Intent(MainActivity.this, LoginActivity.class));
-              }else if (id == R.id.nav_all_users){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
-              }else if (id == R.id.nav_chat_test){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
-              }else if (id == R.id.nav_friends){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
-              }
-              mDrawerLayout.closeDrawer(GravityCompat.START);
-              return true;
-          }
+        if (id == R.id.nav_profile){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment())
+                    .addToBackStack("LateTransaction").commit();
+        }else if (id == R.id.nav_chatrooms){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
+                    .commit();
+        }else if (id == R.id.nav_logout){
+            mAuth.signOut();
+            LoginManager.getInstance().logOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        }else if (id == R.id.nav_all_users){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment())
+                    .addToBackStack("LateTransaction").commit();
+        }else if (id == R.id.nav_chat_test){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment())
+                    .addToBackStack("LateTransaction").commit();
+        }else if (id == R.id.nav_friends){
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment())
+                    .addToBackStack("LateTransaction").commit();
+        }
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    //When backpressed is pressed, checking if backstackcount is over 0, if it is then trying to pop allUsers backstack.
+          //If no allUsers in backstack then going back to ChatRoomFragment.
+          //If 0, exit application
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            if (!fragmentManager.popBackStackImmediate("allUsers", FragmentManager.POP_BACK_STACK_INCLUSIVE)){
+                fragmentManager.popBackStack("Chatrooms",FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentManager.popBackStack("LateTransaction", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        }
+        else {
+            supportFinishAfterTransition();
+        }
+    }
 
 
           private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -174,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);
-            Picasso.get().load(imagePath.toString()).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(navUserImage);
-        }
+        Picasso.get().load(imagePath.toString()).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(navUserImage);
+    }
 
     public void updateNavProfileName(String name) {
         navUserName.setText(name);

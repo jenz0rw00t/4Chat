@@ -1,6 +1,7 @@
 package com.iths.grupp4.a4chat;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +22,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.iths.grupp4.a4chat.photos.ChangeNameDialog;
+import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
+import com.iths.grupp4.a4chat.photos.FullScreenDialog;
+import com.iths.grupp4.a4chat.photos.PhotoUploader;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -102,7 +106,6 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
         HashMap<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("searchName", name.toUpperCase());
@@ -121,22 +124,16 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
             }
         });
 
-
-       /*
-        db.collection("users").document(user.getUid()).update(
-                "name", name);
-                */
-
         userProfileName.setText(name);
-
         ((MainActivity)getActivity()).updateNavProfileName(name); //för att NavBar skapas inte om, måste uppdatera dirr. Borde EJ lägga NavBar i main.
     }
 
-    //Så fort bild ändras i fragmentet ChangePhotoDialog notifieras OnPhotoRecievedListener och ändrad bildURL skickas hit
-    //Laddar upp vald bild på databas Storage via PhotoUploader. Det är denna URL som sedan OnPhotoRecievedListener notifieras och skickar hit
-    //Sätter bild i UserProfileFragment och i NavToolbar
     @Override
     public void getImagePath(Uri imagePath) {
+        Log.d(TAG, "getImagePath: Image path is " + imagePath);
+
+
+
 
         if (!imagePath.toString().equals("")) {
             Context context = getActivity();
@@ -145,14 +142,15 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
                     userId,
                     context,
                     userProfileImage.getWidth(),
-                    userProfileImage.getHeight()
+                    false
             );
             uploader.uploadNewPhoto(imagePath);
 
             Picasso.get().load(imagePath.toString()).
                     transform(new CropCircleTransformation()).
-                            placeholder(R.drawable.default_avatar).
+                    placeholder(R.drawable.default_avatar).
                     into(userProfileImage);
+
             ((MainActivity)getActivity()).updateNavProfileImage(imagePath); //för att NavBar skapas inte om, måste uppdatera dirr. Borde EJ lägga NavBar i main.
         }
     }
@@ -179,7 +177,6 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         dialog.show(fragmentTransaction, FullScreenDialog.TAG);
     }
-
 
 }
 

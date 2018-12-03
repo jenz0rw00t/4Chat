@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.iths.grupp4.a4chat.FullScreenDialog;
+import com.google.firebase.firestore.FieldValue;
+import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,8 +35,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 
 public class AllUserProfileFragment extends Fragment {
@@ -258,21 +256,8 @@ public class AllUserProfileFragment extends Fragment {
                             .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            String name1 = documentSnapshot.getString("name");
-                            String email1 = documentSnapshot.getString("email");
-                            String avatar1 = documentSnapshot.getString("avatar");
-
-                            String currentDate = DateFormat.getDateInstance().format(new Date());
-                            Map<String, Object> senderFriendData = new HashMap<>();
-                            senderFriendData.put(current_user.getUid(), currentDate);
-                            senderFriendData.put("state", "friend");
-                            senderFriendData.put("name", name1);
-                            senderFriendData.put("email", email1);
-                            senderFriendData.put("avatar", avatar1);
-
                             acceptedFriendReference.collection("users").document(current_user.getUid())
-                                    .collection("friends").document(receiver_user_id).set(senderFriendData)
+                                    .update("friends", FieldValue.arrayUnion(receiver_user_id))
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -280,41 +265,29 @@ public class AllUserProfileFragment extends Fragment {
                                                     .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    DocumentSnapshot documentSnapshot2 = task.getResult();
-                                                    String name2 = documentSnapshot2.getString("name");
-                                                    String email2 = documentSnapshot2.getString("email");
-                                                    String avatar2 = documentSnapshot2.getString("avatar");
-
-                                                    Map<String, Object> receiverFriendData = new HashMap<>();
-                                                    receiverFriendData.put(receiver_user_id, currentDate);
-                                                    receiverFriendData.put("state", "friend");
-                                                    receiverFriendData.put("name", name2);
-                                                    receiverFriendData.put("email", email2);
-                                                    receiverFriendData.put("avatar", avatar2);
-
                                                     friendRequestReference.collection("users").document(receiver_user_id)
-                                                            .collection("friends").document(current_user.getUid())
-                                                            .set(receiverFriendData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            friendRequestReference.collection("friend_request").document(current_user.getUid())
-                                                                    .collection(receiver_user_id).document("request").delete()
-                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                        @Override
-                                                                        public void onSuccess(Void aVoid) {
-                                                                            friendRequestReference.collection("friend_request").document(receiver_user_id).
-                                                                                    collection(current_user.getUid()).document("request")
-                                                                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            .update("friends", FieldValue.arrayUnion(current_user.getUid()))
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    friendRequestReference.collection("friend_request").document(current_user.getUid())
+                                                                            .collection(receiver_user_id).document("request").delete()
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
-                                                                                    current_state = "friends";
-                                                                                    addFriend.setText("Unfriend this person");
+                                                                                    friendRequestReference.collection("friend_request").document(receiver_user_id).
+                                                                                            collection(current_user.getUid()).document("request")
+                                                                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onSuccess(Void aVoid) {
+                                                                                            current_state = "friends";
+                                                                                            addFriend.setText("Unfriend this person");
+                                                                                        }
+                                                                                    });
                                                                                 }
                                                                             });
-                                                                        }
-                                                                    });
-                                                        }
-                                                    });
+                                                                }
+                                                            });
                                                 }
                                             });
 

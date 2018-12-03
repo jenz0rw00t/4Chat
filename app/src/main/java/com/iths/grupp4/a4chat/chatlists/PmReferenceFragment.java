@@ -1,8 +1,6 @@
 package com.iths.grupp4.a4chat.chatlists;
 
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
-import com.iths.grupp4.a4chat.photos.PhotoUploader;
-import com.iths.grupp4.a4chat.R;
-import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,17 +22,17 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.allusers.AllUsers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ChatReferenceFragment extends Fragment implements
-        ChangePhotoDialog.OnPhotoReceivedListener, PhotoUploader.ImageUploadCallback {
+public class PmReferenceFragment extends Fragment {
 
-    private static final String TAG = "ChatReferenceFragment";
 
-    public ChatReferenceFragment() {
+    public PmReferenceFragment() {
         // Required empty public constructor
     }
 
@@ -48,7 +42,8 @@ public class ChatReferenceFragment extends Fragment implements
     EditText messageField;
     AllUsers user;
     DocumentReference userRef;
-    String snapshotId;
+    private static final String CHATROOM_ID = "ChatroomId";
+    private String chatroomId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +56,11 @@ public class ChatReferenceFragment extends Fragment implements
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            chatroomId = bundle.getString(CHATROOM_ID,null);
+        }
 
         db = FirebaseFirestore.getInstance();
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -93,7 +93,9 @@ public class ChatReferenceFragment extends Fragment implements
         });
 
         //Register for change events for documents stored in collection items on firestore
-        db.collection("messagesUserRef")
+        db.collection("pms")
+                .document(chatroomId)
+                .collection("messagesUserRef")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -110,7 +112,7 @@ public class ChatReferenceFragment extends Fragment implements
                                 MessageUserRef messageUserRef = dc.getDocument().toObject(MessageUserRef.class);
                                 messageUserRef.id = id;
                                 adapter.addItem(messageUserRef);
-                                recyclerView.smoothScrollToPosition(messagesList.size() -1);
+                                recyclerView.smoothScrollToPosition(messagesList.size() - 1);
 
                             } else if (dc.getType() == DocumentChange.Type.REMOVED) {
                                 String id = dc.getDocument().getId();
@@ -122,13 +124,15 @@ public class ChatReferenceFragment extends Fragment implements
 
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
 
-
+            
             // Create a new message with username and message
-           MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
-           messageField.setText("");
+            MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
+            messageField.setText("");
 
             // Add a new document with a generated ID
-            db.collection("messagesUserRef")
+            db.collection("pms")
+                    .document(chatroomId)
+                    .collection("messagesUserRef")
                     .add(info)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
@@ -143,85 +147,15 @@ public class ChatReferenceFragment extends Fragment implements
                         }
                     });
         });
-
-
-        getActivity().findViewById(R.id.attachment).setOnClickListener(view -> {
-            openChangePhotoDialog(view);
-        });
     }
-
 
     @Override
-    public void getImagePath(Uri imagePath) {
-        Log.d(TAG, "getImagePath: imagepath is " + imagePath);
-
-        if (!imagePath.toString().equals("")) {
-            Context context = getActivity();
-            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            PhotoUploader uploader = new PhotoUploader(userId, context, true, this);
-            uploader.uploadFullSizeNewPhoto(imagePath);
-        }
-
-        MessageUserRef loadingImage = new MessageUserRef(userRef, "default", true);
-
-        db.collection("messagesUserRef")
-                .add(loadingImage)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
-                        snapshotId = documentReference.getId();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("firebase", "Error adding document", e);
-                    }
-                });
+    public void onDestroyView() {
+        super.onDestroyView();
+        db.collection("pms")
+                .document(chatroomId)
+                .collection("active_users")
+                .document(userRef.getId())
+                .delete();
     }
-
-
-    @Override
-    public void updateImageUrl(String downloadUrl) {
-        Log.d(TAG, "messageImageUrl: downUrl is: " + downloadUrl);
-        Log.d(TAG, "snapshotid Is: " + snapshotId);
-
-        db.collection("messagesUserRef")
-                .document(snapshotId)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-
-                        MessageUserRef uploadedImage = new MessageUserRef(userRef, "" + downloadUrl, true);
-
-                        db.collection("messagesUserRef")
-                                .add(uploadedImage)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("firebase", "Error adding document", e);
-                                    }
-                                });
-                    }
-                });
-    }
-
-    private void openChangePhotoDialog(View view) {
-        Log.d(TAG, "onClick: Image button clicked");
-        ChangePhotoDialog dialog = new ChangePhotoDialog();
-        Bundle bundle = new Bundle();
-        bundle.putString("position", "bottom_position");
-        dialog.setArguments(bundle);
-        dialog.setTargetFragment(ChatReferenceFragment.this, 1);
-        dialog.show(getFragmentManager(), "ChangePhotoDialog");
-
-    }
-
 }

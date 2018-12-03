@@ -7,19 +7,19 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:text="Choose photo from memory"
+        android:text="Download"
         android:textSize="15sp"
-        android:id="@+id/dialogChoosePhoto"
+        android:id="@+id/dialogDownloadImage"
         android:gravity="center_vertical"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:text="Take a Photo"
+        android:text="View"
         android:textSize="15sp"
-        android:id="@+id/dialogOpenCamera"
+        android:id="@+id/dialogViewFullscreen"
         android:gravity="center_vertical"
-        android:layout_below="@+id/dialogChoosePhoto"/>
+        android:layout_below="@+id/dialogDownloadImage"/>
 
         />
 

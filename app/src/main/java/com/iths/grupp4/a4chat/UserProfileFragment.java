@@ -1,6 +1,7 @@
 package com.iths.grupp4.a4chat;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -130,6 +131,10 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
     @Override
     public void getImagePath(Uri imagePath) {
         Log.d(TAG, "getImagePath: Image path is " + imagePath);
+
+
+
+
         if (!imagePath.toString().equals("")) {
             Context context = getActivity();
             String userId = mFirebaseAuth.getCurrentUser().getUid();
@@ -137,15 +142,15 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
                     userId,
                     context,
                     userProfileImage.getWidth(),
-                    userProfileImage.getHeight(),
                     false
             );
             uploader.uploadNewPhoto(imagePath);
 
             Picasso.get().load(imagePath.toString()).
                     transform(new CropCircleTransformation()).
-                            placeholder(R.drawable.default_avatar).
+                    placeholder(R.drawable.default_avatar).
                     into(userProfileImage);
+
             ((MainActivity)getActivity()).updateNavProfileImage(imagePath); //för att NavBar skapas inte om, måste uppdatera dirr. Borde EJ lägga NavBar i main.
         }
     }

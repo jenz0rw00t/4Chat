@@ -37,7 +37,6 @@ public class PhotoUploader {
     private byte[] mSmallSizeBytes;
     private BackgroundConversion mConvert;
     private double progress;
-    private int mImageHeight;
     private int mImageWidth;
     private boolean mUploadAttachment;
     private ImageUploadCallback mImageUploadCallback;
@@ -47,12 +46,11 @@ public class PhotoUploader {
         void updateImageUrl(String downloadUrl);
     }
 
-    public PhotoUploader(String userId, Context context, int imageWidth, int imageHeight,
+    public PhotoUploader(String userId, Context context, int imageWidth,
                           boolean uploadAttachment) {
         mUserid = userId;
         mContext = context;
         mImageWidth = imageWidth;
-        mImageHeight = imageHeight;
         mUploadAttachment = uploadAttachment;
     }
 
@@ -140,6 +138,11 @@ public class PhotoUploader {
     }
 
     public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+        BitmapScaler bms = new BitmapScaler();
+        Bitmap b = bms.scaleToFitWidth(bm, newWidth);
+        return b;
+
+        /*
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -151,6 +154,7 @@ public class PhotoUploader {
         // Recreate the new Bitmap
         Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
         return resizedBitmap;
+        */
     }
 
     private void executeUploadTask() {
@@ -365,7 +369,16 @@ public class PhotoUploader {
         }
     }
 
+    public class BitmapScaler {
+        // Scale and maintain aspect ratio given a desired width
+        // BitmapScaler.scaleToFitWidth(bitmap, 100);
+        public Bitmap scaleToFitWidth(Bitmap b, int width) {
+            float factor = width / (float) b.getWidth();
+            return Bitmap.createScaledBitmap(b, width, (int) (b.getHeight() * factor), true);
+        }
+    }
 
-}
+
+    }
 
 

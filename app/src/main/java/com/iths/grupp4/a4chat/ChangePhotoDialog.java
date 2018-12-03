@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.iths.grupp4.a4chat.camera.CameraMainActivity;
+
 public class ChangePhotoDialog extends DialogFragment {
 
     private static final String TAG = "ChangePhotoDialog";
@@ -34,7 +36,7 @@ public class ChangePhotoDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_changephoto, container, false);
 
         //Initialize the textview for choosing an image from memory
-        TextView selectPhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
+        TextView selectPhoto = view.findViewById(R.id.dialogChoosePhoto);
         selectPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +46,41 @@ public class ChangePhotoDialog extends DialogFragment {
                 startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
+        TextView selectCamera = view.findViewById(R.id.dialogOpenCamera);
+        selectCamera.setOnClickListener (new View.OnClickListener () {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: starting camera.");
+
+                //Intent cameraIntent = new Intent (Intent.ACTION_VIEW );
+                Intent cameraIntent = new Intent(getContext (), CameraMainActivity.class);
+                //cameraIntent.setType ("");
+                startActivityForResult (cameraIntent,CAMERA_REQUEST_CODE);
+                //Intent cameraIntent = new Intent(ChangePhotoManager.this,CameraMainActivity.class)
+                //startActivityForResult(cameraIntent);
+
+                //Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+
+
+                //Intent intent = new Intent(getContext (), CameraMainActivity.class);
+                //Intent intent = new Intent(this, CameraMainActivity.class);
+                //startIntentSenderForResult (intent);
+                //startActivityForResult (intent);
+
+
+            }
+        });
+
+
+
+
+
+
+
         return view;
+
+
     }
 
     @Override

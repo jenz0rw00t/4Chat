@@ -95,7 +95,7 @@ public class ChatroomPrivateReferenceFragment extends Fragment {
         //Register for change events for documents stored in collection items on firestore
         db.collection("pms")
                 .document(chatroomId)
-                .collection("messagesUserRef")
+                .collection("messageUserRef")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -132,7 +132,7 @@ public class ChatroomPrivateReferenceFragment extends Fragment {
             // Add a new document with a generated ID
             db.collection("pms")
                     .document(chatroomId)
-                    .collection("messagesUserRef")
+                    .collection("messageUserRef")
                     .add(info)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override

@@ -118,7 +118,7 @@ public class FriendsListFragment extends Fragment {
         });
 
         db.collection("pms").document(current_user.getUid())
-                .collection("messageUserRef")
+                .collection("messagesUserRef")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -148,8 +148,8 @@ public class FriendsListFragment extends Fragment {
 
                 String uniqueId = snapshot.getId();
 
-                DocumentReference docRef = db.collection("pms").document(current_user.getUid())
-                        .collection("messageUserRef").document(uniqueId);
+                DocumentReference docRef = db.collection("pms").document(uniqueId)
+                        .collection("messagesUserRef").document(current_user.getUid());
                 docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -157,30 +157,30 @@ public class FriendsListFragment extends Fragment {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
 
-                                Toast.makeText(getContext(), document.getId() + " exists", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), current_user.getUid() + " exists", Toast.LENGTH_SHORT).show();
 
                                 Map<String, String> user = new HashMap<>();
                                 user.put(USER_NAME, current_user.getDisplayName());
 
                                 Bundle bundle = new Bundle();
-                                bundle.putString(CHATROOM_ID, uniqueId);
+                                bundle.putString(CHATROOM_ID, current_user.getUid());
                                 ChatroomPrivateReferenceFragment chatroomPrivateReferenceFragment = new ChatroomPrivateReferenceFragment();
                                 chatroomPrivateReferenceFragment.setArguments(bundle);
                                 FragmentManager manager = getFragmentManager();
                                 manager.beginTransaction()
-                                        .addToBackStack("Chatrooms")
+                                        .addToBackStack("FriendsList")
                                         .replace(R.id.frameLayout, chatroomPrivateReferenceFragment, null)
                                         .commit();
 
                                 Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                             } else {
 
-                                Toast.makeText(getContext(), uniqueId + " didn't exist", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), current_user.getUid() + " didn't exist", Toast.LENGTH_SHORT).show();
 
                                 // Document didn't exist, so it is created
                                 Chatroom chatroom = new Chatroom(current_user.getDisplayName(), current_user.getUid());
-                                db.collection("pms").document(current_user.getUid())
-                                        .collection("messageUserRef").document(uniqueId)
+                                db.collection("pms").document(uniqueId)
+                                        .collection("messagesUserRef").document(current_user.getUid())
                                         .set(chatroom)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
@@ -189,21 +189,19 @@ public class FriendsListFragment extends Fragment {
                                                 Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
 
                                                 String chatroomName = "PM with " + snapshot.getString("name");
-                                                chatroom.setChatroomId(uniqueId);
+                                                chatroom.setChatroomId(current_user.getUid());
                                                 chatroom.setChatroomName(chatroomName);
-
-                                                Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_SHORT).show();
 
                                                 Map<String, String> user = new HashMap<>();
                                                 user.put(USER_NAME, current_user.getDisplayName());
 
                                                 Bundle bundle = new Bundle();
-                                                bundle.putString(CHATROOM_ID, uniqueId);
+                                                bundle.putString(CHATROOM_ID, current_user.getUid());
                                                 ChatroomPrivateReferenceFragment chatroomPrivateReferenceFragment = new ChatroomPrivateReferenceFragment();
                                                 chatroomPrivateReferenceFragment.setArguments(bundle);
                                                 FragmentManager manager = getFragmentManager();
                                                 manager.beginTransaction()
-                                                        .addToBackStack("Chatrooms")
+                                                        .addToBackStack("FriendsList")
                                                         .replace(R.id.frameLayout, chatroomPrivateReferenceFragment, null)
                                                         .commit();
 

@@ -1,6 +1,8 @@
 package com.iths.grupp4.a4chat.chatlists;
 
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,18 +26,22 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
+import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
+import com.iths.grupp4.a4chat.photos.PhotoUploader;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ChatroomReferenceFragment extends Fragment {
+public class ChatroomReferenceFragment extends Fragment implements
+        ChangePhotoDialog.OnPhotoReceivedListener, PhotoUploader.ImageUploadCallback {
 
 
     public ChatroomReferenceFragment() {
         // Required empty public constructor
     }
 
+    private static final String TAG = "ChatroomReferenceFragme";
     List<MessageUserRef> messagesList = new ArrayList<>();
     private MessageReferenceViewAdapter adapter;
     FirebaseFirestore db;
@@ -44,6 +50,7 @@ public class ChatroomReferenceFragment extends Fragment {
     DocumentReference userRef;
     private static final String CHATROOM_ID = "ChatroomId";
     private String chatroomId;
+    String snapshotId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -147,7 +154,95 @@ public class ChatroomReferenceFragment extends Fragment {
                         }
                     });
         });
+
+
+        getActivity().findViewById(R.id.attachment).setOnClickListener(view -> {
+            Log.d(TAG, "attachment cklicked" );
+            openChangePhotoDialog(view);
+        });
     }
+
+    @Override
+    public void getImagePath(Uri imagePath) {
+        Log.d(TAG, "getImagePath: imagepath is " + imagePath);
+
+        if (!imagePath.toString().equals("")) {
+            Context context = getActivity();
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            PhotoUploader uploader = new PhotoUploader(userId, context, true, this);
+            uploader.uploadFullSizeNewPhoto(imagePath);
+        }
+
+        MessageUserRef loadingImage = new MessageUserRef(userRef, "default", true);
+
+        db.collection("chatrooms")
+                .document(chatroomId)
+                .collection("messagesUserRef")
+                .add(loadingImage)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
+                        snapshotId = documentReference.getId();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("firebase", "Error adding document", e);
+                    }
+                });
+
+    }
+
+
+    @Override
+    public void updateImageUrl(String downloadUrl) {
+        Log.d(TAG, "messageImageUrl: downUrl is: " + downloadUrl);
+        Log.d(TAG, "snapshotid Is: " + snapshotId);
+
+        db.collection("chatrooms")
+                .document(chatroomId)
+                .collection("messagesUserRef")
+                .document(snapshotId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        MessageUserRef uploadedImage = new MessageUserRef(userRef, "" + downloadUrl, true);
+
+                        db.collection("chatrooms")
+                        .document(chatroomId)
+                        .collection("messagesUserRef")
+                                .add(uploadedImage)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("firebase", "Error adding document", e);
+                                    }
+                                });
+                    }
+                });
+    }
+
+
+
+    private void openChangePhotoDialog(View view) {
+        Log.d(TAG, "onClick: Image button clicked");
+        ChangePhotoDialog dialog = new ChangePhotoDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("position", "bottom_position");
+        dialog.setArguments(bundle);
+        dialog.setTargetFragment(ChatroomReferenceFragment.this, 1);
+        dialog.show(getFragmentManager(), "ChangePhotoDialog");
+    }
+
 
     @Override
     public void onDestroyView() {
@@ -158,4 +253,9 @@ public class ChatroomReferenceFragment extends Fragment {
                 .document(userRef.getId())
                 .delete();
     }
+
+
+
+
+
 }

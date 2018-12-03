@@ -50,21 +50,19 @@ public class MessageReferenceViewAdapter extends RecyclerView.Adapter<MessageVie
         if (i == VIEW_TYPE_MESSAGE_RECEIVED) {
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.message_item_received, viewGroup, false);
-            return new MessageViewHolder(view, VIEW_TYPE_MESSAGE_RECEIVED);
         } else if (i == VIEW_TYPE_MESSAGE_SENT) {
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.message_item_sent, viewGroup, false);
-            return new MessageViewHolder(view, i);
         } else if (i == VIEW_TYPE_IMAGE_RECEIVED) {
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.image_item_received, viewGroup, false);
-            return new MessageViewHolder(view, i);
         } else if (i == VIEW_TYPE_IMAGE_SENT) {
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.image_item_sent, viewGroup, false);
-            return new MessageViewHolder(view, i);
+        } else {
+            return null;
         }
-        return null;
+        return new MessageViewHolder(view, i);
     }
 
     @Override

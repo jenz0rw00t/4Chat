@@ -114,25 +114,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               int id = item.getItemId();
 
               if (id == R.id.nav_profile){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment()).commit();
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment())
+                          .addToBackStack("LateTransaction").commit();
               }else if (id == R.id.nav_chatrooms){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment()).commit();
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
+                          .addToBackStack("ChattRoomF").commit();
               }else if (id == R.id.nav_logout){
                   mAuth.signOut();
                   LoginManager.getInstance().logOut();
                   startActivity(new Intent(MainActivity.this, LoginActivity.class));
               }else if (id == R.id.nav_all_users){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment()).commit();
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment())
+                          .addToBackStack("LateTransaction").commit();
               }else if (id == R.id.nav_chat_test){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment()).commit();
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment())
+                          .addToBackStack("LateTransaction").commit();
               }else if (id == R.id.nav_friends){
-                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment())
+                          .addToBackStack("LateTransaction").commit();
               }
               mDrawerLayout.closeDrawer(GravityCompat.START);
               return true;
           }
 
-    public void updateNavProfileImage(Uri imagePath) {
+            //Handles the backstack, going one fragment a time back. Sets the chatRoomFragment as default.
+            //if backpressed in chatRoomFragment then going out of the app
+          @Override
+          public void onBackPressed() {
+              FragmentManager fragmentManager = getSupportFragmentManager();
+
+              if (fragmentManager.getBackStackEntryCount() > 1) {
+                  /*
+                Deleting all fragments with tagname "LateTransaction"
+                fragmentManager.popBackStack("LateTransaction", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                */
+                  fragmentManager.popBackStack();
+              }
+              else if (fragmentManager.getBackStackEntryCount() == 0){
+                  supportFinishAfterTransition();
+              }
+              else {
+                  fragmentManager.beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
+                          .commit();
+                  fragmentManager.popBackStack();
+              }
+          }
+
+
+          public void updateNavProfileImage(Uri imagePath) {
         Log.d(TAG, "setNewImagePath: path is recieved" + imagePath);
             Picasso.get().load(imagePath.toString()).transform(new CropCircleTransformation()).placeholder(R.drawable.default_avatar).into(navUserImage);
         }

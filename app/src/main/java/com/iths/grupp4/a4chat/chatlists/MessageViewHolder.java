@@ -19,19 +19,23 @@ import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.iths.grupp4.a4chat.allusers.AllUserProfileFragment;
 import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
 import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = "MessageViewHolder";
+
     public View itemView;
     public TextView textUser;
     public TextView textMessage;
@@ -40,8 +44,11 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView textTime;
     public ProgressBar progressBar;
     public int viewType;
-    public Context context;
+    String visit_user_id;
 
+    final int radius = 25;
+    final int margin = 25;
+    final Transformation transformation = new RoundedCornersTransformation(radius, margin);
 
     public MessageViewHolder(@NonNull View itemView, int viewType) {
         super(itemView);
@@ -54,7 +61,6 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         imageUser = itemView.findViewById(R.id.imageUser);
         textTime = itemView.findViewById(R.id.textTime);
         progressBar = itemView.findViewById(R.id.progressBar);
-
 
     }
 
@@ -85,7 +91,6 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             String time = dateFormat.format(date);
             textTime.setText(time);
         }
-
     }
 
     public void setDataSent(MessageUserRef messageUserRef) {
@@ -104,6 +109,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 textUser.setText((String) documentSnapshot.get("name"));
                 String avatar = (String) documentSnapshot.get("avatar");
+                visit_user_id = (String) documentSnapshot.get("userId");
                 Picasso.get().load(avatar)
                         .placeholder(R.drawable.default_avatar)
                         .transform(new CropCircleTransformation())
@@ -117,10 +123,13 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             String time = dateFormat.format(date);
             textTime.setText(time);
         }
+
+        imageUser.setOnClickListener(view -> {
+           redirectToProfil(visit_user_id);
+        });
     }
 
     public void setDataImageSent(MessageUserRef messageUserRef) {
-        Log.d(TAG, "setDataImageSent: message is " + messageUserRef.message);
 
         Date date = messageUserRef.timeStamp;
         Log.d(TAG, "setDataImageSent:  date is " + date);
@@ -134,37 +143,15 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         if (messageUserRef.message.equals("default")) {
             showLoader();
             Picasso.get()
-                    .load(messageUserRef.message)
+                    .load(R.drawable.default_avatar)
                     .resize(600, 300).centerCrop()
-                    .into(imageMessage, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-                        @Override
-                        public void onError(Exception e) {
-                            hideLoader();
-                            Picasso.get().load(R.drawable.errorimage)
-                            .resize(600, 300).centerCrop()
-                            .into(imageMessage);
-                        }
-                    });
-        } else {
-            Picasso.get().load(messageUserRef.message)
-                    .resize(600, 300)
-                    .error(R.drawable.errorimage)
-                    .centerCrop()
+                    .transform(transformation)
                     .into(imageMessage);
+        } else {
+            setChatImage(messageUserRef.message, imageMessage);
             hideLoader();
         }
-
-        imageMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                displayFullsizeAvatar(messageUserRef.message);
-            }
-        });
+        imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
 
     }
 
@@ -174,28 +161,15 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 textUser.setText((String) documentSnapshot.get("name"));
                 String avatar = (String) documentSnapshot.get("avatar");
+                visit_user_id = (String) documentSnapshot.get("userId");
                 Picasso.get().load(avatar)
                         .placeholder(R.drawable.default_avatar)
                         .transform(new CropCircleTransformation())
                         .into(imageUser);
-            }
+                }
         });
 
-        Picasso.get()
-                .load(messageUserRef.message)
-                .resize(600, 300).centerCrop()
-                .into(imageMessage, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-                    @Override
-                    public void onError(Exception e) {
-                        Picasso.get().load(R.drawable.errorimage)
-                                .resize(600, 300).centerCrop()
-                                .into(imageMessage);
-                    }
-                });
+        setChatImage(messageUserRef.message, imageMessage);
 
         Date date = messageUserRef.timeStamp;
         if (date != null) {
@@ -203,14 +177,8 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             String time = dateFormat.format(date);
             textTime.setText(time);
         }
-
-        imageMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-               displayFullsizeAvatar(messageUserRef.message);
-            }
-        });
+        imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
+        imageUser.setOnClickListener(view -> redirectToProfil(visit_user_id));
     }
 
     private void showLoader() {
@@ -232,5 +200,33 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         dialog.show(fragmentTransaction, FullScreenDialog.TAG);
     }
 
+    private void setChatImage(String imageUrl, ImageView imageView) {
+        Picasso.get()
+                .load(imageUrl)
+                .resize(600, 300).centerCrop()
+                .transform(transformation)
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
 
+                    }
+                    @Override
+                    public void onError(Exception e) {
+                        Picasso.get().load(R.drawable.errorimage)
+                                .transform(transformation)
+                                .resize(600, 300).centerCrop()
+                                .into(imageView);
+                    }
+                });
+    }
+
+    private void redirectToProfil(String userToVisit) {
+        Bundle bundle = new Bundle();
+        bundle.putString("visit_user_id", visit_user_id);
+        FragmentTransaction fragmentTransaction = MainActivity.sFragmentManager.beginTransaction();
+        AllUserProfileFragment fragment = new AllUserProfileFragment();
+        fragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.commit();
+    }
 }

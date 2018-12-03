@@ -132,9 +132,6 @@ public class UserProfileFragment extends Fragment implements ChangePhotoDialog.O
     public void getImagePath(Uri imagePath) {
         Log.d(TAG, "getImagePath: Image path is " + imagePath);
 
-
-
-
         if (!imagePath.toString().equals("")) {
             Context context = getActivity();
             String userId = mFirebaseAuth.getCurrentUser().getUid();

@@ -42,6 +42,8 @@ public class PhotoUploader {
     private ImageUploadCallback mImageUploadCallback;
 
 
+
+
     public interface ImageUploadCallback {
         void updateImageUrl(String downloadUrl);
     }
@@ -79,6 +81,10 @@ public class PhotoUploader {
         //Only accept image sizes that are compressed to under 5MB. If thats not possible
         //then do not allow image to be uploaded, then interrupt
         BackgroundConversion uploadFullsizeImage = new BackgroundConversion(null);
+
+        if(mConvert != null){
+            mConvert.cancel(true);
+        }
 
         uploadFullsizeImage.execute(imageUri);
     }
@@ -142,19 +148,6 @@ public class PhotoUploader {
         Bitmap b = bms.scaleToFitWidth(bm, newWidth);
         return b;
 
-        /*
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // Create a matrix for the manipulation
-        Matrix matrix = new Matrix();
-        // Resize the bit map
-        matrix.postScale(scaleWidth, scaleHeight);
-        // Recreate the new Bitmap
-        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-        return resizedBitmap;
-        */
     }
 
     private void executeUploadTask() {
@@ -321,6 +314,8 @@ public class PhotoUploader {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
+
+                        Log.d(TAG, "onFailure: " + exception);
                       //  Toast.makeText(mContext, "could not upload photo", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {

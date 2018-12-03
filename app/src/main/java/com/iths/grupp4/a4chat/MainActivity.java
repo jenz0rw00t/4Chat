@@ -174,8 +174,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
-          private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+    //Bottom navigation bar
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
                   = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
               @Override
@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                   switch (item.getItemId()){
                       case R.id.bottomNavigation_recents:
                           return true;
+
                       case R.id.bottomNavigation_friends:
                           getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
                           return true;

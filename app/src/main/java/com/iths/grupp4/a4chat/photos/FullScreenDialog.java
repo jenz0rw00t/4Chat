@@ -48,18 +48,21 @@ public class FullScreenDialog extends DialogFragment {
         mProgressBar = view.findViewById(R.id.dialog_fullscreen_progressbar);
         showLoader();
 
-        Bundle bundle = getArguments();
-        userId = bundle.getString("receiver_user_id");
-
         toolbar = view.findViewById(R.id.dialog_fullscreen_toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_close_white_24dp);
-        if (getDialog()!= null) {
-            toolbar.setNavigationOnClickListener(view1 -> getDialog().dismiss());
-        }
         mImageView = view.findViewById(R.id.dialog_fullscreen_imageview);
 
-        setFullsizeAvatar();
+        if (getDialog() != null) {
+            toolbar.setNavigationOnClickListener(view1 -> getDialog().dismiss());
+        }
 
+        Bundle bundle = getArguments();
+        if (bundle.getString("image_url")!=null) {
+            setImage(bundle.getString("image_url"), mImageView);
+        } else {
+            userId = bundle.getString("receiver_user_id");
+            setFullsizeAvatar();
+        }
         return view;
     }
 

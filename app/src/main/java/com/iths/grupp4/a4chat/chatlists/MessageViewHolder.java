@@ -1,7 +1,13 @@
 package com.iths.grupp4.a4chat.chatlists;
 
 import android.content.Context;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +15,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
+import com.iths.grupp4.a4chat.photos.FullScreenDialog;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -30,13 +40,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView textTime;
     public ProgressBar progressBar;
     public int viewType;
-
+    public Context context;
 
 
     public MessageViewHolder(@NonNull View itemView, int viewType) {
         super(itemView);
         this.itemView = itemView;
         this.viewType = viewType;
+
         textUser = itemView.findViewById(R.id.textUser);
         textMessage = itemView.findViewById(R.id.textMessage);
         imageMessage = itemView.findViewById(R.id.imageMessage);
@@ -122,11 +133,22 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
         if (messageUserRef.message.equals("default")) {
             showLoader();
-            Picasso.get().load(R.drawable.default_avatar)
-                    .resize(600, 300)
-                    .error(R.drawable.errorimage)
-                    .centerCrop()
-                    .into(imageMessage);
+            Picasso.get()
+                    .load(messageUserRef.message)
+                    .resize(600, 300).centerCrop()
+                    .into(imageMessage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+                        @Override
+                        public void onError(Exception e) {
+                            hideLoader();
+                            Picasso.get().load(R.drawable.errorimage)
+                            .resize(600, 300).centerCrop()
+                            .into(imageMessage);
+                        }
+                    });
         } else {
             Picasso.get().load(messageUserRef.message)
                     .resize(600, 300)
@@ -135,6 +157,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
                     .into(imageMessage);
             hideLoader();
         }
+
+        imageMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                displayFullsizeAvatar(messageUserRef.message);
+            }
+        });
 
     }
 
@@ -151,11 +181,21 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        Picasso.get().load(messageUserRef.message)
-                .placeholder(R.drawable.default_avatar)
-                .resize(600, 300)
-                .centerCrop()
-                .into(imageMessage);
+        Picasso.get()
+                .load(messageUserRef.message)
+                .resize(600, 300).centerCrop()
+                .into(imageMessage, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+                    @Override
+                    public void onError(Exception e) {
+                        Picasso.get().load(R.drawable.errorimage)
+                                .resize(600, 300).centerCrop()
+                                .into(imageMessage);
+                    }
+                });
 
         Date date = messageUserRef.timeStamp;
         if (date != null) {
@@ -167,8 +207,8 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         imageMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: image is clicked");
 
+               displayFullsizeAvatar(messageUserRef.message);
             }
         });
     }
@@ -176,7 +216,6 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     private void showLoader() {
         progressBar.setVisibility(View.VISIBLE);
     }
-
     //Hides the progressbar when loading finished
     private void hideLoader() {
         if (progressBar.getVisibility() == View.VISIBLE) {
@@ -184,6 +223,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    private void displayFullsizeAvatar(String imageUrl) {
+        FullScreenDialog dialog = new FullScreenDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("image_url", imageUrl);
+        dialog.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = MainActivity.sFragmentManager.beginTransaction();
+        dialog.show(fragmentTransaction, FullScreenDialog.TAG);
+    }
 
 
 }

@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView navUserName;
     private ImageView navUserImage;
     private FirebaseAuth mAuth;
+    public static FragmentManager sFragmentManager;
 
 
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sFragmentManager = getSupportFragmentManager();
         mAuth = FirebaseAuth.getInstance();
         String user_id = mAuth.getCurrentUser().getUid();
         FirebaseFirestore databaseReference = FirebaseFirestore.getInstance();

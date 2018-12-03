@@ -29,10 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ChatroomReferenceFragment extends Fragment {
+public class PmReferenceFragment extends Fragment {
 
 
-    public ChatroomReferenceFragment() {
+    public PmReferenceFragment() {
         // Required empty public constructor
     }
 
@@ -93,7 +93,7 @@ public class ChatroomReferenceFragment extends Fragment {
         });
 
         //Register for change events for documents stored in collection items on firestore
-        db.collection("chatrooms")
+        db.collection("pms")
                 .document(chatroomId)
                 .collection("messagesUserRef")
                 .orderBy("timeStamp")
@@ -130,7 +130,7 @@ public class ChatroomReferenceFragment extends Fragment {
             messageField.setText("");
 
             // Add a new document with a generated ID
-            db.collection("chatrooms")
+            db.collection("pms")
                     .document(chatroomId)
                     .collection("messagesUserRef")
                     .add(info)
@@ -152,7 +152,7 @@ public class ChatroomReferenceFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        db.collection("chatrooms")
+        db.collection("pms")
                 .document(chatroomId)
                 .collection("active_users")
                 .document(userRef.getId())

@@ -11,7 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
@@ -25,24 +28,23 @@ import java.util.Map;
 public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder> {
 
     private List<Chatroom> chatroomList;
-    private TextView textViewChatroomName;
-    private ImageView imageViewDelete;
     private static final String CHATROOM_ID = "ChatroomId";
-    private static final String USER_ID = "UserId";
     private static final String USER_NAME = "UserName";
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseFirestore db;
+    private FirebaseUser current_user;
     private View view;
+    private String TAG;
 
-    public ChatroomViewAdapter(@NonNull List<Chatroom> chatroomList){
+    public ChatroomViewAdapter(@NonNull List<Chatroom> chatroomList) {
         this.chatroomList = chatroomList;
     }
+
 
     @NonNull
     @Override
     public ChatroomViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.chatroom_item, viewGroup,false);
+                .inflate(R.layout.chatroom_item, viewGroup, false);
 
         return new ChatroomViewHolder(view);
     }
@@ -52,26 +54,39 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         Chatroom chatroom = chatroomList.get(i);
         chatroomViewHolder.setData(chatroom);
 
+        db = FirebaseFirestore.getInstance();
+        current_user = FirebaseAuth.getInstance().getCurrentUser();
+
         int position = chatroomViewHolder.getAdapterPosition();
         String chatroomId = chatroomList.get(position).getChatroomId();
 
-        textViewChatroomName = (TextView) view.findViewById(R.id.chatroom_item_name);
+        TextView textViewChatroomName = (TextView) view.findViewById(R.id.chatroom_item_name);
         textViewChatroomName.setText(chatroomList.get(position).getChatroomName());
 
-        imageViewDelete = view.findViewById(R.id.chatroom_item_delete);
+        ImageView imageViewDelete = view.findViewById(R.id.chatroom_item_delete);
         imageViewDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (auth.getCurrentUser().getUid().equals(chatroomList.get(position).getCreatorId())) {
-                    Toast.makeText(view.getContext(),chatroom.getChatroomName() + " deleted",Toast.LENGTH_SHORT).show();
+                if (current_user.getUid().equals(chatroomList.get(position).getCreatorId())) {
                     removeItem(position);
-                    db.collection("chatrooms").document(chatroomId).delete();
+                    db.collection("chatrooms").document(chatroomId).delete()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " deleted", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " wasn't deleted", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                     if (chatroomList.isEmpty()) {
                         chatroomList = new ArrayList<>();
                     }
-                }
-                else {
-                    Toast.makeText(view.getContext(),"You can't delete " + chatroomList.get(position).getChatroomId(),Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(view.getContext(), "You can't delete " + chatroomList.get(position).getChatroomId(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -80,22 +95,22 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
             @Override
             public void onClick(View v) {
                 Map<String, String> user = new HashMap<>();
-                user.put(USER_NAME,auth.getCurrentUser().getDisplayName());
+                user.put(USER_NAME, current_user.getDisplayName());
 
                 db.collection("chatrooms")
                         .document(chatroomId)
                         .collection("active_users")
-                        .document(auth.getCurrentUser().getUid())
+                        .document(current_user.getUid())
                         .set(user);
 
                 Bundle bundle = new Bundle();
-                bundle.putString(CHATROOM_ID,chatroomId);
+                bundle.putString(CHATROOM_ID, chatroomId);
                 ChatroomReferenceFragment chatroomReferenceFragment = new ChatroomReferenceFragment();
                 chatroomReferenceFragment.setArguments(bundle);
                 FragmentManager manager = ((MainActivity) v.getContext()).getSupportFragmentManager();
                 manager.beginTransaction()
                         .addToBackStack("Chatrooms")
-                        .replace(R.id.frameLayout,chatroomReferenceFragment,null)
+                        .replace(R.id.frameLayout, chatroomReferenceFragment, null)
                         .commit();
             }
         });
@@ -107,23 +122,24 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         return chatroomList.size();
     }
 
-    void addItem(Chatroom chatroom){
+    public void addItem(Chatroom chatroom) {
         chatroomList.add(chatroom);
-        this.notifyItemInserted(chatroomList.size()-1);
+        this.notifyItemInserted(chatroomList.size() - 1);
     }
 
-    void removeItem(String chatroomId) {
+    public void removeItem(String chatroomId) {
         for (int i = 0; i < chatroomList.size(); i++) {
-            if( chatroomList.get(i).chatroomId.equals(chatroomId) ) {
+            if (chatroomList.get(i).chatroomId.equals(chatroomId)) {
                 removeItem(i);
             }
         }
     }
 
-    private void removeItem(int index){
-        if( index >= 0 && index < chatroomList.size()) {
+    private void removeItem(int index) {
+        if (index >= 0 && index < chatroomList.size()) {
             chatroomList.remove(index);
             this.notifyItemRemoved(index);
+            this.notifyItemChanged(index);
         }
     }
 }

@@ -3,33 +3,34 @@ package com.iths.grupp4.a4chat.friend;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
-import com.iths.grupp4.a4chat.allusers.AllUserAdapter;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
-import com.iths.grupp4.a4chat.chatlists.Message;
+import com.iths.grupp4.a4chat.chatlists.PmReferenceFragment;
+import com.iths.grupp4.a4chat.chatroomlists.Chatroom;
+
+import java.util.Arrays;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +42,10 @@ public class FriendsListFragment extends Fragment {
     private FirebaseUser current_user;
     private FriendsAdapter adapter;
     public SearchView search_friends;
+    private static final String CHATROOM_ID = "ChatroomId";
+    private static final String RECEIVER_ID = "Receiver";
+    private static final String USER_NAME = "UserName";
+    private String TAG;
 
 
     public FriendsListFragment() {
@@ -89,16 +94,17 @@ public class FriendsListFragment extends Fragment {
             public boolean onQueryTextSubmit(String s) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
                 //Returning the recyclerview to its original view. If user types letter, then delets letter.
-                if (s.trim().isEmpty()){
+                if (s.trim().isEmpty()) {
                     getList(usersCollection);
                     adapter.startListening();
                     //Getting the name and saving it in searchQuery, then setting it in getList
-                }else {
+                } else {
                     CollectionReference usersRef = db.collection("users").document(current_user.getUid()).collection("friends");
-                    Query searchQuery = usersRef.orderBy("searchName").startAt(s.trim().toUpperCase()).endAt(s.trim().toUpperCase() +"\uf8ff");
+                    Query searchQuery = usersRef.orderBy("searchName").startAt(s.trim().toUpperCase()).endAt(s.trim().toUpperCase() + "\uf8ff");
                     getList(searchQuery);
                     adapter.startListening();
                 }
@@ -127,6 +133,58 @@ public class FriendsListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         adapter.startListening();
+        adapter.setOnItemClickListener(new FriendsAdapter.OnItemClicklistener() {
+            @Override
+            public void onItemClick(DocumentSnapshot snapshot, int position) {
+                db.collection("pms")
+                        .whereArrayContains("users", current_user.getUid() + snapshot.getId())
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot document = task.getResult();
+                            if (!document.isEmpty()) {
+                                String chatroomId = document.getDocuments().get(0).getId();
+                                Bundle bundle = new Bundle();
+                                bundle.putString(CHATROOM_ID, chatroomId);
+                                PmReferenceFragment pmReferenceFragment = new PmReferenceFragment();
+                                pmReferenceFragment.setArguments(bundle);
+                                FragmentManager manager = getFragmentManager();
+                                manager.beginTransaction()
+                                        .addToBackStack("FriendsList")
+                                        .replace(R.id.frameLayout, pmReferenceFragment, null)
+                                        .commit();
+                            } else {
+                                // Document didn't exist, so it is created
+                                Chatroom chatroom = new Chatroom(current_user.getDisplayName(), current_user.getUid());
+                                db.collection("pms")
+                                        .add(chatroom).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        documentReference.update("users", Arrays.asList(
+                                                current_user.getUid(),
+                                                snapshot.getId(),
+                                                current_user.getUid()+snapshot.getId(),
+                                                snapshot.getId()+current_user.getUid()));
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString(CHATROOM_ID, documentReference.getId());
+                                        PmReferenceFragment pmReferenceFragment = new PmReferenceFragment();
+                                        pmReferenceFragment.setArguments(bundle);
+                                        FragmentManager manager = getFragmentManager();
+                                        manager.beginTransaction()
+                                                .addToBackStack("FriendsList")
+                                                .replace(R.id.frameLayout, pmReferenceFragment, null)
+                                                .commit();
+                                    }
+                                });
+                            }
+                        } else {
+                            Log.d(TAG, "get failed with ", task.getException());
+                        }
+                    }
+                });
+            }
+        });
     }
 
 

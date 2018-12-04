@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +30,8 @@ import java.util.List;
 
 public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnNameReceivedListener {
 
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
     private List<Chatroom> chatroomList;
     private ChatroomViewAdapter adapter;
     private FirebaseFirestore db;
@@ -51,7 +54,9 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        RecyclerView recyclerView = getActivity().findViewById(R.id.chatroom_recyclerView);
+        recyclerView = getActivity().findViewById(R.id.chatroom_recyclerView);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
 

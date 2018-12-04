@@ -6,7 +6,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.iths.grupp4.a4chat.R;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ChatroomViewHolder extends RecyclerView.ViewHolder {
 
@@ -25,7 +30,19 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setData(Chatroom chatroom){
+        chatroom.creatorReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                textViewCreator.setText((String) documentSnapshot.get("name"));
+            }
+        });
         textViewName.setText(chatroom.getChatroomName());
-        textViewCreator.setText(chatroom.getCreatorName());
+        Date date = chatroom.timeStamp;
+        textViewCreatedOn.setText("");
+        if (date != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM HH:mm");
+            String time = dateFormat.format(date);
+            textViewCreatedOn.setText(time);
+        }
     }
 }

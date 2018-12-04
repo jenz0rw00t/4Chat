@@ -15,19 +15,20 @@ import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.squareup.picasso.Picasso;
 
-public class FriendsAdapter extends FirestoreRecyclerAdapter<AllUsers, FriendsAdapter.FriendsHolder> {
+public class FriendsAdapter extends FirestoreRecyclerAdapter<Friends, FriendsAdapter.FriendsHolder> {
 
     private OnItemClicklistener onItemClicklistener;
 
-    public FriendsAdapter(@NonNull FirestoreRecyclerOptions<AllUsers> options) {
+    public FriendsAdapter(@NonNull FirestoreRecyclerOptions<Friends> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull FriendsHolder holder, int position, @NonNull AllUsers model) {
+    protected void onBindViewHolder(@NonNull FriendsHolder holder, int position, @NonNull Friends model) {
         holder.textViewUsername.setText(String.valueOf(model.getName()));
         holder.textViewEmail.setText(model.getEmail());
         holder.setAvatar(model.getAvatar());
+        holder.setOnline(model.isOnline());
 
     }
 
@@ -43,12 +44,14 @@ public class FriendsAdapter extends FirestoreRecyclerAdapter<AllUsers, FriendsAd
         TextView textViewUsername;
         TextView textViewEmail;
         ImageView imageViewAvatar;
+        ImageView onlineIcon;
 
         public FriendsHolder(@NonNull View itemView) {
             super(itemView);
 
             textViewUsername = itemView.findViewById(R.id.all_user_username);
             textViewEmail = itemView.findViewById(R.id.all_user_userEmail);
+            onlineIcon = itemView.findViewById(R.id.statusIcon);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -63,6 +66,15 @@ public class FriendsAdapter extends FirestoreRecyclerAdapter<AllUsers, FriendsAd
         public void setAvatar(String avatar) {
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.all_user_profile_image);
             Picasso.get().load(avatar).into(imageViewAvatar);
+        }
+
+
+        public void setOnline(boolean online){
+            if (online == true){
+                onlineIcon.setImageResource(R.drawable.ic_online_icon);
+            }else {
+                onlineIcon.setImageResource(R.drawable.ic_offline_icon);
+            }
         }
     }
 

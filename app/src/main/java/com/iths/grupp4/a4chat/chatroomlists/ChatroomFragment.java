@@ -37,8 +37,8 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
     private FirebaseFirestore db;
     private String TAG;
     private String chatroomId;
-    private String creatorName;
     private String userID;
+    private DocumentReference userRef;
 
     public ChatroomFragment() {
 
@@ -60,29 +60,19 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
 
+        userRef = db.collection("users").document(userID);
+
         //Set adapter for recyclerView
         chatroomList = new ArrayList<>();
         adapter = new ChatroomViewAdapter(chatroomList);
         recyclerView.setAdapter(adapter);
 
-        db.collection("users").document(userID)
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    creatorName = documentSnapshot.getString("name");
-                } else {
-                    Log.w(TAG, "Error getting documents.", task.getException());
-                }
-            }
-        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        db.collection("chatrooms")
+        db.collection("chatroomsBETA")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -111,8 +101,8 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
         getActivity().findViewById(R.id.create_chatroom).setOnClickListener(view -> {
 
             // Create new Chatroom and set data also update to set ChatroomId as data
-            Chatroom chatroom = new Chatroom(creatorName, userID);
-            db.collection("chatrooms")
+            Chatroom chatroom = new Chatroom(userRef, userID);
+            db.collection("chatroomsBETA")
                     .add(chatroom)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
@@ -142,7 +132,7 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
 
     @Override
     public void getName(String chatroomId, String chatroomName) {
-        db.collection("chatrooms")
+        db.collection("chatroomsBETA")
                 .document(chatroomId)
                 .update("chatroomName", chatroomName);
         for (Chatroom chatroom : chatroomList) {

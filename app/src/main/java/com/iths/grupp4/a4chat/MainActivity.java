@@ -20,6 +20,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.firebase.firestore.CollectionReference;
 import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
 import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.iths.grupp4.a4chat.chatlists.LoginActivity;
@@ -34,10 +36,10 @@ import com.iths.grupp4.a4chat.friend.FriendRequestListFragment;
 import com.iths.grupp4.a4chat.friend.FriendsListFragment;
 import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.squareup.picasso.Picasso;
+
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
-      {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
     private static final String TAG = "MainActivityTag";
@@ -46,7 +48,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView mNavigationView;
     private TextView navUserName;
     private ImageView navUserImage;
+    private FirebaseFirestore reference;
     private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
     public static FragmentManager sFragmentManager;
 
 
@@ -86,11 +90,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mNavigationView = findViewById(R.id.nav_view);
         View headerView = mNavigationView.getHeaderView(0);
-        navUserName = (TextView)headerView.findViewById(R.id.nav_username);
+        navUserName = (TextView) headerView.findViewById(R.id.nav_username);
         navUserImage = (ImageView) headerView.findViewById(R.id.nav_user_image);
         mNavigationView.setNavigationItemSelectedListener(this);
 
@@ -106,21 +110,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-          @Override
-          protected void onStart() {
-              super.onStart();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+        String user = mAuth.getCurrentUser().getUid();
 
-          }
+        if (user == null) {
+            signInActivity();
+        }else {
+            reference = FirebaseFirestore.getInstance();
+            reference.collection("users").document(user).update("online", true);
+        }
 
-          @Override
-          protected void onStop() {
-              super.onStop();
-          }
+    }
 
-          @Override
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuth.getCurrentUser() != null ){
+            mAuth = FirebaseAuth.getInstance();
+            String userId = mAuth.getCurrentUser().getUid();
+            reference = FirebaseFirestore.getInstance();
+            reference.collection("users").document(userId).update("online", false);
+        }
+
+    }
+
+    private void signInActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (mToggle.onOptionsItemSelected(item)){
+        if (mToggle.onOptionsItemSelected(item)) {
             InputMethodManager inputMethodManager = (InputMethodManager)
                     getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -134,23 +160,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_profile){
+        if (id == R.id.nav_profile) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment())
                     .addToBackStack("LateTransaction").commit();
-        }else if (id == R.id.nav_chatrooms){
+        } else if (id == R.id.nav_chatrooms) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
                     .commit();
-        }else if (id == R.id.nav_logout){
+        } else if (id == R.id.nav_logout) {
             mAuth.signOut();
             LoginManager.getInstance().logOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        }else if (id == R.id.nav_all_users){
+        } else if (id == R.id.nav_all_users) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment())
                     .addToBackStack("LateTransaction").commit();
-        }else if (id == R.id.nav_chat_test){
+        } else if (id == R.id.nav_chat_test) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatReferenceFragment())
                     .addToBackStack("LateTransaction").commit();
-        }else if (id == R.id.nav_friends){
+        } else if (id == R.id.nav_friends) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment())
                     .addToBackStack("LateTransaction").commit();
         }
@@ -159,50 +185,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //When backpressed is pressed, checking if backstackcount is over 0, if it is then trying to pop allUsers backstack.
-          //If no allUsers in backstack then going back to ChatRoomFragment.
-          //If 0, exit application
+    //If no allUsers in backstack then going back to ChatRoomFragment.
+    //If 0, exit application
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            if (!fragmentManager.popBackStackImmediate("allUsers", FragmentManager.POP_BACK_STACK_INCLUSIVE)){
-                fragmentManager.popBackStack("Chatrooms",FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            if (!fragmentManager.popBackStackImmediate("allUsers", FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
+                fragmentManager.popBackStack("Chatrooms", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fragmentManager.popBackStack("LateTransaction", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
-        }
-        else {
+        } else {
             supportFinishAfterTransition();
         }
     }
 
     //Bottom navigation bar
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-                  = new BottomNavigationView.OnNavigationItemSelectedListener() {
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-              @Override
-              public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                  switch (item.getItemId()){
-                      case R.id.bottomNavigation_recents:
-                          return true;
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.bottomNavigation_recents:
+                    return true;
 
-                      case R.id.bottomNavigation_friends:
-                          getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
-                          return true;
+                case R.id.bottomNavigation_friends:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
+                    return true;
 
-                      case R.id.bottomNavigation_request:
-                          Bundle bundle = new Bundle();
-                          bundle.putBoolean("from_request", true);
-                          FragmentManager fragmentManager = getSupportFragmentManager();
-                          FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                          AllUserListFragment fragment = new AllUserListFragment();
-                          fragment.setArguments(bundle);
-                          fragmentTransaction.replace(R.id.frameLayout, fragment).commit();
-                          return true;
-                  }
-                  return false;
-              }
-          };
-
+                case R.id.bottomNavigation_request:
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("from_request", true);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    AllUserListFragment fragment = new AllUserListFragment();
+                    fragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.frameLayout, fragment).commit();
+                    return true;
+            }
+            return false;
+        }
+    };
 
 
     public void updateNavProfileImage(Uri imagePath) {
@@ -214,16 +238,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navUserName.setText(name);
     }
 
-          private void displayFullsizeAvatar(String receiverUserid) {
-              FragmentManager fragmentManager = getSupportFragmentManager();
-              FullScreenDialog dialog = new FullScreenDialog();
-              Bundle bundle = new Bundle();
-              bundle.putString("receiver_user_id", receiverUserid);
-              dialog.setArguments(bundle);
-              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-              dialog.show(fragmentTransaction, FullScreenDialog.TAG);
-          }
-      }
+    private void displayFullsizeAvatar(String receiverUserid) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FullScreenDialog dialog = new FullScreenDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("receiver_user_id", receiverUserid);
+        dialog.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        dialog.show(fragmentTransaction, FullScreenDialog.TAG);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            signOut();
+        }
+
+    }
+
+    private void signOut() {
+        // Firebase sign out
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            LoginManager.getInstance().logOut();
+            mAuth.signOut();
+            LoginManager.getInstance().logOut();
+            // Google sign out
+            mGoogleSignInClient.signOut().addOnCompleteListener(this,
+                    new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                        }
+                    });
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment())
+                    .addToBackStack("LateTransaction").commit();
+        }
+    }
+
+
+}
 
 
 

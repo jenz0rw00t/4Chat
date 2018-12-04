@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -17,27 +18,34 @@
             android:src="@drawable/default_avatar"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="5dp">
+            android:layout_margin="5dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/all_user_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Username"
                 android:textSize="23sp"
-                android:textStyle="bold"
-                android:text="Username" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/all_user_userEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="Email" />
+                android:text="Email"
+                android:textSize="18sp" />
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/statusIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_offline_icon" />
 
     </LinearLayout>
 

@@ -314,7 +314,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         String token = FirebaseInstanceId.getInstance().getToken();
-        
+
         if (currentUser != null) {
 
                 AllUsers allUsers = new AllUsers(

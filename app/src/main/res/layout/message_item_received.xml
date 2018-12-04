@@ -13,9 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/textMessage"
         app:layout_constraintStart_toEndOf="@+id/imageUser"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Kalle" />
@@ -24,6 +22,7 @@
         android:id="@+id/textMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/chatbubble"
         android:maxWidth="240dp"

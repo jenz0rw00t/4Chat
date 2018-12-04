@@ -80,7 +80,7 @@ public class AllUserProfileFragment extends Fragment {
         friendRequestReference = FirebaseFirestore.getInstance();
         acceptedFriendReference = FirebaseFirestore.getInstance();
         friendsReference = acceptedFriendReference.collection("users");
-        requestReference = friendRequestReference.collection("users");
+        requestReference = friendRequestReference.collection("friend_request");
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_state = "not_friends";
 
@@ -168,7 +168,7 @@ public class AllUserProfileFragment extends Fragment {
                             }
                         }
                     });
-                    
+
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }
@@ -313,12 +313,10 @@ public class AllUserProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (current_state.equals("friends")){
-                    friendsReference.document(current_user.getUid()).collection("friends")
-                            .document(receiver_user_id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    friendsReference.document(current_user.getUid()).update("friends", FieldValue.arrayRemove(receiver_user_id)).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            friendsReference.document(receiver_user_id).collection("friends").document(current_user.getUid())
-                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            friendsReference.document(receiver_user_id).update("friends", FieldValue.arrayRemove(current_user.getUid())).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     current_state = "not_friends";

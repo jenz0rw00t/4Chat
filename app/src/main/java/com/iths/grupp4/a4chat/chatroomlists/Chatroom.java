@@ -21,20 +21,22 @@ public class Chatroom {
 
     }
 
+    public Chatroom(String creatorName, String creatorId) {
+        this.creatorName = creatorName;
+        this.creatorId = creatorId;
+    }
+
     public Chatroom(DocumentReference creatorReference, String creatorId){
         this.creatorReference = creatorReference;
         this.creatorId = creatorId;
     }
 
-    public Chatroom(DocumentReference user1,DocumentReference user2){
+    public Chatroom(DocumentReference user1,DocumentReference user2 , String creatorId){
         this.user1 = user1;
         this.user2 = user2;
-    }
-
-    public Chatroom(String creatorName, String creatorId) {
-        this.creatorName = creatorName;
         this.creatorId = creatorId;
     }
+
 
     public String getCreatorId() {
         return creatorId;

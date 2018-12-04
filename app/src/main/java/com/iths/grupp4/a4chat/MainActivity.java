@@ -128,11 +128,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStop() {
         super.onStop();
-        mAuth = FirebaseAuth.getInstance();
-        String user = mAuth.getCurrentUser().getUid();
+        if (mAuth.getCurrentUser() != null ){
+            mAuth = FirebaseAuth.getInstance();
+            String userId = mAuth.getCurrentUser().getUid();
+            reference = FirebaseFirestore.getInstance();
+            reference.collection("users").document(userId).update("online", false);
+        }
 
-        reference = FirebaseFirestore.getInstance();
-        reference.collection("users").document(user).update("online", false);
     }
 
     private void signInActivity() {

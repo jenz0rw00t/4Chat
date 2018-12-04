@@ -10,17 +10,21 @@ public class AllUsers {
     public String email;
     public String userId;
     public String searchName;
+    public String token;
 
     public AllUsers() {
     }
 
-    public AllUsers(String name, String email, String avatar, String fullSizeAvatar, String userId) {
+    public AllUsers(String name, String email, String avatar, String fullSizeAvatar, String userId,
+    String token) {
         this.name = name;
         this.email = email;
         this.avatar = avatar;
         this.fullSizeAvatar = fullSizeAvatar;
         this.userId = userId;
         this.searchName = name.toUpperCase();
+        this.token = token;
+
     }
 
     public String getName() {

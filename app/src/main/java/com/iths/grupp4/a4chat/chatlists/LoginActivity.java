@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
@@ -312,6 +313,8 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        String token = FirebaseInstanceId.getInstance().getToken();
+        
         if (currentUser != null) {
 
                 AllUsers allUsers = new AllUsers(
@@ -319,7 +322,8 @@ public class LoginActivity extends AppCompatActivity {
                         currentUser.getEmail(),
                         currentUser.getPhotoUrl().toString(),
                         currentUser.getPhotoUrl().toString(),
-                        currentUser.getUid()
+                        currentUser.getUid(),
+                        token
                 );
 
                 db.collection("users").document(currentUser.getUid())

@@ -231,4 +231,8 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             fragmentTransaction.commit();
         }
     }
+
+
+
+
 }

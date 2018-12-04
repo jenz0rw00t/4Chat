@@ -22,6 +22,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.iths.grupp4.a4chat.UserProfileFragment;
+import com.iths.grupp4.a4chat.friend.Friends;
 
 
 public class AllUserListFragment extends Fragment{
@@ -54,8 +55,8 @@ public class AllUserListFragment extends Fragment{
             }
         }
 
-        FirestoreRecyclerOptions<AllUsers> recyclerOptions = new FirestoreRecyclerOptions.Builder<AllUsers>()
-                .setQuery(query, AllUsers.class)
+        FirestoreRecyclerOptions<Friends> recyclerOptions = new FirestoreRecyclerOptions.Builder<Friends>()
+                .setQuery(query, Friends.class)
                 .build();
 
         mUserAdapter = new AllUserAdapter(recyclerOptions);
@@ -104,8 +105,8 @@ public class AllUserListFragment extends Fragment{
     //Sets the recyclerview with a new query
     private void getList(Query q) {
 
-        FirestoreRecyclerOptions<AllUsers> recyclerOptions = new FirestoreRecyclerOptions.Builder<AllUsers>()
-                .setQuery(q, AllUsers.class)
+        FirestoreRecyclerOptions<Friends> recyclerOptions = new FirestoreRecyclerOptions.Builder<Friends>()
+                .setQuery(q, Friends.class)
                 .build();
 
         mUserAdapter = new AllUserAdapter(recyclerOptions);

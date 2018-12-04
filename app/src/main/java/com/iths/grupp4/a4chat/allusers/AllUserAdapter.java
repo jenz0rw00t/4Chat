@@ -13,24 +13,26 @@ import com.iths.grupp4.a4chat.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.iths.grupp4.a4chat.friend.Friends;
 import com.squareup.picasso.Picasso;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
-public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAdapter.AllUsersHolder> {
+public class AllUserAdapter extends FirestoreRecyclerAdapter<Friends, AllUserAdapter.AllUsersHolder> {
 
 
 
     private OnItemClicklistener mOnItemClicklistener;
-    public AllUserAdapter(@NonNull FirestoreRecyclerOptions<AllUsers> options) {
+    public AllUserAdapter(@NonNull FirestoreRecyclerOptions<Friends> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull AllUsersHolder holder, int position, @NonNull AllUsers model) {
+    protected void onBindViewHolder(@NonNull AllUsersHolder holder, int position, @NonNull Friends model) {
         holder.textViewUsername.setText(String.valueOf(model.getName()));
         holder.textViewEmail.setText(model.getEmail());
         holder.setAvatar(model.getAvatar());
+        holder.setOnline(model.isOnline());
 
     }
 
@@ -46,11 +48,13 @@ public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAd
         TextView textViewUsername;
         TextView textViewEmail;
         ImageView imageViewAvatar;
+        ImageView onlineIcon;
 
         public AllUsersHolder(@NonNull View itemView) {
             super(itemView);
             textViewUsername = itemView.findViewById(R.id.all_user_username);
             textViewEmail = itemView.findViewById(R.id.all_user_userEmail);
+            onlineIcon = itemView.findViewById(R.id.statusIcon);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -66,6 +70,14 @@ public class AllUserAdapter extends FirestoreRecyclerAdapter<AllUsers, AllUserAd
         public void setAvatar(String avatar){
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.all_user_profile_image);
             Picasso.get().load(avatar).transform(new CropCircleTransformation()).into(imageViewAvatar);
+        }
+
+        public void setOnline(boolean online){
+            if (online == true){
+                onlineIcon.setImageResource(R.drawable.ic_online_icon);
+            }else {
+                onlineIcon.setImageResource(R.drawable.ic_offline_icon);
+            }
         }
     }
 

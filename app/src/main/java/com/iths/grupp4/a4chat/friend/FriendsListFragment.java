@@ -71,8 +71,8 @@ public class FriendsListFragment extends Fragment {
 
 
 
-        FirestoreRecyclerOptions<AllUsers> options = new FirestoreRecyclerOptions.Builder<AllUsers>()
-                .setQuery(friendQuery, AllUsers.class)
+        FirestoreRecyclerOptions<Friends> options = new FirestoreRecyclerOptions.Builder<Friends>()
+                .setQuery(friendQuery, Friends.class)
                 .build();
 
         adapter = new FriendsAdapter(options);
@@ -117,8 +117,8 @@ public class FriendsListFragment extends Fragment {
 
     private void getList(Query q) {
 
-        FirestoreRecyclerOptions<AllUsers> recyclerOptions = new FirestoreRecyclerOptions.Builder<AllUsers>()
-                .setQuery(q, AllUsers.class)
+        FirestoreRecyclerOptions<Friends> recyclerOptions = new FirestoreRecyclerOptions.Builder<Friends>()
+                .setQuery(q, Friends.class)
                 .build();
 
         adapter = new FriendsAdapter(recyclerOptions);

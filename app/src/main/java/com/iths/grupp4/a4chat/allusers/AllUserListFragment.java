@@ -46,6 +46,14 @@ public class AllUserListFragment extends Fragment{
 
         Query query = allUsers;
 
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            if (bundle.getBoolean("from_request")) {
+                query = query.whereArrayContains("request_sent", FirebaseAuth.getInstance().getCurrentUser().getUid());
+            }
+        }
+
         FirestoreRecyclerOptions<AllUsers> recyclerOptions = new FirestoreRecyclerOptions.Builder<AllUsers>()
                 .setQuery(query, AllUsers.class)
                 .build();

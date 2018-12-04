@@ -190,7 +190,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                           return true;
 
                       case R.id.bottomNavigation_request:
-                          getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendRequestListFragment()).commit();
+                          Bundle bundle = new Bundle();
+                          bundle.putBoolean("from_request", true);
+                          FragmentManager fragmentManager = getSupportFragmentManager();
+                          FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                          AllUserListFragment fragment = new AllUserListFragment();
+                          fragment.setArguments(bundle);
+                          fragmentTransaction.replace(R.id.frameLayout, fragment).commit();
                           return true;
                   }
                   return false;

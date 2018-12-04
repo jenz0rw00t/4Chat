@@ -179,7 +179,6 @@ public class AllUserProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 addFriend.setEnabled(false);
-
                 /*
                 When you press on add friend button it will create new collection and document
                 in firestore, that you have sent a friend request.
@@ -358,6 +357,7 @@ public class AllUserProfileFragment extends Fragment {
                                 }
                             });
                 }
+                addFriend.setEnabled(true);
             }
         });
 

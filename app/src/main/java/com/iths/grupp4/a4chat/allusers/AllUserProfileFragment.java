@@ -151,44 +151,23 @@ public class AllUserProfileFragment extends Fragment {
 
                         }
                     });
-
-             //       friendsReference.whereArrayContains("friends", current_user.getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
-             //           @Override
-             //           public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-             //               if (!queryDocumentSnapshots.isEmpty()){
-             //                   List<AllUsers> list = queryDocumentSnapshots.toObjects(AllUsers.class);
-             //                   for (AllUsers user:list) {
-             //                       if (user.userId.equals(receiver_user_id)){
-             //                           current_state = "friends";
-             //                           addFriend.setVisibility(View.INVISIBLE);
-             //                           removeFriend.setVisibility(View.VISIBLE);
-             //                           removeFriend.setEnabled(true);
-             //                           removeFriend.setText("Unfriend this person");
-             //                       }
-             //                   }
-             //               }
-             //           }
-             //       });
-
-
-                    friendsReference.document(current_user.getUid()).collection("friends").document(receiver_user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    friendsReference.whereArrayContains("friends", current_user.getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
-                        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                            if (documentSnapshot.exists()){
-                                String currentState = documentSnapshot.getString("state");
-                                if (currentState.equals("friend")){
-                                    current_state = "friends";
-                                    addFriend.setVisibility(View.INVISIBLE);
-                                    removeFriend.setVisibility(View.VISIBLE);
-                                    removeFriend.setEnabled(true);
-                                    removeFriend.setText("Unfriend this person");
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (!queryDocumentSnapshots.isEmpty()){
+                                List<AllUsers> list = queryDocumentSnapshots.toObjects(AllUsers.class);
+                                for (AllUsers user:list) {
+                                    if (user.userId.equals(receiver_user_id)){
+                                        current_state = "friends";
+                                        addFriend.setVisibility(View.INVISIBLE);
+                                        removeFriend.setVisibility(View.VISIBLE);
+                                        removeFriend.setEnabled(true);
+                                        removeFriend.setText("Unfriend this person");
+                                   }
                                 }
                             }
                         }
                     });
-
-
-
                 } else {
                     Log.w(TAG, "Error getting documents.", task.getException());
                 }

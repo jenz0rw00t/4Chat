@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               if (FirebaseAuth.getInstance().getCurrentUser() == null) {
                   signOut();
               }
-
+              
           }
 
           private void signOut() {

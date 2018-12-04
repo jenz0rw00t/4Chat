@@ -69,7 +69,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
             public void onClick(View v) {
                 if (current_user.getUid().equals(chatroomList.get(position).getCreatorId())) {
                     removeItem(position);
-                    db.collection("chatrooms").document(chatroomId).delete()
+                    db.collection("chatroomsBETA").document(chatroomId).delete()
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -97,7 +97,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                 Map<String, String> user = new HashMap<>();
                 user.put(USER_NAME, current_user.getDisplayName());
 
-                db.collection("chatrooms")
+                db.collection("chatroomsBETA")
                         .document(chatroomId)
                         .collection("active_users")
                         .document(current_user.getUid())

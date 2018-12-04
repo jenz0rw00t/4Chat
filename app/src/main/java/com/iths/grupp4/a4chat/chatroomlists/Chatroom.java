@@ -26,10 +26,9 @@ public class Chatroom {
         this.creatorId = creatorId;
     }
 
-    public Chatroom(DocumentReference user1,DocumentReference user2 , String creatorId){
+    public Chatroom(DocumentReference user1,DocumentReference user2){
         this.user1 = user1;
         this.user2 = user2;
-        this.creatorId = creatorId;
     }
 
     public Chatroom(String creatorName, String creatorId) {

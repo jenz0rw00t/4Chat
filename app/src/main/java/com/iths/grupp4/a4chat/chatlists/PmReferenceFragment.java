@@ -99,7 +99,7 @@ public class PmReferenceFragment extends Fragment implements
         });
 
         //Register for change events for documents stored in collection items on firestore
-        db.collection("pms")
+        db.collection("pmsBETA")
                 .document(chatroomId)
                 .collection("messagesUserRef")
                 .orderBy("timeStamp")
@@ -136,7 +136,7 @@ public class PmReferenceFragment extends Fragment implements
             messageField.setText("");
 
             // Add a new document with a generated ID
-            db.collection("pms")
+            db.collection("pmsBETA")
                     .document(chatroomId)
                     .collection("messagesUserRef")
                     .add(info)
@@ -172,7 +172,7 @@ public class PmReferenceFragment extends Fragment implements
 
         MessageUserRef loadingImage = new MessageUserRef(userRef, "default", true);
 
-        db.collection("pms")
+        db.collection("pmsBETA")
                 .document(chatroomId)
                 .collection("messagesUserRef")
                 .add(loadingImage)
@@ -195,7 +195,7 @@ public class PmReferenceFragment extends Fragment implements
     @Override
     public void updateImageUrl(String downloadUrl) {
 
-        db.collection("pms")
+        db.collection("pmsBETA")
                 .document(chatroomId)
                 .collection("messagesUserRef")
                 .document(snapshotId)
@@ -206,7 +206,7 @@ public class PmReferenceFragment extends Fragment implements
 
                         MessageUserRef uploadedImage = new MessageUserRef(userRef, "" + downloadUrl, true);
 
-                        db.collection("pms")
+                        db.collection("pmsBETA")
                                 .document(chatroomId)
                                 .collection("messagesUserRef")
                                 .add(uploadedImage)

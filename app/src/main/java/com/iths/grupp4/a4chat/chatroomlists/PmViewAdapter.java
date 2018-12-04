@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder> {
+public class PmViewAdapter extends RecyclerView.Adapter<PmViewHolder> {
 
     private List<Chatroom> chatroomList;
     private static final String CHATROOM_ID = "ChatroomId";
@@ -35,22 +35,22 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
     private View view;
     private String TAG;
 
-    public ChatroomViewAdapter(@NonNull List<Chatroom> chatroomList) {
+    public PmViewAdapter(@NonNull List<Chatroom> chatroomList) {
         this.chatroomList = chatroomList;
     }
 
 
     @NonNull
     @Override
-    public ChatroomViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public PmViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.chatroom_item, viewGroup, false);
 
-        return new ChatroomViewHolder(view);
+        return new PmViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatroomViewHolder chatroomViewHolder, int i) {
+    public void onBindViewHolder(@NonNull PmViewHolder chatroomViewHolder, int i) {
         Chatroom chatroom = chatroomList.get(i);
         chatroomViewHolder.setData(chatroom);
 
@@ -94,24 +94,9 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, String> user = new HashMap<>();
-                user.put(USER_NAME, current_user.getDisplayName());
 
-                db.collection("chatroomsBETA")
-                        .document(chatroomId)
-                        .collection("active_users")
-                        .document(current_user.getUid())
-                        .set(user);
+                //TODO On click metod för listan
 
-                Bundle bundle = new Bundle();
-                bundle.putString(CHATROOM_ID, chatroomId);
-                ChatroomReferenceFragment chatroomReferenceFragment = new ChatroomReferenceFragment();
-                chatroomReferenceFragment.setArguments(bundle);
-                FragmentManager manager = ((MainActivity) v.getContext()).getSupportFragmentManager();
-                manager.beginTransaction()
-                        .addToBackStack("Chatrooms")
-                        .replace(R.id.frameLayout, chatroomReferenceFragment, null)
-                        .commit();
             }
         });
     }

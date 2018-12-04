@@ -18,6 +18,8 @@ import android.widget.EditText;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -30,7 +32,9 @@ import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
 import com.iths.grupp4.a4chat.photos.PhotoUploader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ChatroomReferenceFragment extends Fragment implements
@@ -45,12 +49,32 @@ public class ChatroomReferenceFragment extends Fragment implements
     List<MessageUserRef> messagesList = new ArrayList<>();
     private MessageReferenceViewAdapter adapter;
     FirebaseFirestore db;
+    FirebaseUser current_user;
     EditText messageField;
     AllUsers user;
     DocumentReference userRef;
     private static final String CHATROOM_ID = "ChatroomId";
     private String chatroomId;
     String snapshotId;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        current_user = FirebaseAuth.getInstance().getCurrentUser();
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            chatroomId = bundle.getString(CHATROOM_ID, null);
+        }
+        CollectionReference activeUsers = db.collection("chatroomsBETA")
+                .document(chatroomId)
+                .collection("active_users");
+        if (activeUsers != null) {
+            Map<String, Object> newUser = new HashMap<>();
+            newUser.put("active_user",current_user.getUid());
+            activeUsers.add(newUser);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,11 +87,6 @@ public class ChatroomReferenceFragment extends Fragment implements
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
-
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            chatroomId = bundle.getString(CHATROOM_ID,null);
-        }
 
         db = FirebaseFirestore.getInstance();
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -131,7 +150,7 @@ public class ChatroomReferenceFragment extends Fragment implements
 
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
 
-            
+
             // Create a new message with username and message
             MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
             messageField.setText("");
@@ -157,7 +176,7 @@ public class ChatroomReferenceFragment extends Fragment implements
 
 
         getActivity().findViewById(R.id.attachment).setOnClickListener(view -> {
-            Log.d(TAG, "attachment cklicked" );
+            Log.d(TAG, "attachment cklicked");
             openChangePhotoDialog(view);
         });
     }
@@ -213,8 +232,8 @@ public class ChatroomReferenceFragment extends Fragment implements
                         MessageUserRef uploadedImage = new MessageUserRef(userRef, "" + downloadUrl, true);
 
                         db.collection("chatroomsBETA")
-                        .document(chatroomId)
-                        .collection("messagesUserRef")
+                                .document(chatroomId)
+                                .collection("messagesUserRef")
                                 .add(uploadedImage)
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
@@ -232,7 +251,6 @@ public class ChatroomReferenceFragment extends Fragment implements
     }
 
 
-
     private void openChangePhotoDialog(View view) {
         Log.d(TAG, "onClick: Image button clicked");
         ChangePhotoDialog dialog = new ChangePhotoDialog();
@@ -243,6 +261,15 @@ public class ChatroomReferenceFragment extends Fragment implements
         dialog.show(getFragmentManager(), "ChangePhotoDialog");
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        db.collection("chatroomsBETA")
+                .document(chatroomId)
+                .collection("active_users")
+                .document(userRef.getId())
+                .delete();
+    }
 
     @Override
     public void onDestroyView() {
@@ -253,9 +280,6 @@ public class ChatroomReferenceFragment extends Fragment implements
                 .document(userRef.getId())
                 .delete();
     }
-
-
-
 
 
 }

@@ -64,12 +64,6 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                 Map<String, String> user = new HashMap<>();
                 user.put(USER_NAME, current_user.getDisplayName());
 
-                db.collection("chatrooms")
-                        .document(chatroomId)
-                        .collection("active_users")
-                        .document(current_user.getUid())
-                        .set(user);
-
                 Bundle bundle = new Bundle();
                 bundle.putString(CHATROOM_ID, chatroomId);
                 ChatroomReferenceFragment chatroomReferenceFragment = new ChatroomReferenceFragment();

@@ -1,24 +1,24 @@
 package com.iths.grupp4.a4chat.chatroomlists;
 
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -39,6 +39,8 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
     private String chatroomId;
     private String userID;
     private DocumentReference userRef;
+
+    SwipeController swipeController = null;
 
     public ChatroomFragment() {
 
@@ -67,11 +69,62 @@ public class ChatroomFragment extends Fragment implements ChatroomNameDialog.OnN
         adapter = new ChatroomViewAdapter(chatroomList);
         recyclerView.setAdapter(adapter);
 
+        swipeController = new SwipeController(new SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+                super.onRightClicked(position);
+                if (userRef.getId().equals(chatroomList.get(position).getCreatorId())) {
+
+                    db.collection("chatroomsBETA")
+                            .document(chatroomList.get(position).getChatroomId())
+                            .delete();
+
+                    chatroomList.remove(position);
+
+                    adapter.notifyItemRemoved(position);
+                    adapter.notifyDataSetChanged();
+
+                } else {
+
+                    Toast.makeText(getContext(), "You can't remove " + chatroomList.get(position).getChatroomName(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onLeftClicked(int position) {
+                super.onLeftClicked(position);
+                if (userRef.getId().equals(chatroomList.get(position).getCreatorId())) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("ChatroomId", chatroomList.get(position).getChatroomId());
+
+                    ChatroomNameDialog dialog = new ChatroomNameDialog();
+                    dialog.setArguments(bundle);
+                    dialog.setTargetFragment(ChatroomFragment.this, 1);
+                    dialog.show(getFragmentManager(), "ChatroomNameDialog");
+                } else {
+
+                    Toast.makeText(getContext(), "You can't edit " + chatroomList.get(position).getChatroomName(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        itemTouchhelper.attachToRecyclerView(recyclerView);
+
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
+        adapter.notifyDataSetChanged();
+
         db.collection("chatroomsBETA")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {

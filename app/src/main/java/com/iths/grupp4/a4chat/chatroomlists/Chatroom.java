@@ -8,7 +8,6 @@ import java.util.Date;
 public class Chatroom {
 
     public String creatorId;
-    public String creatorName;
     public String chatroomName;
     public String chatroomId;
     public DocumentReference creatorReference;
@@ -31,18 +30,10 @@ public class Chatroom {
         this.user2 = user2;
         this.creatorId = creatorId;
     }
-
-    public Chatroom(String creatorName, String creatorId) {
-        this.creatorName = creatorName;
-        this.creatorId = creatorId;
-    }
+    
 
     public String getCreatorId() {
         return creatorId;
-    }
-
-    public String getCreatorName() {
-        return creatorName;
     }
 
     public String getChatroomName() {

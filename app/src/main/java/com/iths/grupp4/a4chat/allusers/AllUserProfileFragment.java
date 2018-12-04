@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,7 +35,10 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 
 public class AllUserProfileFragment extends Fragment {
@@ -146,6 +150,25 @@ public class AllUserProfileFragment extends Fragment {
 
                         }
                     });
+
+             //       friendsReference.whereArrayContains("friends", current_user.getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
+             //           @Override
+             //           public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+             //               if (!queryDocumentSnapshots.isEmpty()){
+             //                   List<AllUsers> list = queryDocumentSnapshots.toObjects(AllUsers.class);
+             //                   for (AllUsers user:list) {
+             //                       if (user.userId.equals(receiver_user_id)){
+             //                           current_state = "friends";
+             //                           addFriend.setVisibility(View.INVISIBLE);
+             //                           removeFriend.setVisibility(View.VISIBLE);
+             //                           removeFriend.setEnabled(true);
+             //                           removeFriend.setText("Unfriend this person");
+             //                       }
+             //                   }
+             //               }
+             //           }
+             //       });
+
 
                     friendsReference.document(current_user.getUid()).collection("friends").document(receiver_user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override

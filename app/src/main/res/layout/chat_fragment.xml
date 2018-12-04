@@ -31,7 +31,6 @@
 
     </android.support.v7.widget.RecyclerView>
 
-
     <EditText
         android:id="@+id/messageField"
         android:layout_width="0dp"

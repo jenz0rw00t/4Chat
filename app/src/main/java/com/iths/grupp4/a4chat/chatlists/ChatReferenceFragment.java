@@ -1,6 +1,7 @@
 package com.iths.grupp4.a4chat.chatlists;
 
 
+import android.content.ClipData;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
 import com.iths.grupp4.a4chat.photos.PhotoUploader;
 import com.iths.grupp4.a4chat.R;
@@ -67,6 +69,11 @@ public class ChatReferenceFragment extends Fragment implements
         userRef = db.collection("users").document(userID);
 
         messageField = getActivity().findViewById(R.id.messageField);
+        messageField.setOnClickListener(view -> {
+            ClipData clipData = MainActivity.sClipboardManager.getPrimaryClip();
+            ClipData.Item item = clipData.getItemAt(0);
+            messageField.setText(item.getText().toString());
+        });
 
         //Set adapter for recyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));

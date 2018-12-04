@@ -1,5 +1,7 @@
 package com.iths.grupp4.a4chat.chatlists;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -36,6 +39,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = "MessageViewHolder";
 
+    ClipboardManager mClipboardManager;
     public View itemView;
     public TextView textUser;
     public TextView textMessage;
@@ -101,6 +105,25 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             String time = dateFormat.format(date);
             textTime.setText(time);
         }
+
+        if (!MainActivity.sClipboardManager.hasPrimaryClip()) {
+
+        }
+
+        textMessage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (!messageUserRef.message.equals("")) {
+
+                    ClipData clipData = ClipData.newPlainText("text", messageUserRef.message);
+                    MainActivity.sClipboardManager.setPrimaryClip(clipData);
+                    Log.d(TAG, "setDataSent: Text is copied");
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
     }
 
     public void setDataReceived(MessageUserRef messageUserRef) {
@@ -133,6 +156,12 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
         Date date = messageUserRef.timeStamp;
         Log.d(TAG, "setDataImageSent:  date is " + date);
+
+        /*
+        ClipboardManager clipboard = (ClipboardManager) get getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(label, text);
+        clipboard.setPrimaryClip(clip);
+*/
 
         if (date != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");

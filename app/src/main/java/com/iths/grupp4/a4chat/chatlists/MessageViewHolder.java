@@ -173,8 +173,13 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
         Date date = messageUserRef.timeStamp;
         if (date != null) {
+
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
             String time = dateFormat.format(date);
+
+            Date date1 =
+
+            if (date.compareTo(date.after(time)))
             textTime.setText(time);
         }
         imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));

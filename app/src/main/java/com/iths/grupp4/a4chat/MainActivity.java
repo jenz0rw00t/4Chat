@@ -37,7 +37,7 @@ import com.squareup.picasso.Picasso;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
-      {
+{
 
 
     private static final String TAG = "MainActivityTag";
@@ -106,18 +106,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-          @Override
-          protected void onStart() {
-              super.onStart();
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-          }
+    }
 
-          @Override
-          protected void onStop() {
-              super.onStop();
-          }
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
-          @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (mToggle.onOptionsItemSelected(item)){
@@ -159,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //When backpressed is pressed, checking if backstackcount is over 0, if it is then trying to pop allUsers backstack.
-          //If no allUsers in backstack then going back to ChatRoomFragment.
-          //If 0, exit application
+    //If no allUsers in backstack then going back to ChatRoomFragment.
+    //If 0, exit application
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -177,31 +177,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Bottom navigation bar
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-                  = new BottomNavigationView.OnNavigationItemSelectedListener() {
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-              @Override
-              public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                  switch (item.getItemId()){
-                      case R.id.bottomNavigation_recents:
-                          return true;
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()){
+                case R.id.bottomNavigation_recents:
+                    return true;
 
-                      case R.id.bottomNavigation_friends:
-                          getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
-                          return true;
+                case R.id.bottomNavigation_friends:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
+                    return true;
 
-                      case R.id.bottomNavigation_request:
-                          Bundle bundle = new Bundle();
-                          bundle.putBoolean("from_request", true);
-                          FragmentManager fragmentManager = getSupportFragmentManager();
-                          FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                          AllUserListFragment fragment = new AllUserListFragment();
-                          fragment.setArguments(bundle);
-                          fragmentTransaction.replace(R.id.frameLayout, fragment).commit();
-                          return true;
-                  }
-                  return false;
-              }
-          };
+                case R.id.bottomNavigation_request:
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("from_request", true);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    AllUserListFragment fragment = new AllUserListFragment();
+                    fragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.frameLayout, fragment).commit();
+                    return true;
+            }
+            return false;
+        }
+    };
 
 
 
@@ -214,16 +214,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navUserName.setText(name);
     }
 
-          private void displayFullsizeAvatar(String receiverUserid) {
-              FragmentManager fragmentManager = getSupportFragmentManager();
-              FullScreenDialog dialog = new FullScreenDialog();
-              Bundle bundle = new Bundle();
-              bundle.putString("receiver_user_id", receiverUserid);
-              dialog.setArguments(bundle);
-              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-              dialog.show(fragmentTransaction, FullScreenDialog.TAG);
-          }
-      }
+    private void displayFullsizeAvatar(String receiverUserid) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FullScreenDialog dialog = new FullScreenDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("receiver_user_id", receiverUserid);
+        dialog.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        dialog.show(fragmentTransaction, FullScreenDialog.TAG);
+    }
+
+
+
+
+}
 
 
 

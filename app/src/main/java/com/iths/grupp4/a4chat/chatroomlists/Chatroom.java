@@ -10,6 +10,7 @@ public class Chatroom {
     public String creatorId;
     public String chatroomName;
     public String chatroomId;
+    public String creatorName;
     public DocumentReference creatorReference;
     public DocumentReference user1;
     public DocumentReference user2;
@@ -18,6 +19,11 @@ public class Chatroom {
 
     public Chatroom() {
 
+    }
+
+    public Chatroom(String creatorName, String creatorId) {
+        this.creatorName = creatorName;
+        this.creatorId = creatorId;
     }
 
     public Chatroom(DocumentReference creatorReference, String creatorId){

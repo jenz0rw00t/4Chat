@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.iths.grupp4.a4chat.allusers.AllUserListFragment;
 import com.iths.grupp4.a4chat.chatlists.ChatReferenceFragment;
 import com.iths.grupp4.a4chat.chatlists.LoginActivity;
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView navUserImage;
     private FirebaseAuth mAuth;
     public static FragmentManager sFragmentManager;
+    private GoogleSignInClient mGoogleSignInClient;
+    FirebaseAuth.AuthStateListener mAuthListener;
+
 
 
     @Override
@@ -223,7 +227,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
               dialog.show(fragmentTransaction, FullScreenDialog.TAG);
           }
-      }
+
+          @Override
+          protected void onResume() {
+              super.onResume();
+              if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                  signOut();
+              }
+
+          }
+
+          private void signOut() {
+              // Firebase sign out
+              if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                  LoginManager.getInstance().logOut();
+                  mAuth.signOut();
+                  LoginManager.getInstance().logOut();
+                  // Google sign out
+                  mGoogleSignInClient.signOut().addOnCompleteListener(this,
+                          new OnCompleteListener<Void>() {
+                              @Override
+                              public void onComplete(@NonNull Task<Void> task) {
+
+                              }
+                          });
+                  Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                  intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                  startActivity(intent);
+                  finish();
+
+                  getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment())
+                          .addToBackStack("LateTransaction").commit();
+              }
+          }
+
+          }
+
+
 
 
 

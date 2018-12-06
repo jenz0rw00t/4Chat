@@ -54,6 +54,7 @@ public class AllUserProfileFragment extends Fragment {
     private FirebaseFirestore acceptedFriendReference;
     private CollectionReference requestReference;
     private CollectionReference friendsReference;
+    private CollectionReference notificationReference;
     private FirebaseUser current_user;
 
     private String current_state;
@@ -80,6 +81,7 @@ public class AllUserProfileFragment extends Fragment {
         friendRequestReference = FirebaseFirestore.getInstance();
         acceptedFriendReference = FirebaseFirestore.getInstance();
         friendsReference = acceptedFriendReference.collection("users");
+        notificationReference = FirebaseFirestore.getInstance().collection("users");
         requestReference = friendRequestReference.collection("friend_request");
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         current_state = "not_friends";
@@ -203,7 +205,10 @@ public class AllUserProfileFragment extends Fragment {
                                         .set(received).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-
+                                        Map<String, String > data = new HashMap<>();
+                                        data.put("from", current_user.getUid());
+                                        data.put("type", "request");
+                                        notificationReference.document(receiver_user_id).collection("notifications").add(data);
                                         friendRequestReference.collection("users").document(current_user.getUid())
                                                 .update("request_sent", FieldValue.arrayUnion(receiver_user_id));
 

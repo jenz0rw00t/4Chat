@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.icu.util.BuddhistCalendar;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,6 +21,11 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.iths.grupp4.a4chat.R;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ChangePhotoDialog extends DialogFragment {
 
@@ -34,6 +41,8 @@ public class ChangePhotoDialog extends DialogFragment {
 
     OnPhotoReceivedListener mOnPhotoReceived;
 
+    private String mCurrentPhotoPath;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,16 +54,49 @@ public class ChangePhotoDialog extends DialogFragment {
 
         //Initialize the textview for choosing an image from memory
         TextView selectPhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
-        selectPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: accessing phones memory.");
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI); //opens camera intent
-                intent.setType("image/*");
-                startActivityForResult(intent, RESULT_LOAD_IMAGE);
+        selectPhoto.setOnClickListener(v -> {
+            Log.d(TAG, "onClick: accessing phones memory.");
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI); //opens camera intent
+            intent.setType("image/*");
+            startActivityForResult(intent, RESULT_LOAD_IMAGE);
+        });
+
+        TextView takePhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
+        takePhoto.setOnClickListener(view1 -> {
+            Log.d(TAG, "onCreateView: starting camera");
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+            if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) {
+                    Log.d(TAG, "onClick: error; " + ex.getMessage());
+                }
+                if (photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                            "com.iths.grupp4.a4chat.photos.fileprovider", photoFile);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                }
             }
         });
         return view;
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @Override
@@ -72,7 +114,9 @@ public class ChangePhotoDialog extends DialogFragment {
         }
 
         else if(requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-
+            Log.d(TAG, "onActivityResult: image uri: " + mCurrentPhotoPath);
+            mOnPhotoReceived.getImagePath(Uri.fromFile(new File(mCurrentPhotoPath)));
+            getDialog().dismiss();
         }
     }
 

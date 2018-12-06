@@ -1,5 +1,6 @@
 package com.iths.grupp4.a4chat;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseFirestore reference;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    public static ClipboardManager sClipboardManager;
     public static FragmentManager sFragmentManager;
 
 
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sClipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         sFragmentManager = getSupportFragmentManager();
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
                 .commit();
@@ -128,13 +132,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuth.getCurrentUser() != null ){
-            mAuth = FirebaseAuth.getInstance();
-            String userId = mAuth.getCurrentUser().getUid();
-            reference = FirebaseFirestore.getInstance();
-            reference.collection("users").document(userId).update("online", false);
-        }
+        if (mAuth.getCurrentUser()!=null) {
+        mAuth = FirebaseAuth.getInstance();
 
+            String user = mAuth.getCurrentUser().getUid();
+
+            reference = FirebaseFirestore.getInstance();
+            reference.collection("users").document(user).update("online", false);
+        }
     }
 
     private void signInActivity() {

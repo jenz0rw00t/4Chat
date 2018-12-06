@@ -1,26 +1,28 @@
 package com.iths.grupp4.a4chat.chatlists;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firestore.admin.v1beta1.Index;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.iths.grupp4.a4chat.allusers.AllUserProfileFragment;
-import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
 import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -45,6 +47,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public ProgressBar progressBar;
     public int viewType;
     String visit_user_id;
+    Context mContext;
 
     final int radius = 25;
     final int margin = 25;
@@ -64,13 +67,13 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void setData(Message message){
-        String userStyle = message.user+":";
+    public void setData(Message message) {
+        String userStyle = message.user + ":";
         textUser.setText(userStyle);
         textMessage.setText(message.message);
     }
 
-    public void setData(MessageUserRef messageUserRef){
+    public void setData(MessageUserRef messageUserRef) {
         if (viewType == 2) {
             messageUserRef.user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
@@ -95,12 +98,20 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     public void setDataSent(MessageUserRef messageUserRef) {
         textMessage.setText(messageUserRef.message);
+        textMessage.setTextIsSelectable(true);
         Date date = messageUserRef.timeStamp;
         if (date != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
             String time = dateFormat.format(date);
             textTime.setText(time);
         }
+
+       textMessage.setOnClickListener(view -> {
+           if (!messageUserRef.message.equals("")) {
+               textMessage.setCustomSelectionActionModeCallback(mCopyPasteCallBack);
+           }
+       });
+
     }
 
     public void setDataReceived(MessageUserRef messageUserRef) {
@@ -117,6 +128,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             }
         });
         textMessage.setText(messageUserRef.message);
+        textMessage.setTextIsSelectable(true);
         Date date = messageUserRef.timeStamp;
         if (date != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
@@ -124,8 +136,15 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             textTime.setText(time);
         }
 
+        textMessage.setOnClickListener(view -> {
+            if (!messageUserRef.message.equals("")) {
+                Log.d(TAG, "setDataReceived: on clicxkkd");
+                textMessage.setCustomSelectionActionModeCallback(mCopyPasteCallBack);
+            }
+        });
+
         imageUser.setOnClickListener(view -> {
-           redirectToProfil(visit_user_id);
+            redirectToProfil(visit_user_id);
         });
     }
 
@@ -151,6 +170,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             setChatImage(messageUserRef.message, imageMessage);
             hideLoader();
         }
+
         imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
 
     }
@@ -166,7 +186,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
                         .placeholder(R.drawable.default_avatar)
                         .transform(new CropCircleTransformation())
                         .into(imageUser);
-                }
+            }
         });
 
         setChatImage(messageUserRef.message, imageMessage);
@@ -177,13 +197,16 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             String time = dateFormat.format(date);
             textTime.setText(time);
         }
-        imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
+        if (imageMessage.getDrawable() != null) {
+            imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
+        }
         imageUser.setOnClickListener(view -> redirectToProfil(visit_user_id));
     }
 
     private void showLoader() {
         progressBar.setVisibility(View.VISIBLE);
     }
+
     //Hides the progressbar when loading finished
     private void hideLoader() {
         if (progressBar.getVisibility() == View.VISIBLE) {
@@ -210,12 +233,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
                     public void onSuccess() {
 
                     }
+
                     @Override
                     public void onError(Exception e) {
                         Picasso.get().load(R.drawable.errorimage)
                                 .transform(transformation)
                                 .resize(600, 300).centerCrop()
                                 .into(imageView);
+
                     }
                 });
     }
@@ -223,7 +248,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     private void redirectToProfil(String userToVisit) {
         Bundle bundle = new Bundle();
         bundle.putString("visit_user_id", visit_user_id);
-        if (visit_user_id!=null) {
+        if (visit_user_id != null) {
             FragmentTransaction fragmentTransaction = MainActivity.sFragmentManager.beginTransaction();
             AllUserProfileFragment fragment = new AllUserProfileFragment();
             fragment.setArguments(bundle);
@@ -232,6 +257,45 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    private ActionMode.Callback mCopyPasteCallBack = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            menu.removeItem(android.R.id.cut);
+
+            menu.removeItem(android.R.id.replaceText);
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.copy_paste, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_copy:
+                    copyText();
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+        }
+    };
+
+    private void copyText() {
+        ClipboardManager clipboardManager = MainActivity.sClipboardManager;
+        CharSequence selectedTxt = textMessage.getText().subSequence(textMessage.getSelectionStart(), textMessage.getSelectionEnd());
+        ClipData clipData = ClipData.newPlainText("text", selectedTxt);
+        clipboardManager.setPrimaryClip(clipData);
+    }
 
 
 

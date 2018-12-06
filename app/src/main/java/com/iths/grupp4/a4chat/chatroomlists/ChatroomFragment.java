@@ -168,10 +168,10 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
 
                             Bundle bundle = new Bundle();
                             bundle.putString("ChatroomId", chatroomId);
-                            ChatroomDialogNewChatroom dialog = new ChatroomDialogNewChatroom();
+                            ChatroomDialogEditName dialog = new ChatroomDialogEditName();
                             dialog.setArguments(bundle);
                             dialog.setTargetFragment(ChatroomFragment.this, 1);
-                            dialog.show(getFragmentManager(), "ChatroomDialogNewChatroom");
+                            dialog.show(getFragmentManager(), "ChatroomDialogEditName");
 
                             Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
                         }

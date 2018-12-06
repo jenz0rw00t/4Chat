@@ -261,8 +261,8 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             menu.removeItem(android.R.id.cut);
-
             menu.removeItem(android.R.id.replaceText);
+            menu.removeItem(android.R.id.shareText);
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.copy_paste, menu);
             return true;

@@ -136,7 +136,7 @@ public class FriendsListFragment extends Fragment {
         adapter.setOnItemClickListener(new FriendsAdapter.OnItemClicklistener() {
             @Override
             public void onItemClick(DocumentSnapshot snapshot, int position) {
-                db.collection("pms")
+                db.collection("pmsBETA")
                         .whereArrayContains("users", current_user.getUid() + snapshot.getId())
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -155,8 +155,10 @@ public class FriendsListFragment extends Fragment {
                                         .commit();
                             } else {
                                 // Document didn't exist, so it is created
-                                Chatroom chatroom = new Chatroom(current_user.getDisplayName(), current_user.getUid());
-                                db.collection("pms")
+                                DocumentReference userRef = db.collection("users").document(current_user.getUid());
+                                DocumentReference recieverRef = db.collection("users").document(snapshot.getId());
+                                Chatroom chatroom = new Chatroom(userRef, recieverRef, current_user.getUid());
+                                db.collection("pmsBETA")
                                         .add(chatroom).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
                                     public void onSuccess(DocumentReference documentReference) {

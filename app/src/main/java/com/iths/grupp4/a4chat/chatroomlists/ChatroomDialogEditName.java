@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 import com.iths.grupp4.a4chat.R;
 
-public class ChatroomNameDialog extends DialogFragment {
+public class ChatroomDialogEditName extends DialogFragment {
 
     EditText editTextChatName;
     Button buttonSaveButton;
@@ -23,34 +23,33 @@ public class ChatroomNameDialog extends DialogFragment {
     String chatroomName;
     String chatroomId;
 
-    public interface OnNameReceivedListener {
-        void getName(String chatroomId, String chatroomName);
+    public interface OnEditNameListener {
+        void editName(String chatroomId, String chatroomName);
     }
 
-    OnNameReceivedListener mOnNameReceivedListener;
+    OnEditNameListener onEditNameListener;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_chatname, container, false);
+        View view = inflater.inflate(R.layout.dialog_chatroom_editname, container, false);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
             chatroomId = bundle.getString("ChatroomId", null);
         }
 
-        editTextChatName = (EditText) view.findViewById(R.id.dialog_chatname_chatName);
-        buttonSaveButton = (Button) view.findViewById(R.id.dialog_chatname_saveButton);
+        editTextChatName = (EditText) view.findViewById(R.id.dialog_chatroom_editname_edittext);
+        buttonSaveButton = (Button) view.findViewById(R.id.dialog_chatroom_editname_saveButton);
 
         buttonSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.dialog_chatname_saveButton:
-                        chatroomName = editTextChatName.getText().toString();
-                        mOnNameReceivedListener.getName(chatroomId, chatroomName);
-                        getDialog().dismiss();
-                }
+            public void onClick(View v) {
+
+                chatroomName = editTextChatName.getText().toString();
+                onEditNameListener.editName(chatroomId, chatroomName);
+
+                getDialog().dismiss();
             }
         });
 
@@ -60,7 +59,7 @@ public class ChatroomNameDialog extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         try {
-            mOnNameReceivedListener = (ChatroomNameDialog.OnNameReceivedListener) getTargetFragment();
+            onEditNameListener = (ChatroomDialogEditName.OnEditNameListener) getTargetFragment();
         } catch (ClassCastException e) {
             Log.e(TAG, "onAttach: ClassCastException", e.getCause());
         }

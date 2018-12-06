@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -69,6 +70,7 @@ public class ChatReferenceFragment extends Fragment implements
         userRef = db.collection("users").document(userID);
 
         messageField = getActivity().findViewById(R.id.messageField);
+
         messageField.setOnClickListener(view -> {
             ClipData clipData = MainActivity.sClipboardManager.getPrimaryClip();
             ClipData.Item item = clipData.getItemAt(0);

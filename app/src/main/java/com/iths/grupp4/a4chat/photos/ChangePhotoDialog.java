@@ -61,7 +61,8 @@ public class ChangePhotoDialog extends DialogFragment {
             startActivityForResult(intent, RESULT_LOAD_IMAGE);
         });
 
-        TextView takePhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
+
+        TextView takePhoto = (TextView) view.findViewById(R.id.dialogOpenCamera);
         takePhoto.setOnClickListener(view1 -> {
             Log.d(TAG, "onCreateView: starting camera");
             Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

@@ -197,9 +197,9 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             String time = dateFormat.format(date);
             textTime.setText(time);
         }
-        if (imageMessage.getDrawable() != null) {
-            imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
-        }
+
+        imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
+
         imageUser.setOnClickListener(view -> redirectToProfil(visit_user_id));
     }
 

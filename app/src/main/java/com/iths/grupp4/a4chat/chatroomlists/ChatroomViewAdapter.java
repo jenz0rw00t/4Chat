@@ -88,55 +88,31 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                     return;
                 }
 
-                StringBuilder userList = new StringBuilder();
-                userList.append(view.getContext().getText(R.string.active_users) + " ");
-                List<String> activeUser = new ArrayList<>();
+                if (!value.isEmpty()) {
+                    StringBuilder userList = new StringBuilder();
+                    userList.append(view.getContext().getText(R.string.active_users) + " ");
+                    List<String> activeUser = new ArrayList<>();
 
-                for (QueryDocumentSnapshot doc : value) {
-                    activeUser.add(doc.getString("UserName"));
-                }
+                    for (QueryDocumentSnapshot doc : value) {
+                        activeUser.add(doc.getString("UserName"));
+                    }
 
-                for (int i = 0; i < activeUser.size(); i++) {
-                    if (i < 1) {
-                        userList.append(activeUser.get(i));
+                    for (int i = 0; i < activeUser.size(); i++) {
+                        if (i < 1) {
+                            userList.append(activeUser.get(i));
+                        }
+                        if (i > 1) {
+                            userList.append(", ").append(activeUser.get(i));
+                        }
                     }
-                    if (i > 1) {
-                        userList.append(", ").append(activeUser.get(i));
-                    }
+                    textViewActiveUsers.setText(userList.toString());
                 }
-                textViewActiveUsers.setText(userList.toString());
+                else {
+                    textViewActiveUsers.setText(view.getContext().getText(R.string.no_active_users));
+                }
 
             }
         });
-
-        /*if (activeUsers != null) {
-            activeUsers.get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                StringBuilder userList = new StringBuilder();
-                                userList.append(view.getContext().getText(R.string.active_users) + " ");
-                                for (int i = 0; i < task.getResult().size(); i++) {
-                                    if (i < 1) {
-                                        userList.append(task.getResult().getDocuments().get(i).get("UserName").toString());
-                                    }
-                                    if (task.getResult().size() > 1) {
-                                        userList.append(", " + task.getResult().getDocuments().get(i).get("UserName").toString());
-                                    }
-                                }
-                                textViewActiveUsers.setText(userList.toString());
-                            }
-                            else {
-                                textViewActiveUsers.setText(view.getContext().getText(R.string.no_active_users));
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-        }
-        else {
-            textViewActiveUsers.setText(view.getContext().getText(R.string.no_active_users));
-        }*/
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

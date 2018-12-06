@@ -19,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.chatlists.ChatroomReferenceFragment;
+import com.iths.grupp4.a4chat.chatlists.PmReferenceFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,58 +45,38 @@ public class PmViewAdapter extends RecyclerView.Adapter<PmViewHolder> {
     @Override
     public PmViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.chatroom_item, viewGroup, false);
+                .inflate(R.layout.pms_item, viewGroup, false);
 
         return new PmViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PmViewHolder chatroomViewHolder, int i) {
+    public void onBindViewHolder(@NonNull PmViewHolder pmViewHolder, int i) {
         Chatroom chatroom = chatroomList.get(i);
-        chatroomViewHolder.setData(chatroom);
+        pmViewHolder.setData(chatroom);
 
         db = FirebaseFirestore.getInstance();
         current_user = FirebaseAuth.getInstance().getCurrentUser();
 
-        int position = chatroomViewHolder.getAdapterPosition();
+        int position = pmViewHolder.getAdapterPosition();
         String chatroomId = chatroomList.get(position).getChatroomId();
 
         TextView textViewChatroomName = (TextView) view.findViewById(R.id.chatroom_item_name);
         textViewChatroomName.setText(chatroomList.get(position).getChatroomName());
 
-        ImageView imageViewDelete = view.findViewById(R.id.chatroom_item_delete);
-        imageViewDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (current_user.getUid().equals(chatroomList.get(position).getCreatorId())) {
-                    removeItem(position);
-                    db.collection("chatroomsBETA").document(chatroomId).delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " deleted", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " wasn't deleted", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                    if (chatroomList.isEmpty()) {
-                        chatroomList = new ArrayList<>();
-                    }
-                } else {
-                    Toast.makeText(view.getContext(), "You can't delete " + chatroomList.get(position).getChatroomId(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //TODO On click metod för listan
+                Bundle bundle = new Bundle();
+                bundle.putString(CHATROOM_ID, chatroomId);
+                PmReferenceFragment pmReferenceFragment = new PmReferenceFragment();
+                pmReferenceFragment.setArguments(bundle);
+                FragmentManager manager = ((MainActivity) v.getContext()).getSupportFragmentManager();
+                manager.beginTransaction()
+                        .addToBackStack("Chatrooms")
+                        .replace(R.id.frameLayout, pmReferenceFragment, null)
+                        .commit();
 
             }
         });

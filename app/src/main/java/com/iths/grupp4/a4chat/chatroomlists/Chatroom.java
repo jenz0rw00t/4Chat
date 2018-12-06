@@ -17,6 +17,12 @@ public class Chatroom {
     @ServerTimestamp
     public Date timeStamp;
 
+    public Date getRecentMessage() {
+        return recentMessage;
+    }
+
+    public Date recentMessage;
+
     public Chatroom() {
 
     }

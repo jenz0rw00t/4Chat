@@ -74,7 +74,10 @@ public class PmViewHolder extends RecyclerView.ViewHolder {
                 }
             });
         }
-    Date date = chatroom.timeStamp;
+        Date date = chatroom.recentMessage;
+        if (date == null){
+            date = chatroom.timeStamp;
+        }
         textViewCreatedOn.setText("");
         if(date !=null) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM HH:mm");

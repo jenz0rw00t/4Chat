@@ -30,6 +30,7 @@ import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
 import com.iths.grupp4.a4chat.photos.PhotoUploader;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -144,6 +145,8 @@ public class PmReferenceFragment extends Fragment implements
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
+                            db.collection("pmsBETA")
+                                    .document(chatroomId).update("recentMessage", Calendar.getInstance().getTime());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

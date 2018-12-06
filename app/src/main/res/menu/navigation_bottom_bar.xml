@@ -3,12 +3,12 @@
 
     <item
         android:id="@+id/bottomNavigation_recents"
-        android:icon="@drawable/ic_watch_later_black_24dp"
-        android:title="Recent Chats"/>
+        android:icon="@drawable/ic_message"
+        android:title="Private Messages"/>
 
     <item
         android:id="@+id/bottomNavigation_friends"
-        android:icon="@drawable/ic_person_black_24dp"
+        android:icon="@drawable/ic_group_black_24dp"
         android:title="Friends" />
 
     <item

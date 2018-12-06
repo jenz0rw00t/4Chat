@@ -214,6 +214,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.bottomNavigation_recents:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PmFragment())
+                            .addToBackStack("LateTransaction").commit();
                     return true;
 
                 case R.id.bottomNavigation_friends:

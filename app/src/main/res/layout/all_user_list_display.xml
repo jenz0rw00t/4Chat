@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -8,44 +9,65 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="15dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/all_user_profile_image"
-            android:layout_width="85dp"
-            android:layout_height="85dp"
-            android:src="@drawable/default_avatar"/>
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="260dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="vertical">
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/all_user_username"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/all_user_profile_image"
+                android:layout_width="85dp"
+                android:layout_height="85dp"
+                android:src="@drawable/default_avatar" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Username"
-                android:textSize="23sp"
-                android:textStyle="bold" />
+                android:layout_margin="5dp"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/all_user_userEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Email"
-                android:textSize="18sp" />
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/all_user_username"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="Username"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/statusIcon"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/statusIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:srcCompat="@drawable/ic_offline_icon"
+                        tools:layout_editor_absoluteY="4dp" />
+
+                </android.support.constraint.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/all_user_userEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/statusIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_offline_icon" />
 
     </LinearLayout>
 

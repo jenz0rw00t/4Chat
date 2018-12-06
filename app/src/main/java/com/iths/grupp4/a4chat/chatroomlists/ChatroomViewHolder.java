@@ -27,7 +27,6 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder {
         textViewName = itemView.findViewById(R.id.chatroom_item_name);
         textViewCreator = itemView.findViewById(R.id.chatroom_item_creator);
         textViewCreatedOn = itemView.findViewById(R.id.chatroom_item_createdOn);
-        imageViewDelete = itemView.findViewById(R.id.chatroom_item_delete);
     }
 
     public void setData(Chatroom chatroom){

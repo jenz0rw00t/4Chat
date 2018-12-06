@@ -58,6 +58,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
         recyclerView = getActivity().findViewById(R.id.chatroom_recyclerView);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
 
@@ -80,7 +81,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
                     ChatroomDialogRemove dialog = new ChatroomDialogRemove();
                     dialog.setArguments(bundle);
                     dialog.setTargetFragment(ChatroomFragment.this, 1);
-                    dialog.show(getFragmentManager(), "ChatroomDialogEditName");
+                    dialog.show(getFragmentManager(), "ChatroomDialogRemove");
 
                 } else {
 
@@ -122,6 +123,10 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
     @Override
     public void onStart() {
         super.onStart();
+
+        chatroomList.clear();
+        adapter.notifyDataSetChanged();
+
         db.collection("chatroomsBETA")
                 .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -163,10 +168,10 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
 
                             Bundle bundle = new Bundle();
                             bundle.putString("ChatroomId", chatroomId);
-                            ChatroomDialogEditName dialog = new ChatroomDialogEditName();
+                            ChatroomDialogNewChatroom dialog = new ChatroomDialogNewChatroom();
                             dialog.setArguments(bundle);
                             dialog.setTargetFragment(ChatroomFragment.this, 1);
-                            dialog.show(getFragmentManager(), "ChatroomDialogEditName");
+                            dialog.show(getFragmentManager(), "ChatroomDialogNewChatroom");
 
                             Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
                         }

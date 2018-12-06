@@ -2,8 +2,10 @@ package com.iths.grupp4.a4chat.chatroomlists;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +13,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.chatlists.ChatroomReferenceFragment;
 
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,33 +74,69 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         TextView textViewChatroomName = (TextView) view.findViewById(R.id.chatroom_item_name);
         textViewChatroomName.setText(chatroomList.get(position).getChatroomName());
 
-        ImageView imageViewDelete = view.findViewById(R.id.chatroom_item_delete);
-        imageViewDelete.setOnClickListener(new View.OnClickListener() {
+        TextView textViewActiveUsers = (TextView) view.findViewById(R.id.chatroom_item_active_users);
+        CollectionReference activeUsers = db.collection("chatroomsBETA")
+                .document(chatroomId)
+                .collection("active_users");
+
+        activeUsers.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onClick(View v) {
-                if (current_user.getUid().equals(chatroomList.get(position).getCreatorId())) {
-                    removeItem(position);
-                    db.collection("chatroomsBETA").document(chatroomId).delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " deleted", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(view.getContext(), chatroom.getChatroomName() + " wasn't deleted", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                    if (chatroomList.isEmpty()) {
-                        chatroomList = new ArrayList<>();
-                    }
-                } else {
-                    Toast.makeText(view.getContext(), "You can't delete " + chatroomList.get(position).getChatroomId(), Toast.LENGTH_SHORT).show();
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
                 }
+
+                StringBuilder userList = new StringBuilder();
+                userList.append(view.getContext().getText(R.string.active_users) + " ");
+                List<String> activeUser = new ArrayList<>();
+
+                for (QueryDocumentSnapshot doc : value) {
+                    activeUser.add(doc.getString("UserName"));
+                }
+
+                for (int i = 0; i < activeUser.size(); i++) {
+                    if (i < 1) {
+                        userList.append(activeUser.get(i));
+                    }
+                    if (i > 1) {
+                        userList.append(", ").append(activeUser.get(i));
+                    }
+                }
+                textViewActiveUsers.setText(userList.toString());
+
             }
         });
+
+        /*if (activeUsers != null) {
+            activeUsers.get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                StringBuilder userList = new StringBuilder();
+                                userList.append(view.getContext().getText(R.string.active_users) + " ");
+                                for (int i = 0; i < task.getResult().size(); i++) {
+                                    if (i < 1) {
+                                        userList.append(task.getResult().getDocuments().get(i).get("UserName").toString());
+                                    }
+                                    if (task.getResult().size() > 1) {
+                                        userList.append(", " + task.getResult().getDocuments().get(i).get("UserName").toString());
+                                    }
+                                }
+                                textViewActiveUsers.setText(userList.toString());
+                            }
+                            else {
+                                textViewActiveUsers.setText(view.getContext().getText(R.string.no_active_users));
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+        }
+        else {
+            textViewActiveUsers.setText(view.getContext().getText(R.string.no_active_users));
+        }*/
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

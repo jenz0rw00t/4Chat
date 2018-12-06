@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 import com.iths.grupp4.a4chat.R;
 
-public class ChatroomDialogEditName extends DialogFragment {
+public class ChatroomDialogNewChatroom extends DialogFragment {
 
     EditText editTextEditName;
     Button buttonOk;
@@ -69,7 +69,7 @@ public class ChatroomDialogEditName extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         try {
-            onEditNameListener = (ChatroomDialogEditName.OnEditNameListener) getTargetFragment();
+            onEditNameListener = (ChatroomDialogNewChatroom.OnEditNameListener) getTargetFragment();
         } catch (ClassCastException e) {
             Log.e(TAG, "onAttach: ClassCastException", e.getCause());
         }

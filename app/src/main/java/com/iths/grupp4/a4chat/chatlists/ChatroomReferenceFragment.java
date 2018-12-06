@@ -66,7 +66,7 @@ public class ChatroomReferenceFragment extends Fragment implements
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            chatroomId = bundle.getString(CHATROOM_ID,null);
+            chatroomId = bundle.getString(CHATROOM_ID, null);
         }
 
         db = FirebaseFirestore.getInstance();
@@ -131,7 +131,7 @@ public class ChatroomReferenceFragment extends Fragment implements
 
         getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
 
-            
+
             // Create a new message with username and message
             MessageUserRef info = new MessageUserRef(userRef, messageField.getText().toString());
             messageField.setText("");
@@ -157,7 +157,7 @@ public class ChatroomReferenceFragment extends Fragment implements
 
 
         getActivity().findViewById(R.id.attachment).setOnClickListener(view -> {
-            Log.d(TAG, "attachment cklicked" );
+            Log.d(TAG, "attachment cklicked");
             openChangePhotoDialog(view);
         });
     }
@@ -213,8 +213,8 @@ public class ChatroomReferenceFragment extends Fragment implements
                         MessageUserRef uploadedImage = new MessageUserRef(userRef, "" + downloadUrl, true);
 
                         db.collection("chatroomsBETA")
-                        .document(chatroomId)
-                        .collection("messagesUserRef")
+                                .document(chatroomId)
+                                .collection("messagesUserRef")
                                 .add(uploadedImage)
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
@@ -231,8 +231,6 @@ public class ChatroomReferenceFragment extends Fragment implements
                 });
     }
 
-
-
     private void openChangePhotoDialog(View view) {
         Log.d(TAG, "onClick: Image button clicked");
         ChangePhotoDialog dialog = new ChangePhotoDialog();
@@ -243,19 +241,13 @@ public class ChatroomReferenceFragment extends Fragment implements
         dialog.show(getFragmentManager(), "ChangePhotoDialog");
     }
 
-
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPause() {
+        super.onPause();
         db.collection("chatroomsBETA")
                 .document(chatroomId)
                 .collection("active_users")
                 .document(userRef.getId())
                 .delete();
     }
-
-
-
-
-
 }

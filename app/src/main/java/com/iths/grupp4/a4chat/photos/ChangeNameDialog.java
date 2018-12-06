@@ -18,8 +18,10 @@ public class ChangeNameDialog extends DialogFragment {
 
     private static final String TAG = "ChangeNameDialog";
     String name;
+    Button buttonOk;
+    Button buttonCancel;
 
-    public interface OnNameReceivedListener{
+    public interface OnNameReceivedListener {
         void getName(String name);
     }
 
@@ -30,29 +32,43 @@ public class ChangeNameDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_changename, container, false);
 
-        EditText nameInput = view.findViewById(R.id.dialogChangeName);
+        EditText nameInput = view.findViewById(R.id.dialog_profile_editname_edittext);
+        buttonOk = view.findViewById(R.id.dialog_profile_editname_okButton);
+        buttonCancel = view.findViewById(R.id.dialog_profile_editname_cancelButton);
 
-        Button save = view.findViewById(R.id.dialogSaveBtn);
-        save.setOnClickListener(new View.OnClickListener() {
+        buttonOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (view.getId()) {
-                    case R.id.dialogSaveBtn:
-                    name = nameInput.getText().toString();
-                    mOnNameReceivedListener.getName(name);
-                    getDialog().dismiss();
+                    case R.id.dialog_profile_editname_okButton:
+                        name = nameInput.getText().toString();
+                        mOnNameReceivedListener.getName(name);
+
+                        getDialog().dismiss();
                 }
             }
         });
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.dialog_profile_editname_cancelButton:
+
+                        getDialog().dismiss();
+                }
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onAttach(Context context) {
-        try{
+        try {
             mOnNameReceivedListener = (OnNameReceivedListener) getTargetFragment();
-        }catch (ClassCastException e){
-            Log.e(TAG, "onAttach: ClassCastException", e.getCause() );
+        } catch (ClassCastException e) {
+            Log.e(TAG, "onAttach: ClassCastException", e.getCause());
         }
         super.onAttach(context);
     }

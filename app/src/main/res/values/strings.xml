@@ -42,4 +42,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <string name="no_active_users">No Active Users</string>
+    <string name="active_users">Active Users: </string>
 </resources>

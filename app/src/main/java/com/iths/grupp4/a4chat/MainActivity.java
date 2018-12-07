@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView navUserImage;
     private FirebaseFirestore reference;
     private FirebaseAuth mAuth;
+    private BottomNavigationView navigation;
     private GoogleSignInClient mGoogleSignInClient;
     public static ClipboardManager sClipboardManager;
     public static FragmentManager sFragmentManager;
@@ -72,9 +73,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String user_id = mAuth.getCurrentUser().getUid();
         FirebaseFirestore databaseReference = FirebaseFirestore.getInstance();
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottomNavigationBar);
+        navigation = (BottomNavigationView) findViewById(R.id.bottomNavigationBar);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
+        navigation.getMenu().setGroupCheckable(0,false,true);
 
         databaseReference.collection("users").document(user_id)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -167,9 +168,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
+            navigation.getMenu().setGroupCheckable(0,false,true);
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment())
                     .addToBackStack("LateTransaction").commit();
         } else if (id == R.id.nav_chatrooms) {
+            navigation.getMenu().setGroupCheckable(0,false,true);
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
                     .commit();
         } else if (id == R.id.nav_logout) {
@@ -177,12 +180,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             LoginManager.getInstance().logOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         } else if (id == R.id.nav_all_users) {
+            navigation.getMenu().setGroupCheckable(0,false,true);
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AllUserListFragment())
                     .addToBackStack("LateTransaction").commit();
         } else if (id == R.id.nav_chat_test) {
+            navigation.getMenu().setGroupCheckable(0,true,true);
+            navigation.setSelectedItemId(R.id.bottomNavigation_recents);
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PmFragment())
                     .addToBackStack("LateTransaction").commit();
         } else if (id == R.id.nav_friends) {
+            navigation.getMenu().setGroupCheckable(0,true,true);
+            navigation.setSelectedItemId(R.id.bottomNavigation_friends);
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment())
                     .addToBackStack("LateTransaction").commit();
         }
@@ -214,15 +222,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.bottomNavigation_recents:
+                    navigation.getMenu().setGroupCheckable(0,true,true);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PmFragment())
                             .addToBackStack("LateTransaction").commit();
                     return true;
 
                 case R.id.bottomNavigation_friends:
+                    navigation.getMenu().setGroupCheckable(0,true,true);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
                     return true;
 
                 case R.id.bottomNavigation_request:
+                    navigation.getMenu().setGroupCheckable(0,true,true);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("from_request", true);
                     FragmentManager fragmentManager = getSupportFragmentManager();
@@ -235,6 +246,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return false;
         }
     };
+
+
 
 
     public void updateNavProfileImage(Uri imagePath) {
@@ -286,6 +299,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new UserProfileFragment())
                     .addToBackStack("LateTransaction").commit();
+        }
+    }
+
+    public void showBottomBar(Boolean visible){
+        if (visible){
+            navigation.setVisibility(View.VISIBLE);
+        } else {
+            navigation.setVisibility(View.GONE);
         }
     }
 

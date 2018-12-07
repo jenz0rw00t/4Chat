@@ -24,6 +24,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.iths.grupp4.a4chat.photos.ChangePhotoDialog;
@@ -63,6 +64,9 @@ public class ChatroomReferenceFragment extends Fragment implements
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.showBottomBar(false);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -249,5 +253,12 @@ public class ChatroomReferenceFragment extends Fragment implements
                 .collection("active_users")
                 .document(userRef.getId())
                 .delete();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.showBottomBar(true);
     }
 }

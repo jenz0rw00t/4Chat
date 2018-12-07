@@ -49,8 +49,6 @@ public class ChangePhotoDialog extends DialogFragment {
     OnPhotoReceivedListener mOnPhotoReceived;
 
     private String mCurrentPhotoPath;
-    private boolean mStoragePermission;
-    private boolean mCameraPermission;
 
     @Nullable
     @Override
@@ -60,7 +58,6 @@ public class ChangePhotoDialog extends DialogFragment {
         if (getArguments() != null) {
             bottomPosition();
         }
-
 
         TextView selectPhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
         selectPhoto.setOnClickListener(v -> {

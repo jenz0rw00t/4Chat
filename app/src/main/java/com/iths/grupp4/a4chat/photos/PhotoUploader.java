@@ -77,7 +77,6 @@ public class PhotoUploader {
 
     public void uploadFullSizeNewPhoto(Uri imageUri) {
         Log.d(TAG, "uploadFullSizeNewPhoto: uploading new image" + imageUri);
-
         //Only accept image sizes that are compressed to under 5MB. If thats not possible
         //then do not allow image to be uploaded, then interrupt
         BackgroundConversion uploadFullsizeImage = new BackgroundConversion(null);
@@ -85,7 +84,6 @@ public class PhotoUploader {
         if(mConvert != null){
             mConvert.cancel(true);
         }
-
         uploadFullsizeImage.execute(imageUri);
     }
 
@@ -251,7 +249,7 @@ public class PhotoUploader {
                 bytes = getBytesFromBitmap(mBitmap, 100 / i);
                 Log.d(TAG, "doInBackground: megabytes(" + (11 - i) + "0%) " + bytes.length / MB + "MB");
                 if (bytes.length / MB < MB_THRESHHOLD) {
-                    return bytes;
+                return bytes;
                 }
             }
             return bytes;

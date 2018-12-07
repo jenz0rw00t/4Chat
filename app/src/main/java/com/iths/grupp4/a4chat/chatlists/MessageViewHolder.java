@@ -297,6 +297,4 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         clipboardManager.setPrimaryClip(clipData);
     }
 
-
-
 }

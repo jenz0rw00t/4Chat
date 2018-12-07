@@ -133,7 +133,7 @@ public class PmReferenceFragment extends Fragment implements
                     }
                 });
 
-        getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
+        getActivity().findViewById(R.id.send_button_plane).setOnClickListener(view -> {
 
             
             // Create a new message with username and message

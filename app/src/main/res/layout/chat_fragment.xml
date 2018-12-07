@@ -5,14 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+
+    <ImageView
+        android:id="@+id/send_button_plane"
+        android:layout_width="32dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Send!"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/messageField"
+        app:srcCompat="@drawable/ic_action_send" />
 
     <android.support.v7.widget.RecyclerView
 
@@ -33,14 +37,15 @@
 
     <EditText
         android:id="@+id/messageField"
-        android:layout_width="0dp"
+        android:layout_width="302dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Message"
         android:maxLines="6"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/send_button_plane"
         app:layout_constraintStart_toEndOf="@+id/attachment" />
 
     <View
@@ -62,6 +67,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/messageField"
-        app:srcCompat="@drawable/ic_attachment_black_24" />
+        app:srcCompat="@drawable/ic_camera_chatfragment" />
 
 </android.support.constraint.ConstraintLayout>

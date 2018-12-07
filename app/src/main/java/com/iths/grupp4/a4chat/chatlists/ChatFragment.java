@@ -123,7 +123,7 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        getActivity().findViewById(R.id.button2).setOnClickListener(view -> {
+        getActivity().findViewById(R.id.send_button_plane).setOnClickListener(view -> {
             // Create a new message with username and message
             Message chatMessage = new Message(mFirebaseAuth.getCurrentUser().getDisplayName(), messageField.getText().toString());
             messageField.setText("");

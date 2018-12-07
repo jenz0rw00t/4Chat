@@ -196,6 +196,7 @@ public class ChatroomReferenceFragment extends Fragment implements
     }
 
 
+
     @Override
     public void updateImageUrl(String downloadUrl) {
         Log.d(TAG, "messageImageUrl: downUrl is: " + downloadUrl);

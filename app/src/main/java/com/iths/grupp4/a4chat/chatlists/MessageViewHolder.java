@@ -199,7 +199,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         }
 
             imageMessage.setOnClickListener(view -> displayFullsizeAvatar(messageUserRef.message));
-        
+
         imageUser.setOnClickListener(view -> redirectToProfil(visit_user_id));
     }
 

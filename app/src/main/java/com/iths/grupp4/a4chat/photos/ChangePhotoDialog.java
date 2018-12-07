@@ -64,21 +64,25 @@ public class ChangePhotoDialog extends DialogFragment {
 
         TextView takePhoto = (TextView) view.findViewById(R.id.dialogOpenCamera);
         takePhoto.setOnClickListener(view1 -> {
-            Log.d(TAG, "onCreateView: starting camera");
-            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-            if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Ensure that there's a camera activity to handle the intent
+            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                // Create the File where the photo should go
                 File photoFile = null;
                 try {
                     photoFile = createImageFile();
                 } catch (IOException ex) {
-                    Log.d(TAG, "onClick: error; " + ex.getMessage());
+                    // Error occurred while creating the File
                 }
+                // Continue only if the File was successfully created
                 if (photoFile != null) {
+                    //File Provider
+                    //https://developer.android.com/reference/android/support/v4/content/FileProvider.html
                     Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                            "com.iths.grupp4.a4chat.photos.fileprovider", photoFile);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                            "com.iths.grupp4.a4chat.fileprovider",
+                            photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
                 }
             }
         });
@@ -86,7 +90,7 @@ public class ChangePhotoDialog extends DialogFragment {
     }
 
     private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 

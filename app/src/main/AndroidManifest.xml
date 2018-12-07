@@ -43,6 +43,17 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.iths.grupp4.a4chat.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            ...
+        </provider>
+
+    Hinenr du så hinenr du, annars är det luugnt, appen är ju fullmatad med funktionalitet
+
     </application>
 
 </manifest>

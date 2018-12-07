@@ -1,15 +1,20 @@
 package com.iths.grupp4.a4chat.photos;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.icu.util.BuddhistCalendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,6 +26,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.UserProfileFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +37,7 @@ public class ChangePhotoDialog extends DialogFragment {
 
     private static final String TAG = "ChangePhotoDialog";
 
+    private static final int REQUEST_CODE_PREMISSION = 1234;
     public static final int  CAMERA_REQUEST_CODE = 2;
     private static final int RESULT_LOAD_IMAGE = 1;
 
@@ -42,6 +49,8 @@ public class ChangePhotoDialog extends DialogFragment {
     OnPhotoReceivedListener mOnPhotoReceived;
 
     private String mCurrentPhotoPath;
+    private boolean mStoragePermission;
+    private boolean mCameraPermission;
 
     @Nullable
     @Override
@@ -52,38 +61,55 @@ public class ChangePhotoDialog extends DialogFragment {
             bottomPosition();
         }
 
-        //Initialize the textview for choosing an image from memory
+
         TextView selectPhoto = (TextView) view.findViewById(R.id.dialogChoosePhoto);
         selectPhoto.setOnClickListener(v -> {
-            Log.d(TAG, "onClick: accessing phones memory.");
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI); //opens camera intent
-            intent.setType("image/*");
-            startActivityForResult(intent, RESULT_LOAD_IMAGE);
-        });
+
+            String requiredPermission = "android.permission.READ_EXTERNAL_STORAGE";
+            int checkVal = getContext().checkCallingOrSelfPermission(requiredPermission);
+            if (checkVal==PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI); //opens camera intent
+                intent.setType("image/*");
+                startActivityForResult(intent, RESULT_LOAD_IMAGE);
+            } else {
+                verifyStoragePermission();
+            }
+
+            });
 
 
         TextView takePhoto = (TextView) view.findViewById(R.id.dialogOpenCamera);
         takePhoto.setOnClickListener(view1 -> {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // Ensure that there's a camera activity to handle the intent
-            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                // Create the File where the photo should go
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException ex) {
-                    // Error occurred while creating the File
+
+            String externalStoragePermission = "android.permission.WRITE_EXTERNAL_STORAGE";
+            String cameraPermission = "android.permission.CAMERA";
+            int permission1 = getContext().checkCallingOrSelfPermission(externalStoragePermission);
+            int permission2 = getContext().checkCallingOrSelfPermission(cameraPermission);
+
+            if (permission1==PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED) {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
+                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        //File Provider
+                        //https://developer.android.com/reference/android/support/v4/content/FileProvider.html
+                        Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                "com.example.android.fileprovider",
+                                photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+                    }
                 }
-                // Continue only if the File was successfully created
-                if (photoFile != null) {
-                    //File Provider
-                    //https://developer.android.com/reference/android/support/v4/content/FileProvider.html
-                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                            "com.iths.grupp4.a4chat.fileprovider",
-                            photoFile);
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-                }
+            } else {
+                verifyCameraPermission();
             }
         });
         return view;
@@ -147,4 +173,30 @@ public class ChangePhotoDialog extends DialogFragment {
         window.setAttributes(wlp);
     }
 
-}
+    public void verifyStoragePermission(){
+        Log.d(TAG, "verifyPermissions: asking user for permissions.");
+        String[] permissions = {android.Manifest.permission.READ_EXTERNAL_STORAGE};
+            ActivityCompat.requestPermissions(
+                    getActivity(),
+                    permissions,
+                    REQUEST_CODE_PREMISSION
+                    //Verkar som att man inte kommer åt OnRequestPermissionCode i DialogFragment. Därför tung kod för att direkt öppna
+                    //telefonens minne när "Allow" väljs. Nu behöver man trycka allow och sen trycka en gång till... inte snyggt men men.
+            );
+        }
+
+    public void verifyCameraPermission(){
+        Log.d(TAG, "verifyPermissions: asking user for permissions.");
+        String[] permission = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA};
+
+            ActivityCompat.requestPermissions(
+                    getActivity(),
+                    permission,
+                    REQUEST_CODE_PREMISSION
+                    //Verkar som att man inte kommer åt OnRequestPermissionCode i DialogFragment. Därför tung kod för att direkt öppna
+                    //telefonens minne när "Allow" väljs. Nu behöver man trycka allow och sen trycka en gång till... inte snyggt men men.
+            );
+        }
+    }
+

@@ -261,4 +261,12 @@ public class ChatroomReferenceFragment extends Fragment implements
         MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.showBottomBar(true);
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        super.onStop();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.showBottomBar(false);
+    }
 }

@@ -42,8 +42,6 @@ public class PhotoUploader {
     private ImageUploadCallback mImageUploadCallback;
 
 
-
-
     public interface ImageUploadCallback {
         void updateImageUrl(String downloadUrl);
     }

@@ -104,7 +104,7 @@ public class ChatroomReferenceFragment extends Fragment implements
         });
 
         //Register for change events for documents stored in collection items on firestore
-        db.collection("chatroomsBETA")
+        db.collection("chatrooms_BETA")
                 .document(chatroomId)
                 .collection("messagesUserRef")
                 .orderBy("timeStamp")
@@ -115,19 +115,22 @@ public class ChatroomReferenceFragment extends Fragment implements
                             return;
                         }
 
-                        for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                        if (queryDocumentSnapshots != null) {
 
-                                String id = dc.getDocument().getId();
+                            for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                                if (dc.getType() == DocumentChange.Type.ADDED) {
 
-                                MessageUserRef messageUserRef = dc.getDocument().toObject(MessageUserRef.class);
-                                messageUserRef.id = id;
-                                adapter.addItem(messageUserRef);
-                                recyclerView.smoothScrollToPosition(messagesList.size() - 1);
+                                    String id = dc.getDocument().getId();
 
-                            } else if (dc.getType() == DocumentChange.Type.REMOVED) {
-                                String id = dc.getDocument().getId();
-                                adapter.removeItem(id);
+                                    MessageUserRef messageUserRef = dc.getDocument().toObject(MessageUserRef.class);
+                                    messageUserRef.id = id;
+                                    adapter.addItem(messageUserRef);
+                                    recyclerView.smoothScrollToPosition(messagesList.size() - 1);
+
+                                } else if (dc.getType() == DocumentChange.Type.REMOVED) {
+                                    String id = dc.getDocument().getId();
+                                    adapter.removeItem(id);
+                                }
                             }
                         }
                     }
@@ -141,7 +144,7 @@ public class ChatroomReferenceFragment extends Fragment implements
             messageField.setText("");
 
             // Add a new document with a generated ID
-            db.collection("chatroomsBETA")
+            db.collection("chatrooms_BETA")
                     .document(chatroomId)
                     .collection("messagesUserRef")
                     .add(info)
@@ -167,6 +170,14 @@ public class ChatroomReferenceFragment extends Fragment implements
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        messagesList.clear();
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void getImagePath(Uri imagePath) {
         Log.d(TAG, "getImagePath: imagepath is " + imagePath);
 
@@ -179,7 +190,7 @@ public class ChatroomReferenceFragment extends Fragment implements
 
         MessageUserRef loadingImage = new MessageUserRef(userRef, "default", true);
 
-        db.collection("chatroomsBETA")
+        db.collection("chatrooms_BETA")
                 .document(chatroomId)
                 .collection("messagesUserRef")
                 .add(loadingImage)
@@ -205,7 +216,7 @@ public class ChatroomReferenceFragment extends Fragment implements
         Log.d(TAG, "messageImageUrl: downUrl is: " + downloadUrl);
         Log.d(TAG, "snapshotid Is: " + snapshotId);
 
-        db.collection("chatroomsBETA")
+        db.collection("chatrooms_BETA")
                 .document(chatroomId)
                 .collection("messagesUserRef")
                 .document(snapshotId)
@@ -216,7 +227,7 @@ public class ChatroomReferenceFragment extends Fragment implements
 
                         MessageUserRef uploadedImage = new MessageUserRef(userRef, "" + downloadUrl, true);
 
-                        db.collection("chatroomsBETA")
+                        db.collection("chatrooms_BETA")
                                 .document(chatroomId)
                                 .collection("messagesUserRef")
                                 .add(uploadedImage)
@@ -248,7 +259,7 @@ public class ChatroomReferenceFragment extends Fragment implements
     @Override
     public void onPause() {
         super.onPause();
-        db.collection("chatroomsBETA")
+        db.collection("chatrooms_BETA")
                 .document(chatroomId)
                 .collection("active_users")
                 .document(userRef.getId())

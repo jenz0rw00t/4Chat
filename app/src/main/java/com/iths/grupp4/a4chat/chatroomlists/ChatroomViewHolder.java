@@ -7,7 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
 
 import java.text.SimpleDateFormat;
@@ -15,17 +18,16 @@ import java.util.Date;
 
 public class ChatroomViewHolder extends RecyclerView.ViewHolder {
 
-    private View itemView;
     private TextView textViewName;
-    private TextView textViewCreator;
+    private TextView textViewAdmin;
+    private TextView textViewUsername;
     private TextView textViewCreatedOn;
-    private ImageView imageViewDelete;
 
     ChatroomViewHolder(@NonNull View itemView) {
         super(itemView);
-        this.itemView = itemView;
         textViewName = itemView.findViewById(R.id.chatroom_item_name);
-        textViewCreator = itemView.findViewById(R.id.chatroom_item_creator);
+        textViewAdmin = itemView.findViewById(R.id.chatroom_item_admin);
+        textViewUsername = itemView.findViewById(R.id.chatroom_item_username);
         textViewCreatedOn = itemView.findViewById(R.id.chatroom_item_createdOn);
     }
 
@@ -33,9 +35,10 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder {
         chatroom.creatorReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                textViewCreator.setText((String) documentSnapshot.get("name"));
+                textViewUsername.setText((String) documentSnapshot.get("name"));
             }
         });
+        textViewAdmin.setText(R.string.admin);
         textViewName.setText(chatroom.getChatroomName());
         Date date = chatroom.timeStamp;
         textViewCreatedOn.setText("");

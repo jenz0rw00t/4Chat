@@ -40,11 +40,13 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
 
     private List<Chatroom> chatroomList;
     private static final String CHATROOM_ID = "ChatroomId";
-    private static final String USER_NAME = "UserName";
+    private static final String USER = "User";
     private FirebaseFirestore db;
-    private FirebaseUser current_user;
+    private String userId;
+    private DocumentReference current_user;
     private View view;
     private String TAG;
+    private int numberOfMessages;
 
     public ChatroomViewAdapter(@NonNull List<Chatroom> chatroomList) {
         this.chatroomList = chatroomList;
@@ -66,7 +68,8 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         chatroomViewHolder.setData(chatroom);
 
         db = FirebaseFirestore.getInstance();
-        current_user = FirebaseAuth.getInstance().getCurrentUser();
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        current_user = db.collection("users").document(userId);
 
         int position = chatroomViewHolder.getAdapterPosition();
         String chatroomId = chatroomList.get(position).getChatroomId();
@@ -75,11 +78,46 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         textViewChatroomName.setText(chatroomList.get(position).getChatroomName());
 
         TextView textViewActiveUsers = (TextView) view.findViewById(R.id.chatroom_item_active_users);
-        CollectionReference activeUsers = db.collection("chatroomsBETA")
-                .document(chatroomId)
-                .collection("active_users");
+        CollectionReference activeUsers = db.collection("chatrooms_BETA")
+                .document(chatroomId).collection("active_users");
 
         activeUsers.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+
+                }
+
+                if (!value.isEmpty()) {
+
+                    int numberOfUsers = 0;
+                    for (QueryDocumentSnapshot doc : value) {
+                        numberOfUsers++;
+                    }
+
+                    StringBuilder sb = new StringBuilder();
+                    if (numberOfUsers < 2) {
+                        sb.append(numberOfUsers).append(" ").append(view.getContext().getText(R.string.active_user));
+                    } else {
+                        sb.append(numberOfUsers).append(" ").append(view.getContext().getText(R.string.active_users));
+                    }
+
+                    textViewActiveUsers.setText(sb.toString());
+                } else {
+
+                    textViewActiveUsers.setText(view.getContext().getText(R.string.no_active_users));
+                }
+
+            }
+        });
+
+        TextView textViewMessages = view.findViewById(R.id.chatroom_item_messages);
+        CollectionReference messages = db.collection("chatrooms_BETA")
+                .document(chatroomId).collection("messagesUserRef");
+        messages.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
 
@@ -89,26 +127,22 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                 }
 
                 if (!value.isEmpty()) {
-                    StringBuilder userList = new StringBuilder();
-                    userList.append(view.getContext().getText(R.string.active_users) + " ");
-                    List<String> activeUser = new ArrayList<>();
-
+                    numberOfMessages = 0;
                     for (QueryDocumentSnapshot doc : value) {
-                        activeUser.add(doc.getString("UserName"));
+                        numberOfMessages++;
                     }
 
-                    for (int i = 0; i < activeUser.size(); i++) {
-                        if (i < 1) {
-                            userList.append(activeUser.get(i));
-                        }
-                        if (i > 1) {
-                            userList.append(", ").append(activeUser.get(i));
-                        }
+                    StringBuilder sb = new StringBuilder();
+                    if (numberOfMessages < 2) {
+                        sb.append(numberOfMessages).append(" ").append(view.getContext().getText(R.string.message));
+                    } else {
+                        sb.append(numberOfMessages).append(" ").append(view.getContext().getText(R.string.messages));
                     }
-                    textViewActiveUsers.setText(userList.toString());
-                }
-                else {
-                    textViewActiveUsers.setText(view.getContext().getText(R.string.no_active_users));
+
+                    textViewMessages.setText(sb.toString());
+                } else {
+
+                    textViewMessages.setText(view.getContext().getText(R.string.no_messages));
                 }
 
             }
@@ -117,13 +151,13 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, String> user = new HashMap<>();
-                user.put(USER_NAME, current_user.getDisplayName());
+                Map<String, DocumentReference> user = new HashMap<>();
+                user.put(USER, current_user);
 
-                db.collection("chatroomsBETA")
+                db.collection("chatrooms_BETA")
                         .document(chatroomId)
                         .collection("active_users")
-                        .document(current_user.getUid())
+                        .document(userId)
                         .set(user);
 
                 Bundle bundle = new Bundle();

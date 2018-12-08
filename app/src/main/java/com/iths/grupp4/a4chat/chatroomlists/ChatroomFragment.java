@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -28,7 +29,7 @@ import com.iths.grupp4.a4chat.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatroomFragment extends Fragment implements ChatroomDialogEditName.OnEditNameListener, ChatroomDialogRemove.OnRemoveChatroomListener{
+public class ChatroomFragment extends Fragment implements ChatroomDialogEditName.OnEditNameListener, ChatroomDialogRemove.OnRemoveChatroomListener {
 
     private List<Chatroom> chatroomList;
     private ChatroomViewAdapter adapter;
@@ -88,6 +89,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
                     Toast.makeText(getContext(), "You can't remove " + chatroomList.get(position).getChatroomName(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onLeftClicked(int position) {
                 super.onLeftClicked(position);
@@ -118,6 +120,47 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
             }
         });
 
+        CollectionReference chatrooms = db.collection("chatrooms_BETA");
+        chatrooms.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.d(TAG, "Listen failed.", e);
+                }
+
+                chatroomList.clear();
+                adapter.notifyDataSetChanged();
+
+                if (queryDocumentSnapshots != null) {
+
+                    db.collection("chatrooms_BETA")
+                            .orderBy("timeStamp")
+                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        return;
+                                    }
+
+                                    for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                                        if (dc.getType() == DocumentChange.Type.ADDED) {
+
+                                            String id = dc.getDocument().getId();
+
+                                            Chatroom chatroom = dc.getDocument().toObject(Chatroom.class);
+                                            chatroom.setChatroomId(id);
+                                            adapter.addItem(chatroom);
+
+                                        } else if (dc.getType() == DocumentChange.Type.REMOVED) {
+                                            String id = dc.getDocument().getId();
+                                            adapter.removeItem(id);
+                                        }
+                                    }
+                                }
+                            });
+                }
+            }
+        });
     }
 
     @Override
@@ -127,37 +170,11 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
         chatroomList.clear();
         adapter.notifyDataSetChanged();
 
-        db.collection("chatroomsBETA")
-                .orderBy("timeStamp")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
-                        }
-
-                        for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                            if (dc.getType() == DocumentChange.Type.ADDED) {
-
-                                String id = dc.getDocument().getId();
-
-                                Chatroom chatroom = dc.getDocument().toObject(Chatroom.class);
-                                chatroom.setChatroomId(id);
-                                adapter.addItem(chatroom);
-
-                            } else if (dc.getType() == DocumentChange.Type.REMOVED) {
-                                String id = dc.getDocument().getId();
-                                adapter.removeItem(id);
-                            }
-                        }
-                    }
-                });
-
         getActivity().findViewById(R.id.create_chatroom).setOnClickListener(view -> {
 
             // Create new Chatroom and set data also update to set ChatroomId as data
             Chatroom chatroom = new Chatroom(userRef, userID);
-            db.collection("chatroomsBETA")
+            db.collection("chatrooms_BETA")
                     .add(chatroom)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
@@ -188,7 +205,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
     @Override
     public void editName(String chatroomId, String chatroomName) {
 
-        db.collection("chatroomsBETA")
+        db.collection("chatrooms_BETA")
                 .document(chatroomId)
                 .update("chatroomName", chatroomName);
         for (Chatroom chatroom : chatroomList) {
@@ -203,7 +220,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
     @Override
     public void removeChatroom(int position) {
 
-        db.collection("chatroomsBETA")
+        db.collection("chatrooms_BETA")
                 .document(chatroomList.get(position).getChatroomId())
                 .delete();
 

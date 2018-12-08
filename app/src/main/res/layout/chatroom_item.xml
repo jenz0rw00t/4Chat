@@ -18,61 +18,104 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginBottom="0dp"
             android:background="@color/colorPrimaryDark"
             android:padding="8dp"
             android:textColor="@color/browser_actions_bg_grey"
             android:textSize="24sp"
-            android:textStyle="bold"
+            android:textStyle="bold|italic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Chatroom Name" />
 
         <TextView
-            android:id="@+id/chatroom_item_active_users"
+            android:id="@+id/chatroom_item_admin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
+            android:background="@color/colorPrimary"
+            android:padding="8dp"
+            android:paddingEnd="2dp"
+            android:textAllCaps="true"
+            android:textColor="@color/browser_actions_bg_grey"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chatroom_item_name"
+            tools:text="Admin: " />
+
+        <TextView
+            android:id="@+id/chatroom_item_username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:background="@color/colorPrimaryDark"
-            android:paddingStart="8dp"
-            android:paddingTop="0dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="8dp"
+            android:background="@color/colorPrimary"
+            android:padding="8dp"
+            android:paddingStart="2dp"
             android:textColor="@color/browser_actions_bg_grey"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/chatroom_item_admin"
             app:layout_constraintTop_toBottomOf="@id/chatroom_item_name"
-            tools:text="Active Users: " />
+            tools:text="Username" />
 
-        <TextView
-            android:id="@+id/chatroom_item_creator"
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/chatroom_item_info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:textSize="12sp"
-            android:textStyle="italic"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@color/colorPrimarySecond"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chatroom_item_active_users"
-            tools:text="Creator" />
+            app:layout_constraintTop_toBottomOf="@id/chatroom_item_admin">
+
+            <TextView
+                android:id="@+id/chatroom_item_active_users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimarySecond"
+                android:padding="8dp"
+                android:textAllCaps="true"
+                android:textColor="@color/browser_actions_bg_grey"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="13 Active Users" />
+
+            <TextView
+                android:id="@+id/chatroom_item_messages"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimarySecond"
+                android:padding="8dp"
+                android:textAllCaps="true"
+                android:textColor="@color/browser_actions_bg_grey"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="33 Messages" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:id="@+id/chatroom_item_createdOn"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:padding="8dp"
+            android:textAlignment="textEnd"
             android:textSize="12sp"
-            android:textStyle="italic"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chatroom_item_info"
             tools:text="CreatedOn" />
 
     </android.support.constraint.ConstraintLayout>

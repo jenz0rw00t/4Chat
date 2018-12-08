@@ -43,6 +43,11 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
+    <string name="admin">Admin</string>
     <string name="no_active_users">No Active Users</string>
-    <string name="active_users">Active Users: </string>
+    <string name="active_users">Active Users</string>
+    <string name="active_user">Active User</string>
+    <string name="no_messages">No Messages</string>
+    <string name="messages">Messages</string>
+    <string name="message">Message</string>
 </resources>

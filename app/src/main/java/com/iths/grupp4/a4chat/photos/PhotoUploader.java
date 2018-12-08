@@ -54,7 +54,6 @@ public class PhotoUploader {
         mUploadAttachment = uploadAttachment;
     }
 
-
     public PhotoUploader(String userId, Context context,
                          boolean uploadAttachment, ImageUploadCallback imageUploadCallback) {
         mUserid = userId;
@@ -62,7 +61,6 @@ public class PhotoUploader {
         mUploadAttachment = uploadAttachment;
         mImageUploadCallback = imageUploadCallback;
     }
-
 
     public void uploadNewPhoto(Uri imageUri) {
         Log.d(TAG, "uploadNewPhoto: uploading new image" + imageUri);

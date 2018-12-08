@@ -126,9 +126,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             signInActivity();
         }else {
             reference = FirebaseFirestore.getInstance();
-            reference.collection("users").document(user).update("online", true);
+            reference.collection("users").document(user).update("online", false);
         }
-
     }
 
     @Override

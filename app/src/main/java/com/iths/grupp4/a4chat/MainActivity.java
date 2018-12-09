@@ -1,8 +1,12 @@
 package com.iths.grupp4.a4chat;
 
+import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,10 +16,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -40,6 +47,8 @@ import com.iths.grupp4.a4chat.friend.FriendsListFragment;
 import com.iths.grupp4.a4chat.photos.FullScreenDialog;
 import com.squareup.picasso.Picasso;
 
+import java.util.Locale;
+
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -63,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        loadLocale();
 
         sClipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         sFragmentManager = getSupportFragmentManager();
@@ -160,8 +171,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }
 
+        switch (item.getItemId()){
+            case R.id.menu_languages:
+                showLanguageDialog();
+                return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -308,6 +326,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             navigation.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_language, menu);
+        return true;
+    }
+
+    private void showLanguageDialog(){
+        final String[] listItems = {"English", "Svenska"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.chooce_language);
+        builder.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0){
+                    setLocale("en");
+                    recreate();
+                }else if (which == 1){
+                    setLocale("sv");
+                    recreate();
+                }
+
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration configuration = new Configuration();
+        configuration.locale = locale;
+        getBaseContext().getResources().updateConfiguration(configuration, getBaseContext()
+                .getResources().getDisplayMetrics());
+
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putString("My_Lang", lang);
+        editor.apply();
+
+    }
+
+    public void loadLocale(){
+        SharedPreferences preferences = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
+        String language = preferences.getString("My_Lang", "");
+        setLocale(language);
     }
 
 

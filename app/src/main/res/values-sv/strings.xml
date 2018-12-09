@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chat 4</string>
+    <string name="profile_email">Email</string>
+    <string name="nav_profile_string">Profil</string>
+    <string name="nav_logout">Logga ut</string>
+    <string name="nav_allUsers">Alla användare</string>
+    <string name="action_save">spara</string>
+    <string name="name">namn</string>
+    <string name="email">email</string>
+    <string name="open">Öppna</string>
+    <string name="close">Stäng</string>
+    <string name="profile_username">Namn</string>
+    <string name="search_users">Sök användare</string>
+    <string name="nav_chatrooms">Chatrum</string>
+    <string name="active_users">Aktiva användare</string>
+    <string name="no_active_users">Inga aktiva användare</string>
+    <string name="private_messages">Privata meddelande</string>
+    <string name="friends">Vänner</string>
+    <string name="friend_requests">Vänförfråga</string>
+    <string name="send_friend_request">Skicka vänförfråga</string>
+    <string name="unfriend_this_person">Ta bort vän</string>
+    <string name="are_you_sure">Är du säker?</string>
+    <string name="ok">Okej</string>
+    <string name="cancel">Avbryt</string>
+    <string name="enter_chatroom_name">Skriv Chattrum Namn</string>
+    <string name="take_a_photo">Ta bild</string>
+    <string name="choose_photo_from_memory">Välj bild från minnen</string>
+    <string name="enter_your_name">Ange ditt namn</string>
+    <string name="message">Meddelande</string>
+    <string name="chooce_language">Välj språk</string>
+
+</resources>

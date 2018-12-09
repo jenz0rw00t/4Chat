@@ -10,7 +10,7 @@
         android:icon="@drawable/ic_message"/>
     <item
         android:id="@+id/nav_chat_test"
-        android:title="Private Messages"
+        android:title="@string/private_messages"
         android:icon="@drawable/ic_message"/>
     <item
         android:id="@+id/nav_all_users"
@@ -20,7 +20,7 @@
     <item
         android:id="@+id/nav_friends"
         android:icon="@drawable/ic_group_black_24dp"
-        android:title="Friends"/>
+        android:title="@string/friends"/>
 
     <item
         android:id="@+id/nav_logout"

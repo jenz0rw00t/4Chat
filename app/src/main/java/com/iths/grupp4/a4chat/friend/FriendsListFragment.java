@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.iths.grupp4.a4chat.chatlists.PmReferenceFragment;
@@ -87,6 +88,21 @@ public class FriendsListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 search_friends.setIconified(false);
+            }
+        });
+        //Handles the bottomnav bar when focus is changed on searchView
+        search_friends.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // searchView expanded
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.showBottomBar(false);
+                } else {
+                    // searchView not expanded
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.showBottomBar(true);
+                }
             }
         });
 

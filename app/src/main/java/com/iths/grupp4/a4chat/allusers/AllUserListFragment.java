@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
@@ -73,6 +74,21 @@ public class AllUserListFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 search_users.setIconified(false);
+            }
+        });
+        //Handles the bottomnav bar when focus is changed on searchView
+        search_users.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // searchView expanded
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.showBottomBar(false);
+                } else {
+                    // searchView not expanded
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.showBottomBar(true);
+                }
             }
         });
 

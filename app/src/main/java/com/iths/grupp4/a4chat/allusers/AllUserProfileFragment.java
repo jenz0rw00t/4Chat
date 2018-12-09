@@ -130,9 +130,9 @@ public class AllUserProfileFragment extends Fragment {
                                 if(request_type.equals("received")){
 
                                     current_state = "request_received";
-                                    addFriend.setText("Accept Friend Request");
+                                    addFriend.setText(R.string.accept_friend_request);
 
-                                    removeFriend.setText("Decline friend Request");
+                                    removeFriend.setText(R.string.decline_friend_request);
                                     removeFriend.setVisibility(View.VISIBLE);
                                     removeFriend.setEnabled(true);
 
@@ -140,7 +140,7 @@ public class AllUserProfileFragment extends Fragment {
                                 } else if(request_type.equals("sent")) {
 
                                     current_state = "request_sent";
-                                    addFriend.setText("Cancel Friend Request");
+                                    addFriend.setText(R.string.cancel_friend_request);
 
                                     removeFriend.setVisibility(View.INVISIBLE);
                                     removeFriend.setEnabled(false);
@@ -162,7 +162,7 @@ public class AllUserProfileFragment extends Fragment {
                                         addFriend.setVisibility(View.INVISIBLE);
                                         removeFriend.setVisibility(View.VISIBLE);
                                         removeFriend.setEnabled(true);
-                                        removeFriend.setText("Unfriend this person");
+                                        removeFriend.setText(R.string.unfriend_this_person);
                                     }
                                 }
                             }
@@ -209,7 +209,7 @@ public class AllUserProfileFragment extends Fragment {
 
                                         addFriend.setEnabled(true);
                                         current_state = "request_sent";
-                                        addFriend.setText("Cancel Friend Request");
+                                        addFriend.setText(R.string.cancel_friend_request);
 
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
@@ -249,7 +249,7 @@ public class AllUserProfileFragment extends Fragment {
 
                                     friendsReference.document(current_user.getUid()).update("request_sent", FieldValue.arrayRemove(receiver_user_id));
 
-                                    addFriend.setText("Send friend request");
+                                    addFriend.setText(R.string.send_friend_request);
                                 }
                             });
                         }
@@ -293,7 +293,7 @@ public class AllUserProfileFragment extends Fragment {
                                                                                             current_state = "friends";
                                                                                             friendsReference.document(current_user.getUid()).update("request_sent", FieldValue.arrayRemove(receiver_user_id));
                                                                                             friendsReference.document(receiver_user_id).update("request_sent", FieldValue.arrayRemove(current_user.getUid()));
-                                                                                            addFriend.setText("Unfriend this person");
+                                                                                            addFriend.setText(R.string.unfriend_this_person);
                                                                                         }
                                                                                     });
                                                                                 }
@@ -329,7 +329,7 @@ public class AllUserProfileFragment extends Fragment {
                                 public void onSuccess(Void aVoid) {
                                     current_state = "not_friends";
                                     addFriend.setVisibility(View.VISIBLE);
-                                    addFriend.setText("Send friend request");
+                                    addFriend.setText(R.string.send_friend_request);
                                     removeFriend.setVisibility(View.INVISIBLE);
                                 }
                             });
@@ -350,7 +350,7 @@ public class AllUserProfileFragment extends Fragment {
                                             friendsReference.document(receiver_user_id).update("request_sent", FieldValue.arrayRemove(current_user.getUid()));
 
                                             current_state = "not_friends";
-                                            addFriend.setText("Send friend request");
+                                            addFriend.setText(R.string.send_friend_request);
                                             removeFriend.setVisibility(View.INVISIBLE);
                                         }
                                     });

@@ -75,7 +75,7 @@ public class AllUserAdapter extends FirestoreRecyclerAdapter<Friends, AllUserAda
         public void setOnline(boolean online){
             if (online == true){
                 onlineIcon.setImageResource(R.drawable.ic_online_icon);
-            }else {
+            }else if (online == false) {
                 onlineIcon.setImageResource(R.drawable.ic_offline_icon);
             }
         }

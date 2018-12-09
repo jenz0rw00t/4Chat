@@ -58,5 +58,8 @@
     <string name="enter_your_name">Enter Your Name</string>
     <string name="message">Message</string>
     <string name="chooce_language">Choose language</string>
+    <string name="cancel_friend_request">Cancel Friend Request</string>
+    <string name="accept_friend_request">Accept Friend Request</string>
+    <string name="decline_friend_request">Decline friend Request</string>
 
 </resources>

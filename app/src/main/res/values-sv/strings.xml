@@ -15,7 +15,7 @@
     <string name="nav_chatrooms">Chatrum</string>
     <string name="active_users">Aktiva användare</string>
     <string name="no_active_users">Inga aktiva användare</string>
-    <string name="private_messages">Privata meddelande</string>
+    <string name="private_messages">Privat Meddelande</string>
     <string name="friends">Vänner</string>
     <string name="friend_requests">Vänförfråga</string>
     <string name="send_friend_request">Skicka vänförfråga</string>
@@ -29,5 +29,8 @@
     <string name="enter_your_name">Ange ditt namn</string>
     <string name="message">Meddelande</string>
     <string name="chooce_language">Välj språk</string>
+    <string name="cancel_friend_request">Avbryt vänförfrågan</string>
+    <string name="accept_friend_request">Acceptera Vänförfrågan</string>
+    <string name="decline_friend_request">Tacka nej till vänförfrågan</string>
 
 </resources>

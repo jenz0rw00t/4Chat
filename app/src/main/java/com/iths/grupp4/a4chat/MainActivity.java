@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadLocale();
 
         sClipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         sFragmentManager = getSupportFragmentManager();
@@ -194,6 +193,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChatroomFragment())
                     .commit();
         } else if (id == R.id.nav_logout) {
+            mAuth = FirebaseAuth.getInstance();
+            String user = mAuth.getCurrentUser().getUid();
+            reference.collection("users").document(user).update("online", false);
             mAuth.signOut();
             LoginManager.getInstance().logOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));

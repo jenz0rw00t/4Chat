@@ -65,7 +65,7 @@ public class ChangePhotoDialog extends DialogFragment {
             String requiredPermission = "android.permission.READ_EXTERNAL_STORAGE";
             int checkVal = getContext().checkCallingOrSelfPermission(requiredPermission);
             if (checkVal==PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI); //opens camera intent
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 intent.setType("image/*");
                 startActivityForResult(intent, RESULT_LOAD_IMAGE);
             } else {

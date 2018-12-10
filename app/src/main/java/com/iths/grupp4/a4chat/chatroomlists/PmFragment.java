@@ -14,6 +14,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
@@ -29,6 +30,8 @@ public class PmFragment extends Fragment {
     private String TAG;
     private String chatroomId;
     private String userID;
+    ListenerRegistration reg;
+
 
     public PmFragment() {
 
@@ -61,8 +64,8 @@ public class PmFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        db.collection("pmsBETA").whereArrayContains("users", userID)
-                .orderBy("recentMessage", Query.Direction.DESCENDING)
+        reg = db.collection("pmsBETA").whereArrayContains("users", userID)
+                .orderBy("timeStamp")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -85,5 +88,20 @@ public class PmFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        chatroomList.clear();
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        reg.remove();
     }
 }

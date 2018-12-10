@@ -66,8 +66,8 @@ public class PmViewAdapter extends RecyclerView.Adapter<PmViewHolder> {
                 pmReferenceFragment.setArguments(bundle);
                 FragmentManager manager = ((MainActivity) v.getContext()).getSupportFragmentManager();
                 manager.beginTransaction()
-                        .addToBackStack("Chatrooms")
-                        .replace(R.id.frameLayout, pmReferenceFragment, null)
+                        .addToBackStack("allUsers")
+                        .replace(R.id.frameLayout, pmReferenceFragment, "")
                         .commit();
 
             }

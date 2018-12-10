@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="colorPrimary">#922B21</color>
     <color name="colorPrimaryDark">#641E16</color>
     <color name="colorPrimarySecond">#F39C12</color>
     <color name="colorAccent">#5F0044</color>
+    <color name="colorAccentLight">#FCF3CF</color>
     <color name="Black">#000000</color>
     <color name="White">#ffffff</color>
 
-    <color name="testBackground">#641E16</color>
-    <color name="testHeader">#922B21</color>
-    <color name="testDetails">#F39C12</color>
-    <color name="testInfo">#FCF3CF</color>
 </resources>

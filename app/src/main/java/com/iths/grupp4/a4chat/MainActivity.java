@@ -244,12 +244,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.bottomNavigation_recents:
                     navigation.getMenu().setGroupCheckable(0,true,true);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new PmFragment())
-                            .addToBackStack("LateTransaction").commit();
+                            .addToBackStack("LateTransaction")
+                            .commit();
                     return true;
 
                 case R.id.bottomNavigation_friends:
                     navigation.getMenu().setGroupCheckable(0,true,true);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FriendsListFragment())
+                            .addToBackStack("LateTransaction")
+                            .commit();
                     return true;
 
                 case R.id.bottomNavigation_request:
@@ -260,7 +263,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     AllUserListFragment fragment = new AllUserListFragment();
                     fragment.setArguments(bundle);
-                    fragmentTransaction.replace(R.id.frameLayout, fragment).commit();
+                    fragmentTransaction.replace(R.id.frameLayout, fragment)
+                            .addToBackStack("LateTransaction")
+                            .commit();
                     return true;
             }
             return false;

@@ -60,6 +60,7 @@ public class PmFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
         db.collection("pmsBETA").whereArrayContains("users", userID)
                 .orderBy("recentMessage", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {

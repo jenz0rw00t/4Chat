@@ -23,6 +23,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.R;
 
@@ -40,6 +42,8 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
     private DocumentReference userRef;
     private SwipeController swipeController;
     private LinearLayoutManager layoutManager;
+    Query chatrooms;
+    ListenerRegistration reg;
 
     public ChatroomFragment() {
 
@@ -119,9 +123,14 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
                 swipeController.onDraw(c);
             }
         });
+    }
 
-        CollectionReference chatrooms = db.collection("chatroomsBETA");
-        chatrooms.addSnapshotListener(new EventListener<QuerySnapshot>() {
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        chatrooms = db.collection("chatroomsBETA");
+        reg = chatrooms.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -152,6 +161,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
                                             adapter.addItem(chatroom);
 
                                         } else if (dc.getType() == DocumentChange.Type.REMOVED) {
+
                                             String id = dc.getDocument().getId();
                                             adapter.removeItem(id);
                                         }
@@ -161,14 +171,6 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
                 }
             }
         });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        chatroomList.clear();
-        adapter.notifyDataSetChanged();
 
         getActivity().findViewById(R.id.create_chatroom).setOnClickListener(view -> {
 
@@ -208,6 +210,13 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
 
         chatroomList.clear();
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        reg.remove();
     }
 
     @Override

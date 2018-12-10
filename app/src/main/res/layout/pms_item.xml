@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_margin="8dp"
     app:cardElevation="4dp"
     tools:ignore="MissingDefaultResource">
 
@@ -24,7 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageUser"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Chatname" />
+            tools:text="Username" />
 
         <TextView
             android:id="@+id/chatroom_item_createdOn"

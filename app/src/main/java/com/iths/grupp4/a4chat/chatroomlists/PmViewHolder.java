@@ -21,7 +21,6 @@ public class PmViewHolder extends RecyclerView.ViewHolder {
 
     private View itemView;
     private TextView textViewName;
-    private TextView textViewCreator;
     private TextView textViewCreatedOn;
     private ImageView imageUser;
     private ImageView onlineIcon;
@@ -30,7 +29,6 @@ public class PmViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.itemView = itemView;
         textViewName = itemView.findViewById(R.id.chatroom_item_name);
-        textViewCreator = itemView.findViewById(R.id.chatroom_item_creator);
         textViewCreatedOn = itemView.findViewById(R.id.chatroom_item_createdOn);
         imageUser = itemView.findViewById(R.id.imageUser);
         onlineIcon = itemView.findViewById(R.id.statusIcon);

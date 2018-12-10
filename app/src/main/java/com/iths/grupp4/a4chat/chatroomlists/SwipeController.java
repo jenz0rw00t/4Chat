@@ -155,7 +155,7 @@ class SwipeController extends Callback {
         Paint p = new Paint();
 
         RectF leftButton = new RectF(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
-        p.setColor(Color.BLUE);
+        p.setColor(Color.rgb(95, 0, 68));
         c.drawRoundRect(leftButton, corners, corners, p);
         drawText("EDIT", c, leftButton, p);
 

@@ -78,7 +78,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         textViewChatroomName.setText(chatroomList.get(position).getChatroomName());
 
         TextView textViewActiveUsers = (TextView) view.findViewById(R.id.chatroom_item_active_users);
-        CollectionReference activeUsers = db.collection("chatrooms_BETA")
+        CollectionReference activeUsers = db.collection("chatroomsBETA")
                 .document(chatroomId).collection("active_users");
 
         activeUsers.addSnapshotListener(new EventListener<QuerySnapshot>() {

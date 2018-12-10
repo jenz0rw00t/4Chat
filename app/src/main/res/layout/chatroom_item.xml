@@ -142,7 +142,7 @@
                 android:padding="8dp"
                 android:textAlignment="textEnd"
                 android:textSize="12sp"
-                android:textStyle="bold"
+                android:textStyle="italic"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/chatroom_item_footer"
                 app:layout_constraintStart_toStartOf="@id/chatroom_item_footer"

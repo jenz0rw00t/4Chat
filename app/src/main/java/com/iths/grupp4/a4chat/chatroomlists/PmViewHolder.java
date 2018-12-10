@@ -51,7 +51,9 @@ public class PmViewHolder extends RecyclerView.ViewHolder {
                                 .placeholder(R.drawable.default_avatar)
                                 .transform(new CropCircleTransformation())
                                 .into(imageUser);
-                        setOnline(documentSnapshot.getBoolean("online"));
+                        if (documentSnapshot.getBoolean("online") != null){
+                            setOnline(documentSnapshot.getBoolean("online"));
+                        }
                     }
                 }
             });
@@ -69,7 +71,9 @@ public class PmViewHolder extends RecyclerView.ViewHolder {
                                 .placeholder(R.drawable.default_avatar)
                                 .transform(new CropCircleTransformation())
                                 .into(imageUser);
-                        setOnline(documentSnapshot.getBoolean("online"));
+                        if (documentSnapshot.getBoolean("online") != null){
+                            setOnline(documentSnapshot.getBoolean("online"));
+                        }
                     }
                 }
             });

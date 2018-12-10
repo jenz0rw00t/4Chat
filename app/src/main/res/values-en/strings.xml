@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="app_name">Chat 4</string>
+    <string name="app_name">4Chat</string>
     <string name="action_save">save</string>
     <string name="name">name</string>
     <string name="email">email</string>

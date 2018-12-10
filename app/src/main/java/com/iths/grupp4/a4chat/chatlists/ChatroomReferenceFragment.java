@@ -175,6 +175,8 @@ public class ChatroomReferenceFragment extends Fragment implements
 
         messagesList.clear();
         adapter.notifyDataSetChanged();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.showBottomBar(false);
     }
 
     @Override
@@ -273,11 +275,4 @@ public class ChatroomReferenceFragment extends Fragment implements
         mainActivity.showBottomBar(true);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        super.onStop();
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.showBottomBar(false);
-    }
 }

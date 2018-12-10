@@ -203,6 +203,14 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        chatroomList.clear();
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void editName(String chatroomId, String chatroomName) {
 
         db.collection("chatrooms_BETA")

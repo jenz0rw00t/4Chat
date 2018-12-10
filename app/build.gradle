@@ -3,6 +3,9 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
+    //compileSdkVersion rootProject.ext.compileSdkVersion
+    //buildToolsVersion rootProject.ext.buildToolsVersion
+
     defaultConfig {
         applicationId "com.iths.grupp4.a4chat"
         minSdkVersion 21
@@ -11,6 +14,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        //minSdkVersion rootProject.ext.minSdkVersion
+        //targetSdkVersion rootProject.ext.targetSdkVersion
+
     }
     buildTypes {
         release {
@@ -18,6 +24,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main.java.srcDirs += 'src/main/base'
+        main.java.srcDirs += 'src/main/api9'
+        main.java.srcDirs += 'src/main/api14'
+        main.java.srcDirs += 'src/main/api21'
+        main.java.srcDirs += 'src/main/api23'
+    }
+
+
     compileOptions {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
@@ -50,8 +65,12 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
     compile project(':library')
 
+
+
     // Tests
     testCompile 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     androidTestCompile('com.android.support.test:runner:0.5') {
         exclude module: 'support-annotations'
     }

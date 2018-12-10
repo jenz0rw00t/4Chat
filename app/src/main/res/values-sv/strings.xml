@@ -13,8 +13,6 @@
     <string name="profile_username">Namn</string>
     <string name="search_users">Sök användare</string>
     <string name="nav_chatrooms">Chatrum</string>
-    <string name="active_users">Aktiva användare</string>
-    <string name="no_active_users">Inga aktiva användare</string>
     <string name="private_messages">Privat Meddelande</string>
     <string name="friends">Vänner</string>
     <string name="friend_requests">Vänförfråga</string>
@@ -27,10 +25,16 @@
     <string name="take_a_photo">Ta bild</string>
     <string name="choose_photo_from_memory">Välj bild från minnen</string>
     <string name="enter_your_name">Ange ditt namn</string>
-    <string name="message">Meddelande</string>
     <string name="chooce_language">Välj språk</string>
     <string name="cancel_friend_request">Avbryt vänförfrågan</string>
     <string name="accept_friend_request">Acceptera Vänförfrågan</string>
     <string name="decline_friend_request">Tacka nej till vänförfrågan</string>
 
+    <string name="admin">Admin</string>
+    <string name="no_active_users">Inga Aktiva Användare</string>
+    <string name="active_users">Aktiva Användare</string>
+    <string name="active_user">Aktiv Användare</string>
+    <string name="no_messages">Inga Meddelanden</string>
+    <string name="messages">Meddelanden</string>
+    <string name="message">Meddelande</string>
 </resources>

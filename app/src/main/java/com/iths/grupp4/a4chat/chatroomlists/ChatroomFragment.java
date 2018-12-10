@@ -120,7 +120,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
             }
         });
 
-        CollectionReference chatrooms = db.collection("chatrooms_BETA");
+        CollectionReference chatrooms = db.collection("chatroomsBETA");
         chatrooms.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
@@ -133,7 +133,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
 
                 if (queryDocumentSnapshots != null) {
 
-                    db.collection("chatrooms_BETA")
+                    db.collection("chatroomsBETA")
                             .orderBy("timeStamp")
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
@@ -174,7 +174,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
 
             // Create new Chatroom and set data also update to set ChatroomId as data
             Chatroom chatroom = new Chatroom(userRef, userID);
-            db.collection("chatrooms_BETA")
+            db.collection("chatroomsBETA")
                     .add(chatroom)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
@@ -213,7 +213,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
     @Override
     public void editName(String chatroomId, String chatroomName) {
 
-        db.collection("chatrooms_BETA")
+        db.collection("chatroomsBETA")
                 .document(chatroomId)
                 .update("chatroomName", chatroomName);
         for (Chatroom chatroom : chatroomList) {
@@ -228,7 +228,7 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
     @Override
     public void removeChatroom(int position) {
 
-        db.collection("chatrooms_BETA")
+        db.collection("chatroomsBETA")
                 .document(chatroomList.get(position).getChatroomId())
                 .delete();
 

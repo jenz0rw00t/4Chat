@@ -43,8 +43,6 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
-    <string name="no_active_users">No Active Users</string>
-    <string name="active_users">Active Users: </string>
     <string name="private_messages">Private Messages</string>
     <string name="friends">Friends</string>
     <string name="friend_requests">Friend Requests</string>
@@ -57,9 +55,16 @@
     <string name="take_a_photo">Take a Photo</string>
     <string name="choose_photo_from_memory">Choose photo from memory</string>
     <string name="enter_your_name">Enter Your Name</string>
-    <string name="message">Message</string>
     <string name="chooce_language">Choose language</string>
     <string name="cancel_friend_request">Cancel Friend Request</string>
     <string name="accept_friend_request">Accept Friend Request</string>
     <string name="decline_friend_request">Decline friend Request</string>
+
+    <string name="admin">Admin</string>
+    <string name="no_active_users">No Active Users</string>
+    <string name="active_users">Active Users</string>
+    <string name="active_user">Active User</string>
+    <string name="no_messages">No Messages</string>
+    <string name="messages">Messages</string>
+    <string name="message">Message</string>
 </resources>

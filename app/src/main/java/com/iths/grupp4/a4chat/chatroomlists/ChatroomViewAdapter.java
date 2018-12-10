@@ -115,7 +115,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
         });
 
         TextView textViewMessages = view.findViewById(R.id.chatroom_item_messages);
-        CollectionReference messages = db.collection("chatrooms_BETA")
+        CollectionReference messages = db.collection("chatroomsBETA")
                 .document(chatroomId).collection("messagesUserRef");
         messages.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -154,7 +154,7 @@ public class ChatroomViewAdapter extends RecyclerView.Adapter<ChatroomViewHolder
                 Map<String, DocumentReference> user = new HashMap<>();
                 user.put(USER, current_user);
 
-                db.collection("chatrooms_BETA")
+                db.collection("chatroomsBETA")
                         .document(chatroomId)
                         .collection("active_users")
                         .document(userId)

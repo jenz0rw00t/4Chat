@@ -28,7 +28,7 @@ import java.util.HashMap;
 public class PhotoUploader {
 
     private static String TAG = "PhotoUploader";
-    private static double MB_THRESHHOLD = 5.0;
+    private static double MB_THRESHHOLD = 2.0;
     private static double MB = 1000000.0;
 
     private Context mContext;

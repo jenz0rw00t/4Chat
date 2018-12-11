@@ -173,7 +173,6 @@ public class ChatroomReferenceFragment extends Fragment implements
     public void onStart() {
         super.onStart();
 
-        messagesList.clear();
         adapter.notifyDataSetChanged();
         MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.showBottomBar(false);

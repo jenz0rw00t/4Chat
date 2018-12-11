@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -19,6 +20,7 @@ public class ChatroomDialogEditName extends DialogFragment {
     EditText editTextEditName;
     Button buttonOk;
     Button buttonCancel;
+    View view;
 
     private static final String TAG = "ChatNameDialog";
     String chatroomName;
@@ -33,7 +35,7 @@ public class ChatroomDialogEditName extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_chatroom_editname, container, false);
+        view = inflater.inflate(R.layout.dialog_chatroom_editname, container, false);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -43,6 +45,7 @@ public class ChatroomDialogEditName extends DialogFragment {
         editTextEditName = (EditText) view.findViewById(R.id.dialog_chatroom_editname_edittext);
         buttonOk = (Button) view.findViewById(R.id.dialog_chatroom_editname_okButton);
         buttonCancel = (Button) view.findViewById(R.id.dialog_chatroom_editname_cancelButton);
+        showKeyboard();
 
         buttonOk.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +54,7 @@ public class ChatroomDialogEditName extends DialogFragment {
                 chatroomName = editTextEditName.getText().toString();
                 onEditNameListener.editName(chatroomId, chatroomName);
 
+                closeKeyboard();
                 getDialog().dismiss();
             }
         });
@@ -59,11 +63,22 @@ public class ChatroomDialogEditName extends DialogFragment {
             @Override
             public void onClick(View v) {
 
+                closeKeyboard();
                 getDialog().dismiss();
             }
         });
 
         return view;
+    }
+
+    public void showKeyboard(){
+        InputMethodManager inputMethodManager = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    }
+
+    public void closeKeyboard(){
+        InputMethodManager inputMethodManager = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
     @Override

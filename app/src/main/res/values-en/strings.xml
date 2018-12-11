@@ -66,5 +66,9 @@
     <string name="no_messages">No Messages</string>
     <string name="messages">Messages</string>
     <string name="message">Message</string>
-
+    <string name="choose">Choose</string>
+    <string-array name="choose">
+        <item>Send Message</item>
+        <item>View Profile</item>
+    </string-array>
 </resources>

@@ -37,4 +37,9 @@
     <string name="no_messages">Inga Meddelanden</string>
     <string name="messages">Meddelanden</string>
     <string name="message">Meddelande</string>
+    <string name="choose">Välj</string>
+    <string-array name="choose">
+        <item>Skicka Meddelande</item>
+        <item>Visa Profil</item>
+    </string-array>
 </resources>

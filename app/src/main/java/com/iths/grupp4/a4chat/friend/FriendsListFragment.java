@@ -1,10 +1,14 @@
 package com.iths.grupp4.a4chat.friend;
 
 
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -27,6 +31,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.iths.grupp4.a4chat.MainActivity;
 import com.iths.grupp4.a4chat.R;
+import com.iths.grupp4.a4chat.UserProfileFragment;
+import com.iths.grupp4.a4chat.allusers.AllUserProfileFragment;
 import com.iths.grupp4.a4chat.allusers.AllUsers;
 import com.iths.grupp4.a4chat.chatlists.PmReferenceFragment;
 import com.iths.grupp4.a4chat.chatroomlists.Chatroom;
@@ -152,53 +158,80 @@ public class FriendsListFragment extends Fragment {
         adapter.setOnItemClickListener(new FriendsAdapter.OnItemClicklistener() {
             @Override
             public void onItemClick(DocumentSnapshot snapshot, int position) {
-                db.collection("pmsBETA")
-                        .whereArrayContains("users", current_user.getUid() + snapshot.getId())
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                Resources res = getResources();
+                final String[] listItems = res.getStringArray(R.array.choose);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(R.string.choose).setItems(listItems, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot document = task.getResult();
-                            if (!document.isEmpty()) {
-                                String chatroomId = document.getDocuments().get(0).getId();
-                                Bundle bundle = new Bundle();
-                                bundle.putString(CHATROOM_ID, chatroomId);
-                                PmReferenceFragment pmReferenceFragment = new PmReferenceFragment();
-                                pmReferenceFragment.setArguments(bundle);
-                                FragmentManager manager = getFragmentManager();
-                                manager.beginTransaction()
-                                        .replace(R.id.frameLayout, pmReferenceFragment, null)
-                                        .commit();
-                            } else {
-                                // Document didn't exist, so it is created
-                                DocumentReference userRef = db.collection("users").document(current_user.getUid());
-                                DocumentReference recieverRef = db.collection("users").document(snapshot.getId());
-                                Chatroom chatroom = new Chatroom(userRef, recieverRef, current_user.getUid());
-                                db.collection("pmsBETA")
-                                        .add(chatroom).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        documentReference.update("users", Arrays.asList(
-                                                current_user.getUid(),
-                                                snapshot.getId(),
-                                                current_user.getUid()+snapshot.getId(),
-                                                snapshot.getId()+current_user.getUid()));
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString(CHATROOM_ID, documentReference.getId());
-                                        PmReferenceFragment pmReferenceFragment = new PmReferenceFragment();
-                                        pmReferenceFragment.setArguments(bundle);
-                                        FragmentManager manager = getFragmentManager();
-                                        manager.beginTransaction()
-                                                .replace(R.id.frameLayout, pmReferenceFragment, null)
-                                                .commit();
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0){
+                            db.collection("pmsBETA")
+                                    .whereArrayContains("users", current_user.getUid() + snapshot.getId())
+                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        QuerySnapshot document = task.getResult();
+                                        if (!document.isEmpty()) {
+                                            String chatroomId = document.getDocuments().get(0).getId();
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString(CHATROOM_ID, chatroomId);
+                                            PmReferenceFragment pmReferenceFragment = new PmReferenceFragment();
+                                            pmReferenceFragment.setArguments(bundle);
+                                            FragmentManager manager = getFragmentManager();
+                                            manager.beginTransaction()
+                                                    .replace(R.id.frameLayout, pmReferenceFragment, null)
+                                                    .commit();
+                                        } else {
+                                            // Document didn't exist, so it is created
+                                            DocumentReference userRef = db.collection("users").document(current_user.getUid());
+                                            DocumentReference recieverRef = db.collection("users").document(snapshot.getId());
+                                            Chatroom chatroom = new Chatroom(userRef, recieverRef, current_user.getUid());
+                                            db.collection("pmsBETA")
+                                                    .add(chatroom).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    documentReference.update("users", Arrays.asList(
+                                                            current_user.getUid(),
+                                                            snapshot.getId(),
+                                                            current_user.getUid()+snapshot.getId(),
+                                                            snapshot.getId()+current_user.getUid()));
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString(CHATROOM_ID, documentReference.getId());
+                                                    PmReferenceFragment pmReferenceFragment = new PmReferenceFragment();
+                                                    pmReferenceFragment.setArguments(bundle);
+                                                    FragmentManager manager = getFragmentManager();
+                                                    manager.beginTransaction()
+                                                            .replace(R.id.frameLayout, pmReferenceFragment, null)
+                                                            .commit();
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        Log.d(TAG, "get failed with ", task.getException());
                                     }
-                                });
-                            }
-                        } else {
-                            Log.d(TAG, "get failed with ", task.getException());
+                                }
+                            });
+
+                        }else if (which == 1){
+                            String id = snapshot.getId();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("visit_user_id", id);
+                            FragmentManager fragmentManager = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            AllUserProfileFragment fragment = new AllUserProfileFragment();
+                            fragment.setArguments(bundle);
+                            fragmentTransaction.replace(R.id.frameLayout, fragment).commit();
                         }
+
+                        dialog.dismiss();
+
                     }
                 });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
             }
         });
     }

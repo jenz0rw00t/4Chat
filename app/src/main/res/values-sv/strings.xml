@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Chat 4</string>
+    <string name="app_name">4Chat</string>
     <string name="profile_email">Email</string>
     <string name="nav_profile_string">Profil</string>
     <string name="nav_logout">Logga ut</string>

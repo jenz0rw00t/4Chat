@@ -228,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (!fragmentManager.popBackStackImmediate("allUsers", FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
                 fragmentManager.popBackStack("Chatrooms", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fragmentManager.popBackStack("LateTransaction", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                fragmentManager.popBackStack("friends", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
         } else {
             supportFinishAfterTransition();

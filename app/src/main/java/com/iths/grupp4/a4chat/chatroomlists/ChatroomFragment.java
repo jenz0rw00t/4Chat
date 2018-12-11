@@ -31,7 +31,7 @@ import com.iths.grupp4.a4chat.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatroomFragment extends Fragment implements ChatroomDialogEditName.OnEditNameListener, ChatroomDialogRemove.OnRemoveChatroomListener {
+public class ChatroomFragment extends Fragment implements ChatroomDialogAddNew.OnAddNewChatroomListener, ChatroomDialogEditName.OnEditNameListener, ChatroomDialogRemove.OnRemoveChatroomListener {
 
     private List<Chatroom> chatroomList;
     private ChatroomViewAdapter adapter;
@@ -174,48 +174,28 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
 
         getActivity().findViewById(R.id.create_chatroom).setOnClickListener(view -> {
 
-            // Create new Chatroom and set data also update to set ChatroomId as data
-            Chatroom chatroom = new Chatroom(userRef, userID);
-            db.collection("chatroomsBETA")
-                    .add(chatroom)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            chatroomId = documentReference.getId();
-                            chatroom.setChatroomId(chatroomId);
-                            documentReference.update("chatroomId", chatroomId);
-
-                            Bundle bundle = new Bundle();
-                            bundle.putString("ChatroomId", chatroomId);
-                            ChatroomDialogEditName dialog = new ChatroomDialogEditName();
-                            dialog.setArguments(bundle);
-                            dialog.setTargetFragment(ChatroomFragment.this, 1);
-                            dialog.show(getFragmentManager(), "ChatroomDialogEditName");
-
-                            Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("firebase", "Error adding document", e);
-                        }
-                    });
+            ChatroomDialogAddNew dialog = new ChatroomDialogAddNew();
+            dialog.setTargetFragment(ChatroomFragment.this, 1);
+            dialog.show(getFragmentManager(), "ChatroomDialogAddNew");
         });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         chatroomList.clear();
         adapter.notifyDataSetChanged();
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        reg.remove();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
-
         reg.remove();
     }
 
@@ -240,10 +220,37 @@ public class ChatroomFragment extends Fragment implements ChatroomDialogEditName
         db.collection("chatroomsBETA")
                 .document(chatroomList.get(position).getChatroomId())
                 .delete();
+        adapter.removeItem(chatroomList.get(position).getChatroomId());
+    }
 
-        chatroomList.remove(position);
+    @Override
+    public void addNewChatroom() {
+        // Create new Chatroom and set data also update to set ChatroomId as data
+        Chatroom chatroom = new Chatroom(userRef, userID);
+        db.collection("chatroomsBETA")
+                .add(chatroom)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        chatroomId = documentReference.getId();
+                        chatroom.setChatroomId(chatroomId);
+                        documentReference.update("chatroomId", chatroomId);
 
-        adapter.notifyItemRemoved(position);
-        adapter.notifyDataSetChanged();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("ChatroomId", chatroomId);
+                        ChatroomDialogEditName dialog = new ChatroomDialogEditName();
+                        dialog.setArguments(bundle);
+                        dialog.setTargetFragment(ChatroomFragment.this, 1);
+                        dialog.show(getFragmentManager(), "ChatroomDialogEditName");
+
+                        Log.d("firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("firebase", "Error adding document", e);
+                    }
+                });
     }
 }

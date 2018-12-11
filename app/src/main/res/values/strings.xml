@@ -72,4 +72,5 @@
         <item>Send Message</item>
         <item>View Profile</item>
     </string-array>
+    <string name="create_new_chatroom">Create new chatroom?</string>
 </resources>
